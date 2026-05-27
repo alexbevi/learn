@@ -112,7 +112,7 @@
 
         <section>
           <p class="kicker">LangChain</p>
-          <h2>LangChain is the agent harness</h2>
+          <h2>LangChain agents provide the harness</h2>
           <div class="grid-3">
             <div class="panel">
               <h3>Standard interfaces</h3>
@@ -128,8 +128,8 @@
             </div>
           </div>
           <p class="footnote">
-            In current docs, LangChain agents are recommended as a higher-level
-            starting point for common model and tool-calling loops.
+            <code>create_agent</code> is the harness entry point for common
+            model and tool-calling loops; LangChain is the broader framework.
           </p>
         </section>
 
@@ -257,6 +257,7 @@ class TicketState(TypedDict):
     category: str | None
     risk: Literal["low", "high"] | None
     draft: str | None
+    approved: bool | None
 
 def classify(state: TicketState) -> dict:
     return {"category": "billing", "risk": "high"}
@@ -347,11 +348,20 @@ graph = builder.compile()</code></pre>
               </p>
             </div>
           </div>
-          <pre><code class="language-python code-small">from langgraph.types import interrupt
+          <pre><code class="language-python code-small">from langgraph.types import Command, interrupt
 
 def request_approval(state: TicketState) -> dict:
     decision = interrupt({"draft": state["draft"], "risk": state["risk"]})
-    return {"approved": decision["approved"]}</code></pre>
+    return {"approved": decision["approved"]}
+
+graph.invoke(
+    Command(resume={"approved": True}),
+    config={"configurable": {"thread_id": "support-ticket-42"}},
+)</code></pre>
+          <p class="footnote">
+            Resume uses the same <code>thread_id</code> so the checkpointer can
+            restore the paused graph state before applying the command.
+          </p>
         </section>
 
         <section>
@@ -627,7 +637,7 @@ def request_approval(state: TicketState) -> dict:
             <div class="panel">
               <h3>Frameworks</h3>
               <ul>
-                <li>LangChain accelerates the agent harness.</li>
+                <li>LangChain agents and <code>create_agent</code> accelerate the agent harness.</li>
                 <li>LangGraph makes runtime state and control explicit.</li>
                 <li>LangSmith-style traces make behavior inspectable.</li>
               </ul>
@@ -676,6 +686,21 @@ def request_approval(state: TicketState) -> dict:
               </li>
               <li>
                 <a href="https://docs.langchain.com/oss/python/langgraph/add-memory">LangGraph memory</a>
+              </li>
+              <li>
+                <a href="https://docs.langchain.com/oss/python/integrations/checkpointers/index">LangGraph checkpointer integrations</a>
+              </li>
+            </ul>
+            <h3>Data plane and reliability</h3>
+            <ul>
+              <li>
+                <a href="https://github.com/pgvector/pgvector">pgvector</a>
+              </li>
+              <li>
+                <a href="https://www.mongodb.com/docs/vector-search/">MongoDB Vector Search</a>
+              </li>
+              <li>
+                <a href="https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/transactional-outbox.html">AWS transactional outbox pattern</a>
               </li>
             </ul>
             <h3>Observability and slide runtime</h3>

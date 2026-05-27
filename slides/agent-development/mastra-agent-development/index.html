@@ -225,6 +225,7 @@ export const getOrder = createTool({
 export const customerOpsAgent = new Agent({
   id: "customer-ops",
   name: "Customer Operations Agent",
+  description: "Handles support triage, policy-aware responses, and safe escalation.",
   instructions: "Triage support tickets, cite policy, and avoid irreversible actions without approval.",
   model: "openai/gpt-5-mini",
   tools: { getOrder },
@@ -263,8 +264,10 @@ export const customerOpsAgent = new Agent({
           <pre><code class="language-ts code-small">const response = await customerOpsAgent.generate(
   "Customer says order A-123 is late and wants a refund.",
   {
-    threadId: "ticket-9482",
-    resourceId: "customer-c_123",
+    memory: {
+      thread: "ticket-9482",
+      resource: "customer-c_123",
+    },
   },
 );
 
@@ -273,9 +276,9 @@ console.log(response.text);</code></pre>
             <div class="panel">
               <h3>Mastra concept</h3>
               <p>
-                <code>threadId</code> scopes the conversation;
-                <code>resourceId</code> scopes the user or owning resource for
-                memory and history.
+                <code>memory.thread</code> scopes this ticket conversation;
+                <code>memory.resource</code> scopes the customer or owning
+                resource whose memory may span threads.
               </p>
             </div>
             <div class="panel">
@@ -312,25 +315,30 @@ console.log(response.text);</code></pre>
         <section>
           <p class="kicker">RAG</p>
           <h2>Add product and policy retrieval as a tool</h2>
-          <pre><code class="language-ts code-small">import { openai } from "@ai-sdk/openai";
+          <pre><code class="language-ts code-small">import { ModelRouterEmbeddingModel } from "@mastra/core/llm";
 import { createVectorQueryTool } from "@mastra/rag";
 
 export const policySearch = createVectorQueryTool({
   id: "policy-search",
   description: "Search refund, escalation, and shipping policy documents.",
+  // Assumes the Mastra registry has a vector store named "pgVector".
   vectorStoreName: "pgVector",
   indexName: "support_policies",
-  model: openai.embedding("text-embedding-3-small"),
+  model: new ModelRouterEmbeddingModel("openai/text-embedding-3-small"),
   enableFilter: true,
 });
 
 export const customerOpsAgent = new Agent({
   id: "customer-ops",
   name: "Customer Operations Agent",
+  description: "Handles support triage, policy-aware responses, and safe escalation.",
   instructions: "Use policySearch before quoting policy. Cite the policy section.",
   model: "openai/gpt-5-mini",
   tools: { getOrder, policySearch },
 });</code></pre>
+          <p class="footnote">
+            For standalone usage, pass a concrete vector store with <code>vectorStore</code>; <code>vectorStoreName</code> is a registry lookup.
+          </p>
         </section>
 
         <section>
@@ -367,7 +375,7 @@ export const customerOpsAgent = new Agent({
         <section>
           <p class="kicker">Memory</p>
           <h2>Memory is not just conversation history</h2>
-          <div class="grid-3">
+          <div class="grid-4">
             <div class="panel">
               <h3>Thread history</h3>
               <p>What happened in this support ticket conversation?</p>
@@ -380,8 +388,12 @@ export const customerOpsAgent = new Agent({
               <h3>Semantic recall</h3>
               <p>What prior conversations or facts are relevant to this new request?</p>
             </div>
+            <div class="panel">
+              <h3>Observational memory</h3>
+              <p>What compact observations and reflections should replace raw context as conversations grow?</p>
+            </div>
           </div>
-          <p class="lead">Mastra's memory story is a major part of its product pitch, not an external notebook you bolt on later.</p>
+          <p class="lead">Mastra's newer memory direction treats observational memory as distinct from working memory and vector-based semantic recall.</p>
         </section>
 
         <section>
@@ -389,25 +401,29 @@ export const customerOpsAgent = new Agent({
           <h2>Configure memory explicitly for persistence and recall</h2>
           <pre><code class="language-ts code-small">import { Memory } from "@mastra/memory";
 import { LibSQLStore, LibSQLVector } from "@mastra/libsql";
+import { ModelRouterEmbeddingModel } from "@mastra/core/llm";
 
 const memory = new Memory({
   storage: new LibSQLStore({ url: "file:./mastra.db" }),
   vector: new LibSQLVector({ url: "file:./mastra.db" }),
+  embedder: new ModelRouterEmbeddingModel("openai/text-embedding-3-small"),
   options: {
     workingMemory: { enabled: true },
-    semanticRecall: true,
+    semanticRecall: { topK: 3, messageRange: 2, scope: "resource" },
+    observationalMemory: true,
   },
 });
 
 export const customerOpsAgent = new Agent({
   id: "customer-ops",
   name: "Customer Operations Agent",
+  description: "Handles support triage, policy-aware responses, and safe escalation.",
   instructions: "Remember durable customer preferences only when they are explicit.",
   model: "openai/gpt-5-mini",
   tools: { getOrder, policySearch },
   memory,
 });</code></pre>
-          <p class="footnote">The exact storage/vector adapter changes by environment; the design point is explicit persistence and recall.</p>
+          <p class="footnote">Semantic recall needs a vector store and embedder; observational memory is a newer compression-oriented mode for long-running context.</p>
         </section>
 
         <section>
@@ -429,7 +445,7 @@ export const customerOpsAgent = new Agent({
               </tr>
               <tr>
                 <td>Long-term</td>
-                <td>Semantic recall and configured storage/vector backends.</td>
+                <td>Semantic recall, observational memory, and configured storage/vector backends.</td>
                 <td>Stores namespaced by user/app, searched separately from checkpoints.</td>
               </tr>
               <tr>
@@ -569,7 +585,7 @@ export const supportMcp = new MCPServer({
           <div class="grid-2">
             <div class="panel">
               <h3>Mastra angle</h3>
-              <p>Expose existing Mastra tools, agents, and workflows through an MCP server.</p>
+              <p>Expose existing Mastra tools, agents, and workflows through an MCP server; exposed agents need descriptions so clients can select them correctly.</p>
             </div>
             <div class="panel">
               <h3>LangChain angle</h3>
@@ -891,9 +907,20 @@ export const supportMcp = new MCPServer({
             <h3>Mastra workflows, memory, RAG, and storage</h3>
             <ul>
               <li><a href="https://mastra.ai/ai-workflows">Mastra workflows overview</a></li>
+              <li><a href="https://mastra.ai/docs/memory/overview">Mastra memory overview</a></li>
+              <li><a href="https://mastra.ai/docs/memory/semantic-recall">Mastra semantic recall docs</a></li>
               <li><a href="https://mastra.ai/docs/server-db/storage">Mastra storage docs</a></li>
               <li><a href="https://mastra.ai/examples/memory/streaming-working-memory">Mastra working memory example</a></li>
+              <li><a href="https://mastra.ai/docs/memory/observational-memory">Mastra observational memory docs</a></li>
+              <li><a href="https://mastra.ai/blog/observational-memory">Mastra observational memory announcement</a></li>
+              <li><a href="https://mastra.ai/research/observational-memory">Mastra observational memory research</a></li>
               <li><a href="https://mastra.ai/en/reference/tools/vector-query-tool">Mastra vector query tool reference</a></li>
+              <li><a href="https://mastra.ai/blog/mastra-0.10">Mastra 0.10 memory migration notes</a></li>
+            </ul>
+            <h3>Mastra tools and MCP</h3>
+            <ul>
+              <li><a href="https://mastra.ai/en/docs/tools-mcp/mcp-overview">Mastra MCP overview</a></li>
+              <li><a href="https://mastra.ai/en/reference/tools/mcp-server">Mastra MCPServer reference</a></li>
             </ul>
             <h3>Mastra observability and evals</h3>
             <ul>

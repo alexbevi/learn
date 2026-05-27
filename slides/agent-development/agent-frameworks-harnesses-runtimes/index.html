@@ -472,9 +472,14 @@
                 <td>Drafts the customer response and calls policy tools.</td>
               </tr>
               <tr>
-                <td>Workflow agents</td>
-                <td>Deterministic sequence, loop, parallel, or graph control.</td>
-                <td>Classify, retrieve, draft, approve, update in order.</td>
+                <td>Template workflow agents</td>
+                <td>Deterministic sequential, loop, and parallel orchestration.</td>
+                <td>Classify, retrieve, draft, approve, then update in a fixed path.</td>
+              </tr>
+              <tr>
+                <td>ADK 2.0 graph workflows</td>
+                <td>Graph routes with data handling, human input, and dynamic workflow control.</td>
+                <td>Branch support tickets by policy risk, missing data, or approval outcome.</td>
               </tr>
               <tr>
                 <td>Sessions, state, memory</td>
@@ -1124,9 +1129,14 @@
                 <td>Connectivity and visible workflows are more valuable than custom runtime code.</td>
               </tr>
               <tr>
-                <td>Enterprise agent platform and governance</td>
-                <td>Agno or Microsoft Agent Framework</td>
-                <td>Control plane, RBAC, audit, workflow hosting, and enterprise integration matter.</td>
+                <td>Agent platform operations and governance</td>
+                <td>Agno</td>
+                <td>Control plane, RBAC, audit trails, scheduling, and service operations matter.</td>
+              </tr>
+              <tr>
+                <td>Microsoft-oriented SDK and workflow apps</td>
+                <td>Microsoft Agent Framework</td>
+                <td>Provider integrations, graph workflows, state, telemetry, checkpointing, and human-in-the-loop matter.</td>
               </tr>
             </tbody>
           </table>
@@ -1227,11 +1237,19 @@
             <h3>UI, low-code, and visual builders</h3>
             <ul>
               <li><a href="https://ai-sdk.dev/docs/ai-sdk-core/tools-and-tool-calling">Vercel AI SDK tool calling</a></li>
-              <li><a href="https://ai-sdk.dev/docs/agents">Vercel AI SDK agents guide</a></li>
+              <li><a href="https://ai-sdk.dev/docs/agents/overview">Vercel AI SDK Agents overview</a></li>
+              <li><a href="https://ai-sdk.dev/docs/ai-sdk-ui/generative-user-interfaces">Vercel AI SDK generative UI documentation</a></li>
               <li><a href="https://docs.n8n.io/advanced-ai/intro-tutorial/">n8n AI workflow tutorial</a></li>
               <li><a href="https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.agent/">n8n AI Agent node documentation</a></li>
               <li><a href="https://docs.langflow.org/agents">Langflow agents documentation</a></li>
               <li><a href="https://docs.flowiseai.com/using-flowise/agentflowv2">Flowise Agentflow V2 documentation</a></li>
+            </ul>
+
+            <h3>Interop protocols</h3>
+            <ul>
+              <li><a href="https://modelcontextprotocol.io/docs/learn/architecture">Model Context Protocol architecture documentation</a></li>
+              <li><a href="https://modelcontextprotocol.io/specification/">Model Context Protocol specification</a></li>
+              <li><a href="https://a2aproject.github.io/A2A/latest/specification/">Agent2Agent protocol specification</a></li>
             </ul>
 
             <h3>Data, memory, and retrieval</h3>
