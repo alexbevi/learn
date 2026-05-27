@@ -10,9 +10,9 @@ the source of truth.
 - Project skill definitions live under `.codex/skills/`.
 - Keep these skills repo-local. Do not install or maintain global copies under
   `$CODEX_HOME/skills/`.
-- Use the `learn-presentation-create` Codex skill when creating or materially
+- Use the `presentation-create` Codex skill when creating or materially
   updating a learning presentation.
-- Use the `learn-presentation-validate` Codex skill when auditing a presentation
+- Use the `presentation-validate` Codex skill when auditing a presentation
   for structural health, rendering readiness, source coverage, or factual
   accuracy.
 - Validation audits must check current web sources of truth for technical claims

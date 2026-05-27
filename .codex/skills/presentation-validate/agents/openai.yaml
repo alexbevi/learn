@@ -1,0 +1,3 @@
+interface:
+  display_name: "Presentation Validate"
+  short_description: "Validate repo-local presentation facts"

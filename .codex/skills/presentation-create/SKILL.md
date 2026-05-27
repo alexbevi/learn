@@ -1,9 +1,9 @@
 ---
-name: learn-presentation-create
+name: presentation-create
 description: Use when creating or materially updating static HTML learning presentations in /Users/alex/Workspace/learn, including conversational intake, source-grounded research, deck authoring, metadata/tag updates, local validation, commit, and push.
 ---
 
-# Learn Presentation Create
+# Presentation Create
 
 ## Overview
 

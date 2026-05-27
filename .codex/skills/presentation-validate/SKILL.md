@@ -1,9 +1,9 @@
 ---
-name: learn-presentation-validate
+name: presentation-validate
 description: Use when auditing or fact-checking Learn repository HTML presentations against current sources of truth, including local structural validation, web-backed accuracy review, issue summary, and optional user-approved fixes.
 ---
 
-# Learn Presentation Validate
+# Presentation Validate
 
 ## Overview
 
