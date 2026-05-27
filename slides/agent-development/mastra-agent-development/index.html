@@ -141,26 +141,11 @@
         <section>
           <p class="kicker">Ecosystem map</p>
           <h2>Mastra is a unified TypeScript framework; LangChain is a layered ecosystem</h2>
-          <div class="grid-2">
-            <div class="panel">
-              <h3>Mastra</h3>
-              <ul>
-                <li>Agent class and typed tools.</li>
-                <li>Workflow engine for explicit processes.</li>
-                <li>Memory, RAG, MCP, server, storage, tracing, and scorers.</li>
-                <li>Studio and cloud/platform story around local iteration and deployment.</li>
-              </ul>
-            </div>
-            <div class="panel">
-              <h3>LangChain ecosystem</h3>
-              <ul>
-                <li>LangChain: agent harness, models, tools, middleware, integrations.</li>
-                <li>LangGraph: orchestration runtime for stateful, long-running agents.</li>
-                <li>LangSmith: tracing, datasets, evals, prompts, deployment, and debugging.</li>
-                <li>Deep Agents and other harnesses layer on top.</li>
-              </ul>
-            </div>
-          </div>
+          <img
+            class="diagram"
+            src="../../../assets/img/agent-development/mastra-agent-development/ecosystem-map.png"
+            alt="Comparison diagram showing Mastra as a unified TypeScript framework and LangChain as a layered ecosystem with LangChain, LangGraph, and LangSmith."
+          />
         </section>
 
         <section>
@@ -375,24 +360,11 @@ export const customerOpsAgent = new Agent({
         <section>
           <p class="kicker">Memory</p>
           <h2>Memory is not just conversation history</h2>
-          <div class="grid-4">
-            <div class="panel">
-              <h3>Thread history</h3>
-              <p>What happened in this support ticket conversation?</p>
-            </div>
-            <div class="panel">
-              <h3>Working memory</h3>
-              <p>What stable details about this customer should the agent keep in mind?</p>
-            </div>
-            <div class="panel">
-              <h3>Semantic recall</h3>
-              <p>What prior conversations or facts are relevant to this new request?</p>
-            </div>
-            <div class="panel">
-              <h3>Observational memory</h3>
-              <p>What compact observations and reflections should replace raw context as conversations grow?</p>
-            </div>
-          </div>
+          <img
+            class="diagram"
+            src="../../../assets/img/agent-development/mastra-agent-development/memory-modes.png"
+            alt="Diagram of four Mastra memory modes: thread history, working memory, semantic recall, and observational memory."
+          />
           <p class="lead">Mastra's newer memory direction treats observational memory as distinct from working memory and vector-based semantic recall.</p>
         </section>
 
@@ -460,16 +432,11 @@ export const customerOpsAgent = new Agent({
         <section>
           <p class="kicker">Workflows</p>
           <h2>Use workflows when the business process should not be improvised</h2>
-          <div class="grid-2">
-            <div class="panel">
-              <h3>Agent loop</h3>
-              <p>Good when the model should decide which tool to call next under broad instructions.</p>
-            </div>
-            <div class="panel">
-              <h3>Workflow</h3>
-              <p>Good when triage, retrieval, drafting, approval, and side effects need auditable order.</p>
-            </div>
-          </div>
+          <img
+            class="diagram"
+            src="../../../assets/img/agent-development/mastra-agent-development/workflow-boundary.png"
+            alt="Two-lane diagram contrasting an open-ended agent loop with an ordered workflow runtime for approvals and side effects."
+          />
           <p class="lead">
             This is Mastra's closest conceptual overlap with LangGraph: explicit execution graphs for work that needs control.
           </p>
@@ -597,24 +564,11 @@ export const supportMcp = new MCPServer({
         <section>
           <p class="kicker">Observability</p>
           <h2>Agents need traces, not just logs</h2>
-          <div class="grid-4">
-            <div class="panel">
-              <h3>Model calls</h3>
-              <p>Prompt, output, latency, tokens, provider errors.</p>
-            </div>
-            <div class="panel">
-              <h3>Tool calls</h3>
-              <p>Inputs, outputs, validation, authorization, failures.</p>
-            </div>
-            <div class="panel">
-              <h3>Workflow steps</h3>
-              <p>State transitions, retries, pauses, resumes.</p>
-            </div>
-            <div class="panel">
-              <h3>Memory/RAG</h3>
-              <p>Retrieved context, source quality, recall behavior.</p>
-            </div>
-          </div>
+          <img
+            class="diagram"
+            src="../../../assets/img/agent-development/mastra-agent-development/quality-loop.png"
+            alt="Loop diagram showing traces flowing into datasets, scorers, fixes, and release gates."
+          />
           <p class="footnote">Mastra stores traces and can export to observability platforms; LangSmith specializes deeply in this layer.</p>
         </section>
 
@@ -763,20 +717,11 @@ export const supportMcp = new MCPServer({
         <section>
           <p class="kicker">Architecture synthesis</p>
           <h2>A production customer operations agent has the same bones in either stack</h2>
-          <div class="grid-3">
-            <div class="panel">
-              <h3>Control plane</h3>
-              <p>Agent loop for flexible reasoning; workflow graph for predictable business process.</p>
-            </div>
-            <div class="panel">
-              <h3>Data plane</h3>
-              <p>App database for truth, vector index for policy/document evidence, memory store for durable user context.</p>
-            </div>
-            <div class="panel">
-              <h3>Quality plane</h3>
-              <p>Traces, evals, feedback, datasets, and release gates that keep behavior from drifting silently.</p>
-            </div>
-          </div>
+          <img
+            class="diagram"
+            src="../../../assets/img/agent-development/mastra-agent-development/production-architecture.png"
+            alt="Architecture matrix for a production support agent across experience, control plane, data plane, and quality plane."
+          />
         </section>
 
         <section>

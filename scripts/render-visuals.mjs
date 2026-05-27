@@ -57,7 +57,6 @@ for (const source of sources) {
     "playwright",
     "screenshot",
     "--viewport-size=1600,900",
-    "--device-scale-factor=2",
     `file://${source}`,
     output,
   ]);

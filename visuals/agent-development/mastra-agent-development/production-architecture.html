@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Production Customer Operations Agent Architecture</title>
+    <style>
+      :root {
+        --bg: #101319;
+        --panel: #1b2230;
+        --line: #3a4558;
+        --text: #f5f7fb;
+        --muted: #b8c2d1;
+        --accent: #2dd4bf;
+        --amber: #ffbd5a;
+        --blue: #80aaff;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        width: 1600px;
+        height: 900px;
+        background:
+          radial-gradient(circle at 86% 14%, rgb(45 212 191 / 14%), transparent 360px),
+          var(--bg);
+        color: var(--text);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      main {
+        padding: 70px 92px;
+      }
+
+      h1 {
+        margin: 0 0 42px;
+        font-size: 56px;
+      }
+
+      .rows {
+        display: grid;
+        gap: 18px;
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: 220px repeat(4, 1fr);
+        gap: 14px;
+        align-items: stretch;
+      }
+
+      .head,
+      .cell {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: linear-gradient(180deg, #252d3d, var(--panel));
+        padding: 18px;
+      }
+
+      .head {
+        display: grid;
+        align-items: center;
+        color: var(--accent);
+        font-size: 25px;
+        font-weight: 850;
+      }
+
+      .cell strong {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--text);
+        font-size: 23px;
+      }
+
+      .cell span {
+        color: var(--muted);
+        font-size: 19px;
+        line-height: 1.28;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>The same production bones show up in either stack</h1>
+      <div class="rows">
+        <div class="row">
+          <div class="head">Experience</div>
+          <div class="cell"><strong>Ticket UI</strong><span>Draft, citations, approval form.</span></div>
+          <div class="cell"><strong>Studio</strong><span>Local prompt and tool iteration.</span></div>
+          <div class="cell"><strong>API</strong><span>Agent routes and workflow triggers.</span></div>
+          <div class="cell"><strong>Human review</strong><span>Edit, approve, reject.</span></div>
+        </div>
+        <div class="row">
+          <div class="head">Control plane</div>
+          <div class="cell"><strong>Agent</strong><span>Flexible reasoning and tool choice.</span></div>
+          <div class="cell"><strong>Workflow</strong><span>Deterministic process and suspend/resume.</span></div>
+          <div class="cell"><strong>MCP</strong><span>Portable tools, agents, workflows.</span></div>
+          <div class="cell"><strong>Side effects</strong><span>Authorized, idempotent actions.</span></div>
+        </div>
+        <div class="row">
+          <div class="head">Data plane</div>
+          <div class="cell"><strong>App DB</strong><span>Orders, customers, refunds.</span></div>
+          <div class="cell"><strong>RAG index</strong><span>Policy and product evidence.</span></div>
+          <div class="cell"><strong>Memory</strong><span>Thread, resource, semantic recall.</span></div>
+          <div class="cell"><strong>Checkpoints</strong><span>Paused workflow state.</span></div>
+        </div>
+        <div class="row">
+          <div class="head">Quality plane</div>
+          <div class="cell"><strong>Traces</strong><span>Model, tool, workflow spans.</span></div>
+          <div class="cell"><strong>Scorers</strong><span>Grounding and action safety.</span></div>
+          <div class="cell"><strong>Datasets</strong><span>Regression cases and outcomes.</span></div>
+          <div class="cell"><strong>Release gates</strong><span>Quality thresholds before deploy.</span></div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>
