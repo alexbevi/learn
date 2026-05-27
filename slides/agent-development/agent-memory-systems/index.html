@@ -1,0 +1,1472 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Agent Memory Systems</title>
+    <link rel="stylesheet" href="../../../assets/vendor/reveal/dist/reveal.css" />
+    <link
+      rel="stylesheet"
+      href="../../../assets/vendor/reveal/dist/plugin/highlight/monokai.css"
+    />
+    <link rel="stylesheet" href="../../../assets/css/deck.css" />
+    <style>
+      .memory-strip,
+      .pipeline,
+      .swimlane {
+        display: grid;
+        gap: 12px;
+        margin-top: 24px;
+      }
+
+      .memory-strip {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+
+      .pipeline {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+      }
+
+      .memory-card,
+      .pipeline-step,
+      .axis-row {
+        border: 1px solid var(--deck-line);
+        border-radius: 8px;
+        background: linear-gradient(180deg, var(--deck-panel-2), var(--deck-panel));
+        padding: 14px;
+      }
+
+      .memory-card strong,
+      .pipeline-step strong,
+      .axis-row strong {
+        display: block;
+        color: var(--deck-text);
+        font-size: 0.58em;
+      }
+
+      .memory-card span,
+      .pipeline-step span,
+      .axis-row span {
+        display: block;
+        margin-top: 8px;
+        color: var(--deck-muted);
+        font-size: 0.46em;
+        line-height: 1.35;
+      }
+
+      .axis-row {
+        display: grid;
+        grid-template-columns: 190px minmax(0, 1fr) 300px;
+        gap: 18px;
+        align-items: center;
+      }
+
+      .axis-row em {
+        color: var(--deck-amber);
+        font-size: 0.46em;
+        font-style: normal;
+        line-height: 1.3;
+      }
+
+      .compare-table {
+        font-size: 0.44em;
+      }
+
+      .compare-table th,
+      .compare-table td {
+        padding: 9px;
+      }
+
+      .code-tiny {
+        font-size: 0.42em;
+        line-height: 1.25;
+      }
+
+      .badge-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 18px;
+      }
+
+      .badge {
+        display: inline-flex;
+        padding: 6px 9px;
+        border: 1px solid rgb(255 255 255 / 12%);
+        border-radius: 999px;
+        color: var(--deck-muted);
+        font-size: 0.42em;
+        font-weight: 750;
+      }
+
+      .swimlane {
+        grid-template-columns: 165px repeat(4, minmax(0, 1fr));
+        align-items: stretch;
+      }
+
+      .lane-title,
+      .lane-cell {
+        border: 1px solid var(--deck-line);
+        border-radius: 8px;
+        background: rgb(255 255 255 / 4%);
+        padding: 12px;
+      }
+
+      .lane-title {
+        color: var(--deck-text);
+        font-size: 0.54em;
+        font-weight: 800;
+      }
+
+      .lane-cell {
+        color: var(--deck-muted);
+        font-size: 0.46em;
+        line-height: 1.35;
+      }
+
+      @media (max-width: 900px) {
+        .memory-strip,
+        .pipeline,
+        .axis-row,
+        .swimlane {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body class="has-deck-topbar">
+    <header class="deck-topbar" aria-label="Presentation navigation">
+      <a class="deck-nav-link" href="../../../">Main menu</a>
+      <div class="deck-title">
+        <span>Agent Memory Systems</span>
+        <small>Types, implementations, frameworks, and services</small>
+      </div>
+      <a class="deck-nav-link" href="../../../topics/agent-development/">Topic</a>
+    </header>
+
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <p class="kicker">Agent Development</p>
+          <h1>Agent Memory Systems</h1>
+          <p class="lead">
+            A technical and practical tour of memory abstractions, storage
+            patterns, framework implementations, memory services, graph layers,
+            and governance models for long-running agents.
+          </p>
+          <p class="footnote">85 minutes / 50 slides</p>
+        </section>
+
+        <section>
+          <p class="kicker">Learning goals</p>
+          <h2>Agent memory should stop feeling like a vague feature</h2>
+          <div class="grid-2">
+            <div class="callout">
+              <h3>Taxonomy</h3>
+              <p>Separate working, session, episodic, semantic, procedural, associative, profile, and shared memory.</p>
+            </div>
+            <div class="callout">
+              <h3>Implementation</h3>
+              <p>Design write paths, read paths, indexes, scopes, TTLs, contradiction handling, and audit trails.</p>
+            </div>
+            <div class="callout">
+              <h3>Tooling</h3>
+              <p>Compare framework-native memory with Mem0, Letta, Zep, Memori Labs, Cognee, Rippletide, Semvec, and Caura.</p>
+            </div>
+            <div class="callout">
+              <h3>Architecture</h3>
+              <p>Know where MongoDB, Postgres, vector stores, graph stores, and managed memory services fit.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Running example</p>
+          <h2>Long-running customer account agent</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>What the agent does</h3>
+              <ul>
+                <li>Handles support tickets across months.</li>
+                <li>Remembers preferences, unresolved commitments, and prior incidents.</li>
+                <li>Retrieves policies, contracts, order history, and product facts.</li>
+                <li>Escalates risky refunds and tracks what actions already happened.</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>Why memory matters</h3>
+              <p>
+                Without memory, the agent is a stateless responder. With badly
+                designed memory, it becomes confidently stale. With governed
+                memory, it becomes an accountable product system.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Core thesis</p>
+          <h2>Memory is a data system around the model</h2>
+          <div class="memory-strip">
+            <div class="memory-card">
+              <strong>Encode</strong>
+              <span>Turn raw interaction into structured, searchable, permissioned memory.</span>
+            </div>
+            <div class="memory-card">
+              <strong>Store</strong>
+              <span>Persist memory units, embeddings, graph edges, provenance, and lifecycle state.</span>
+            </div>
+            <div class="memory-card">
+              <strong>Retrieve</strong>
+              <span>Select what matters for this task, user, session, and risk boundary.</span>
+            </div>
+            <div class="memory-card">
+              <strong>Synthesize</strong>
+              <span>Inject memory as compact, sourced context rather than raw database dumps.</span>
+            </div>
+            <div class="memory-card">
+              <strong>Govern</strong>
+              <span>Correct, expire, delete, audit, and evaluate memories over time.</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">MongoDB framing</p>
+          <h2>Agent memory is a computational exocortex</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Useful framing</h3>
+              <p>
+                MongoDB frames agent memory as a memory-management system that
+                integrates context-window state with persistent encoding,
+                storage, retrieval, and synthesis of experiences.
+              </p>
+            </div>
+            <div class="panel">
+              <h3>Why it helps this deck</h3>
+              <p>
+                It keeps memory broader than vector search: memory units need
+                temporal behavior, metadata, relationships, and actionability.
+              </p>
+            </div>
+          </div>
+          <div class="badge-row">
+            <span class="badge">working memory</span>
+            <span class="badge">semantic cache</span>
+            <span class="badge">episodic memory</span>
+            <span class="badge">semantic memory</span>
+            <span class="badge">procedural memory</span>
+            <span class="badge">associative memory</span>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Axes</p>
+          <h2>Classify memory before choosing a product</h2>
+          <div class="memory-strip">
+            <div class="memory-card">
+              <strong>Time</strong>
+              <span>Current turn, session, cross-session, long-horizon, archival.</span>
+            </div>
+            <div class="memory-card">
+              <strong>Scope</strong>
+              <span>User, account, ticket, agent, team, tenant, organization, fleet.</span>
+            </div>
+            <div class="memory-card">
+              <strong>Representation</strong>
+              <span>Messages, profiles, facts, examples, embeddings, graph edges, files.</span>
+            </div>
+            <div class="memory-card">
+              <strong>Write path</strong>
+              <span>Manual, agent tool, background extractor, workflow event, admin import.</span>
+            </div>
+            <div class="memory-card">
+              <strong>Governance</strong>
+              <span>Provenance, permissions, confidence, lifecycle, retention, deletion.</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Memory types</p>
+          <h2>One word hides several systems</h2>
+          <table class="table compare-table">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Purpose</th>
+                <th>Support agent example</th>
+                <th>Typical storage</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Working</td>
+                <td>Current task scratchpad</td>
+                <td>Refund risk score and pending next step</td>
+                <td>Runtime state, checkpoint</td>
+              </tr>
+              <tr>
+                <td>Session</td>
+                <td>Conversation continuity</td>
+                <td>Last few turns in ticket <code>T-9482</code></td>
+                <td>Thread/session store</td>
+              </tr>
+              <tr>
+                <td>Episodic</td>
+                <td>Past events</td>
+                <td>March escalation that ended in a credit</td>
+                <td>Event log, summaries, examples</td>
+              </tr>
+              <tr>
+                <td>Semantic</td>
+                <td>Facts and relationships</td>
+                <td>Customer prefers SMS; enterprise contract has SLA</td>
+                <td>Profile, documents, graph, vector index</td>
+              </tr>
+              <tr>
+                <td>Procedural</td>
+                <td>Skills and methods</td>
+                <td>How to handle high-value refunds</td>
+                <td>Prompt rules, playbooks, skills</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Working memory</p>
+          <h2>Working memory belongs to the active run</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>What it stores</h3>
+              <ul>
+                <li>Current goal and subgoals.</li>
+                <li>Tool observations and intermediate conclusions.</li>
+                <li>Risk flags, branch decisions, pending approvals.</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>Failure mode</h3>
+              <p>
+                If working state is hidden in conversation text, retries and
+                approvals become fragile. Store it as graph state or workflow
+                state when correctness matters.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Session memory</p>
+          <h2>Session memory is continuity, not learning</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Message window</h3>
+              <p>Recent chat turns that fit in the context budget.</p>
+            </div>
+            <div class="panel">
+              <h3>Summaries</h3>
+              <p>Compressed prior turns when the thread is too long.</p>
+            </div>
+            <div class="panel">
+              <h3>Session store</h3>
+              <p>OpenAI Agents SDK sessions, LangGraph thread checkpoints, and app-owned chat history.</p>
+            </div>
+          </div>
+          <p class="lead">
+            Session memory answers: "What have we been discussing?" Long-term memory answers: "What should future runs know?"
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Episodic memory</p>
+          <h2>Episodic memory is evidence of what happened</h2>
+          <div class="pipeline">
+            <div class="pipeline-step">
+              <strong>Ticket</strong>
+              <span>Customer asked for a refund.</span>
+            </div>
+            <div class="pipeline-step">
+              <strong>Investigation</strong>
+              <span>Shipment delayed by carrier.</span>
+            </div>
+            <div class="pipeline-step">
+              <strong>Decision</strong>
+              <span>Manager approved credit.</span>
+            </div>
+            <div class="pipeline-step">
+              <strong>Action</strong>
+              <span>Credit issued and email sent.</span>
+            </div>
+            <div class="pipeline-step">
+              <strong>Outcome</strong>
+              <span>Customer retained account.</span>
+            </div>
+            <div class="pipeline-step">
+              <strong>Lesson</strong>
+              <span>Escalate carrier delays above $500.</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Semantic memory</p>
+          <h2>Semantic memory stores facts, but facts need ownership</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Good semantic memories</h3>
+              <ul>
+                <li>Small enough to verify.</li>
+                <li>Scoped to a subject.</li>
+                <li>Linked to source events.</li>
+                <li>Timestamped and correctable.</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>Bad semantic memories</h3>
+              <ul>
+                <li>Model guesses saved as facts.</li>
+                <li>Summaries without provenance.</li>
+                <li>Preference facts shared across tenants.</li>
+                <li>Contradictions with no lifecycle.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Procedural memory</p>
+          <h2>Procedural memory is how the agent learns to work</h2>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Pattern</th>
+                <th>Example</th>
+                <th>Storage</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Playbook</td>
+                <td>High-value refund process</td>
+                <td>Read-only docs or policy database</td>
+              </tr>
+              <tr>
+                <td>Skill</td>
+                <td>How to write an escalation note</td>
+                <td>Versioned skill file or prompt module</td>
+              </tr>
+              <tr>
+                <td>Learned strategy</td>
+                <td>Ask for carrier tracking before refund</td>
+                <td>Curated memory or eval-approved rule</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Associative memory</p>
+          <h2>Graph memory connects facts over time</h2>
+          <div class="swimlane">
+            <div class="lane-title">Subject</div>
+            <div class="lane-cell">Customer C-123</div>
+            <div class="lane-cell">Order A-123</div>
+            <div class="lane-cell">Policy P-9</div>
+            <div class="lane-cell">Support ticket T-9482</div>
+            <div class="lane-title">Relations</div>
+            <div class="lane-cell">has preference: SMS</div>
+            <div class="lane-cell">delayed by carrier</div>
+            <div class="lane-cell">allows credit after 5 days</div>
+            <div class="lane-cell">resolved by refund request</div>
+          </div>
+          <p class="lead">
+            Graph memory is most useful when questions require relationships, temporal validity, contradiction handling, and multi-hop recall.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Shared memory</p>
+          <h2>Multi-agent systems need scoped sharing</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Private</h3>
+              <p>Agent scratch state, draft reasoning, unresolved hypotheses.</p>
+            </div>
+            <div class="panel">
+              <h3>Team</h3>
+              <p>Support playbooks, product gotchas, recent incident lessons.</p>
+            </div>
+            <div class="panel">
+              <h3>Organization</h3>
+              <p>Policies, compliance facts, approved procedures, tenant-safe knowledge.</p>
+            </div>
+          </div>
+          <p class="footnote">
+            Caura and MemClaw explicitly position around governed shared memory for agent fleets.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Memory unit</p>
+          <h2>Design the record before designing retrieval</h2>
+          <pre><code class="language-ts code-small">type MemoryUnit = {
+  id: string;
+  subject: { type: "customer" | "account" | "agent" | "policy"; id: string };
+  scope: { tenantId: string; visibility: "private" | "team" | "org" };
+  kind: "preference" | "event" | "fact" | "procedure" | "relationship";
+  content: string;
+  source: { type: "ticket" | "tool" | "admin" | "document"; id: string };
+  confidence: number;
+  validFrom: string;
+  validUntil?: string;
+  supersedes?: string[];
+  embedding?: number[];
+  graphEdges?: Array<{ predicate: string; objectId: string }>;
+};</code></pre>
+        </section>
+
+        <section>
+          <p class="kicker">Write path</p>
+          <h2>The write path is where most memory quality is won</h2>
+          <div class="pipeline">
+            <div class="pipeline-step">
+              <strong>Capture</strong>
+              <span>Message, tool result, workflow event, document, correction.</span>
+            </div>
+            <div class="pipeline-step">
+              <strong>Filter</strong>
+              <span>Should this be remembered? Is it allowed?</span>
+            </div>
+            <div class="pipeline-step">
+              <strong>Extract</strong>
+              <span>Structured fact, event, preference, relationship, procedure.</span>
+            </div>
+            <div class="pipeline-step">
+              <strong>Reconcile</strong>
+              <span>Merge, supersede, invalidate, dedupe, link to source.</span>
+            </div>
+            <div class="pipeline-step">
+              <strong>Index</strong>
+              <span>Embedding, graph edge, keyword, metadata, temporal index.</span>
+            </div>
+            <div class="pipeline-step">
+              <strong>Audit</strong>
+              <span>Who wrote it, why, from what evidence, with what policy?</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Read path</p>
+          <h2>Recall is routing, retrieval, and context assembly</h2>
+          <div class="pipeline">
+            <div class="pipeline-step">
+              <strong>Need</strong>
+              <span>What does this task require?</span>
+            </div>
+            <div class="pipeline-step">
+              <strong>Scope</strong>
+              <span>User, account, ticket, org, agent, time.</span>
+            </div>
+            <div class="pipeline-step">
+              <strong>Query</strong>
+              <span>Vector, graph, SQL, keyword, profile lookup.</span>
+            </div>
+            <div class="pipeline-step">
+              <strong>Rank</strong>
+              <span>Relevance, recency, confidence, authority, risk.</span>
+            </div>
+            <div class="pipeline-step">
+              <strong>Compose</strong>
+              <span>Compact context with sources and caveats.</span>
+            </div>
+            <div class="pipeline-step">
+              <strong>Inject</strong>
+              <span>System prompt, tool result, state, or UI review.</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Lifecycle</p>
+          <h2>Memory needs contradiction and forgetting semantics</h2>
+          <div class="grid-4">
+            <div class="panel">
+              <h3>Active</h3>
+              <p>Available for recall and prompt injection.</p>
+            </div>
+            <div class="panel">
+              <h3>Superseded</h3>
+              <p>Kept for audit, not used as current truth.</p>
+            </div>
+            <div class="panel">
+              <h3>Expired</h3>
+              <p>Hidden after TTL or policy validity ends.</p>
+            </div>
+            <div class="panel">
+              <h3>Deleted</h3>
+              <p>Removed by privacy request or retention policy.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Governance</p>
+          <h2>Memory is a privacy and authorization surface</h2>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Risk</th>
+                <th>Control</th>
+                <th>Implementation hook</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Silent PII storage</td>
+                <td>Classify and redact before write</td>
+                <td>Extraction policy, DLP, human approval</td>
+              </tr>
+              <tr>
+                <td>Cross-tenant leakage</td>
+                <td>Namespace and row-level isolation</td>
+                <td>Tenant-scoped query filters</td>
+              </tr>
+              <tr>
+                <td>Stale preferences</td>
+                <td>Validity windows and source rank</td>
+                <td>Temporal metadata</td>
+              </tr>
+              <tr>
+                <td>Wrong memories</td>
+                <td>Correction and supersession</td>
+                <td>Admin UI, audit log, feedback loop</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Evaluation</p>
+          <h2>Memory quality needs its own test suite</h2>
+          <div class="grid-4">
+            <div class="panel">
+              <h3>Recall</h3>
+              <p>Did the right memories appear?</p>
+            </div>
+            <div class="panel">
+              <h3>Precision</h3>
+              <p>Did irrelevant memories stay out?</p>
+            </div>
+            <div class="panel">
+              <h3>Update</h3>
+              <p>Did contradictions supersede old facts?</p>
+            </div>
+            <div class="panel">
+              <h3>Outcome</h3>
+              <p>Did memory improve task success without new risk?</p>
+            </div>
+          </div>
+          <p class="lead">
+            Treat memory as a behavior-changing subsystem: trace reads and writes, label failures, and run regression scenarios.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">MongoDB implementation</p>
+          <h2>Document memory fits MongoDB's shape well</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Natural fit</h3>
+              <ul>
+                <li>Memory units with flexible metadata.</li>
+                <li>Account/ticket/customer documents.</li>
+                <li>Vector Search over memory content and policy chunks.</li>
+                <li>Aggregation and change streams for consolidation workflows.</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>Design discipline</h3>
+              <p>
+                Keep application truth, memory units, retrieval indexes, and
+                agent traces logically distinct even when they share one
+                database platform.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Postgres implementation</p>
+          <h2>Postgres and pgvector fit transactional memory</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Good fit</h3>
+              <ul>
+                <li>Relational account, policy, approval, and audit data.</li>
+                <li><code>pgvector</code> for embeddings next to SQL filters.</li>
+                <li>Transactional writes for action memory and workflow state.</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>Watch out</h3>
+              <p>
+                Vector similarity alone does not solve memory lifecycle,
+                contradiction handling, provenance, or governed sharing.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">TypeScript sketch</p>
+          <h2>A minimal app-owned memory write path</h2>
+          <pre><code class="language-ts code-small">async function rememberPreference(input: {
+  tenantId: string;
+  customerId: string;
+  sourceTicketId: string;
+  preference: string;
+}) {
+  await policy.assertCanStoreMemory(input.tenantId, "customer_preference");
+
+  const memory = {
+    subject: { type: "customer", id: input.customerId },
+    scope: { tenantId: input.tenantId, visibility: "team" },
+    kind: "preference",
+    content: input.preference,
+    source: { type: "ticket", id: input.sourceTicketId },
+    confidence: 0.9,
+    validFrom: new Date().toISOString(),
+    status: "active",
+  };
+
+  await memories.insertOne(memory);
+  await memoryIndex.enqueue({ memoryId: memory.id });
+}</code></pre>
+        </section>
+
+        <section>
+          <p class="kicker">Python sketch</p>
+          <h2>A minimal recall path separates query from injection</h2>
+          <pre><code class="language-python code-small">async def recall_for_ticket(customer_id: str, ticket_text: str) -> str:
+    candidates = await memory_store.search(
+        subject={"type": "customer", "id": customer_id},
+        query=ticket_text,
+        filters={"status": "active", "visibility": {"$in": ["team", "org"]}},
+        limit=12,
+    )
+
+    ranked = rank_by_policy(candidates, weights={
+        "semantic": 0.45,
+        "recency": 0.2,
+        "confidence": 0.2,
+        "source_authority": 0.15,
+    })
+
+    return compose_context(ranked[:5], include_sources=True)</code></pre>
+        </section>
+
+        <section>
+          <p class="kicker">LangChain and LangGraph</p>
+          <h2>LangChain separates thread memory from long-term stores</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Short-term</h3>
+              <p>
+                LangGraph checkpoints persist thread-scoped state: messages,
+                graph state, pending interrupts, and resumable execution.
+              </p>
+            </div>
+            <div class="panel">
+              <h3>Long-term</h3>
+              <p>
+                LangChain long-term memory is built on LangGraph stores:
+                JSON documents organized by namespace and key, searchable across
+                conversations.
+              </p>
+            </div>
+          </div>
+          <p class="lead">
+            Strong pattern: use checkpoints for run durability, stores for cross-thread memory, and tools for explicit memory writes.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">LangMem</p>
+          <h2>LangMem makes memory extraction and management explicit</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Semantic</h3>
+              <p>Facts, profile fields, and searchable knowledge collections.</p>
+            </div>
+            <div class="panel">
+              <h3>Episodic</h3>
+              <p>Past examples, summaries, outcomes, and experience traces.</p>
+            </div>
+            <div class="panel">
+              <h3>Procedural</h3>
+              <p>Rules, style, skills, and learned behavior patterns.</p>
+            </div>
+          </div>
+          <p class="lead">
+            LangMem's useful design question: what should be learned, when should it be formed, and where should it be stored?
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Mastra</p>
+          <h2>Mastra treats memory as part of the TypeScript agent framework</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Thread history</h3>
+              <p>Conversation continuity scoped by <code>memory.thread</code> and <code>memory.resource</code>.</p>
+            </div>
+            <div class="panel">
+              <h3>Semantic recall</h3>
+              <p>Vector-backed recall over prior memories, with explicit embedder configuration.</p>
+            </div>
+            <div class="panel">
+              <h3>Observational memory</h3>
+              <p>Newer compression-oriented memory mode for long-running context.</p>
+            </div>
+          </div>
+          <p class="lead">
+            Mastra is compelling when agent code, memory, RAG, workflows, and product app code are all TypeScript.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">LlamaIndex</p>
+          <h2>LlamaIndex memory reflects its data-first DNA</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Memory class</h3>
+              <p>
+                Combines short-term FIFO chat history with optional long-term
+                memory blocks that receive flushed messages and process them.
+              </p>
+            </div>
+            <div class="panel">
+              <h3>Best fit</h3>
+              <p>
+                Agents whose hardest memory problem is retrieval over documents,
+                histories, and structured knowledge rather than workflow
+                checkpointing.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">CrewAI and OpenAI Agents SDK</p>
+          <h2>Other frameworks expose narrower but useful memory surfaces</h2>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Framework</th>
+                <th>Memory shape</th>
+                <th>Boundary</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>CrewAI</td>
+                <td>Unified <code>Memory</code> API with remember, recall, scope, recency, importance, and background saves.</td>
+                <td>Good for multi-agent crews and flows where shared work memory matters.</td>
+              </tr>
+              <tr>
+                <td>OpenAI Agents SDK</td>
+                <td>Sessions store conversation history across agent runs.</td>
+                <td>Good session continuity; long-term domain memory still often belongs in an app store or memory service.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Dedicated services</p>
+          <h2>Managed memory services move memory out of the harness</h2>
+          <div class="memory-strip">
+            <div class="memory-card">
+              <strong>Mem0</strong>
+              <span>Universal memory layer with managed and open-source options.</span>
+            </div>
+            <div class="memory-card">
+              <strong>Zep</strong>
+              <span>High-level Memory API plus graph API and user-level knowledge graph.</span>
+            </div>
+            <div class="memory-card">
+              <strong>Letta</strong>
+              <span>Memory-first stateful agents with persistent identity and memory blocks.</span>
+            </div>
+            <div class="memory-card">
+              <strong>Memori Labs</strong>
+              <span>Agent-native memory infra with structured extraction and trace memory.</span>
+            </div>
+            <div class="memory-card">
+              <strong>Cognee</strong>
+              <span>Graph/RAG memory layer for agent memory and knowledge organization.</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Mem0</p>
+          <h2>Mem0 optimizes for easy persistent memory across apps</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>What it abstracts</h3>
+              <ul>
+                <li>Adding memories from conversations.</li>
+                <li>Searching memories by user, agent, or session.</li>
+                <li>Managed platform or self-hosted open source deployment.</li>
+                <li>Integrations with LangChain, CrewAI, Vercel AI SDK, and others.</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>Best fit</h3>
+              <p>
+                Fast path to cross-session user memory when you do not want to
+                design extraction, indexing, and recall from scratch.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Zep</p>
+          <h2>Zep is graph-backed context engineering for agents</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Memory API</h3>
+              <p>
+                Add chat history with one call, retrieve a context string with
+                one call, and use recent messages as short-term memory while the
+                context string represents long-term memory.
+              </p>
+            </div>
+            <div class="panel">
+              <h3>Graph API</h3>
+              <p>
+                Use lower-level graph operations when you need business data,
+                custom memory construction, group graphs, or retrieval
+                customization.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Letta</p>
+          <h2>Letta starts from stateful agents, not stateless threads</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Core idea</h3>
+              <p>
+                Letta agents maintain persistent memory and evolve over
+                interactions. The agent is the persistent entity, not a
+                disposable chat thread.
+              </p>
+            </div>
+            <div class="panel">
+              <h3>Design lesson</h3>
+              <p>
+                Memory can be a first-class agent architecture: identity,
+                memory blocks, tools, and context management shape the agent's
+                behavior over time.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Memori Labs</p>
+          <h2>Memori Labs frames memory as agent-native infrastructure</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Attribution</h3>
+              <p>Memory is scoped to entities, processes, sessions, and agent execution context.</p>
+            </div>
+            <div class="panel">
+              <h3>Extraction</h3>
+              <p>Interactions are captured and asynchronously distilled into structured memories.</p>
+            </div>
+            <div class="panel">
+              <h3>Recall</h3>
+              <p>Supports automatic and manual recall, plus trace/execution memory for agents.</p>
+            </div>
+          </div>
+          <p class="footnote">
+            Treat as an emerging service: validate APIs, deployment model, retention controls, and integration depth before committing.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Cognee</p>
+          <h2>Cognee is memory as graph-organized knowledge</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>What it adds</h3>
+              <p>
+                A memory layer for agents that builds structured knowledge from
+                data, then exposes retrieval over graph and semantic context.
+              </p>
+            </div>
+            <div class="panel">
+              <h3>Best fit</h3>
+              <p>
+                Data-heavy agents that need knowledge graph organization,
+                provenance, and repeatable memory construction from documents
+                and interactions.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Rippletide</p>
+          <h2>Rippletide positions memory as a context graph and decision layer</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Context Graph</h3>
+              <p>
+                Persistent graph memory for facts, decisions, preferences,
+                context, relationships, and invalidation when information
+                changes.
+              </p>
+            </div>
+            <div class="panel">
+              <h3>Enterprise angle</h3>
+              <p>
+                Rippletide describes itself as a decision runtime/database
+                between an agent and the real world, with MCP-oriented access
+                and hallucination/evaluation positioning.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Semvec</p>
+          <h2>Semvec represents the compact semantic-state direction</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Emerging idea</h3>
+              <p>
+                Semvec-style layers emphasize vector-addressed semantic state:
+                compact memory representations that can be searched and updated
+                without replaying entire chat histories.
+              </p>
+            </div>
+            <div class="panel">
+              <h3>Practical caution</h3>
+              <p>
+                Treat Semvec as an emerging/experimental option. Evaluate
+                maintenance, API stability, persistence model, and how
+                contradictions are resolved.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Caura and MemClaw</p>
+          <h2>Caura focuses on governed shared memory for agent fleets</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Caura framing</h3>
+              <p>
+                A shared memory layer for agents to remember, coordinate, and
+                comply across LLMs, teams, tools, and enterprise interfaces.
+              </p>
+            </div>
+            <div class="panel">
+              <h3>MemClaw framing</h3>
+              <p>
+                Governed memory with visibility scopes, trust tiers, audit,
+                tenant isolation, PII quarantine, lifecycle automation, and
+                MCP-style tools.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Comparison</p>
+          <h2>Compare by boundary, not by feature list</h2>
+          <table class="table compare-table">
+            <thead>
+              <tr>
+                <th>Layer</th>
+                <th>Primary boundary</th>
+                <th>Strong when</th>
+                <th>Watch for</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Framework memory</td>
+                <td>Inside agent/runtime</td>
+                <td>You want simple integration and fewer services</td>
+                <td>Portability, observability, hidden write policy</td>
+              </tr>
+              <tr>
+                <td>App-owned DB</td>
+                <td>Your product data plane</td>
+                <td>Memory must align with app truth and auth</td>
+                <td>Building extraction/ranking/governance yourself</td>
+              </tr>
+              <tr>
+                <td>Managed memory service</td>
+                <td>External memory API</td>
+                <td>You want fast persistent memory and integrations</td>
+                <td>Vendor lock-in, privacy model, opaque ranking</td>
+              </tr>
+              <tr>
+                <td>Graph/decision layer</td>
+                <td>Relationships and validity</td>
+                <td>Multi-hop, temporal, governed decisions matter</td>
+                <td>Operational complexity and graph hygiene</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Architecture choices</p>
+          <h2>Four patterns cover most practical systems</h2>
+          <div class="grid-4">
+            <div class="panel">
+              <h3>Embedded</h3>
+              <p>Use the framework's memory primitives.</p>
+            </div>
+            <div class="panel">
+              <h3>Database-backed</h3>
+              <p>Own memory units, indexes, and lifecycle.</p>
+            </div>
+            <div class="panel">
+              <h3>Service-backed</h3>
+              <p>Call Mem0, Zep, Letta, Memori, or similar.</p>
+            </div>
+            <div class="panel">
+              <h3>Graph-governed</h3>
+              <p>Use graph/fleet layers for relationships and compliance.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Blueprint</p>
+          <h2>Support agent memory architecture</h2>
+          <div class="axis-row">
+            <strong>Runtime state</strong>
+            <span>Ticket workflow state, tool outputs, pending approval, retries, current task scratchpad.</span>
+            <em>LangGraph checkpoints, Mastra workflows, app workflow DB.</em>
+          </div>
+          <div class="axis-row">
+            <strong>User/account memory</strong>
+            <span>Preferences, prior incidents, commitments, customer-specific constraints.</span>
+            <em>MongoDB/Postgres memory units, Mem0, Zep, Letta, Memori.</em>
+          </div>
+          <div class="axis-row">
+            <strong>Knowledge memory</strong>
+            <span>Policies, product docs, contracts, procedures, examples.</span>
+            <em>RAG index, LlamaIndex, Cognee, vector/graph store.</em>
+          </div>
+          <div class="axis-row">
+            <strong>Decision memory</strong>
+            <span>What action was taken, who approved it, why, and what changed later.</span>
+            <em>Audit log, graph layer, Rippletide-style decision context.</em>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Build path</p>
+          <h2>How I would implement the first production version</h2>
+          <div class="pipeline">
+            <div class="pipeline-step">
+              <strong>1. Split state</strong>
+              <span>Runtime state, memory units, app truth, and traces.</span>
+            </div>
+            <div class="pipeline-step">
+              <strong>2. Define schema</strong>
+              <span>Subject, scope, source, confidence, lifecycle, permissions.</span>
+            </div>
+            <div class="pipeline-step">
+              <strong>3. Add tools</strong>
+              <span>Explicit <code>remember</code>, <code>recall</code>, <code>forget</code>.</span>
+            </div>
+            <div class="pipeline-step">
+              <strong>4. Add extractor</strong>
+              <span>Background memory extraction from conversations and outcomes.</span>
+            </div>
+            <div class="pipeline-step">
+              <strong>5. Add evals</strong>
+              <span>Recall, precision, contradiction, privacy, task outcome.</span>
+            </div>
+            <div class="pipeline-step">
+              <strong>6. Add UI</strong>
+              <span>Let humans inspect, correct, delete, and approve memories.</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Anti-patterns</p>
+          <h2>What usually goes wrong</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Everything is memory</h3>
+              <p>Chat logs, policy docs, tool outputs, and user preferences all land in one vector index with no lifecycle.</p>
+            </div>
+            <div class="panel">
+              <h3>The model silently writes truth</h3>
+              <p>Unverified guesses become durable facts and later appear as authoritative context.</p>
+            </div>
+            <div class="panel">
+              <h3>Recall is invisible</h3>
+              <p>No trace shows which memories influenced the answer, so debugging depends on guesswork.</p>
+            </div>
+            <div class="panel">
+              <h3>No correction path</h3>
+              <p>Users can correct the answer but not the memory that caused the answer.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Write strategy</p>
+          <h2>Save everything is not the same as remember wisely</h2>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Strategy</th>
+                <th>Pros</th>
+                <th>Cons</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Raw transcript</td>
+                <td>Complete evidence, easy audit</td>
+                <td>Noisy, expensive, weak recall</td>
+              </tr>
+              <tr>
+                <td>LLM extraction</td>
+                <td>Structured, compact, useful</td>
+                <td>Can hallucinate, needs validation</td>
+              </tr>
+              <tr>
+                <td>Tool-mediated write</td>
+                <td>Agent must choose to remember</td>
+                <td>Misses facts unless prompted/evaluated</td>
+              </tr>
+              <tr>
+                <td>Human-approved memory</td>
+                <td>High trust and governance</td>
+                <td>Slower, higher UI burden</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Database fit</p>
+          <h2>Databases add value because memory is product data</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>MongoDB</h3>
+              <p>Flexible memory units, operational records, metadata filters, Vector Search, and event-driven consolidation.</p>
+            </div>
+            <div class="panel">
+              <h3>Postgres</h3>
+              <p>Transactional memory, relational policy joins, audit, approval flows, and <code>pgvector</code>.</p>
+            </div>
+            <div class="panel">
+              <h3>Graph stores</h3>
+              <p>Entities, relationships, temporal validity, provenance, and multi-hop questions.</p>
+            </div>
+          </div>
+          <p class="lead">
+            Vector search is one index. The memory system is the contract around what is allowed to become durable context.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Interop</p>
+          <h2>Memory is becoming a protocol surface</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>MCP memory tools</h3>
+              <p>
+                Tools like <code>remember</code>, <code>recall</code>, and
+                <code>relate</code> let assistants access memory services
+                without framework-specific plugins.
+              </p>
+            </div>
+            <div class="panel">
+              <h3>Portability pressure</h3>
+              <p>
+                As agents move across IDEs, chat apps, runtimes, and vendors,
+                memory ownership and transfer become product and governance
+                questions.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Testing</p>
+          <h2>Memory scenarios should look like product tests</h2>
+          <pre><code class="language-yaml code-small">scenario: "customer preference supersession"
+turns:
+  - user: "Send all updates by SMS."
+    expect_memory_write:
+      kind: preference
+      content: "prefers SMS updates"
+  - user: "Actually, email is better for billing issues."
+    expect_memory_update:
+      active: "prefers email for billing issues"
+      retained: "prefers SMS updates for other updates"
+assertions:
+  - recall("billing contact preference") includes "email"
+  - recall("shipping update preference") includes "SMS"
+  - answer cites memory source ticket ids</code></pre>
+        </section>
+
+        <section>
+          <p class="kicker">Decision matrix</p>
+          <h2>Pick memory tooling by the dominant risk</h2>
+          <table class="table compare-table">
+            <thead>
+              <tr>
+                <th>Dominant need</th>
+                <th>Start with</th>
+                <th>Why</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Quick personalization</td>
+                <td>Mem0 or Zep Memory API</td>
+                <td>Fast persistent recall with framework integrations.</td>
+              </tr>
+              <tr>
+                <td>Memory-first agents</td>
+                <td>Letta</td>
+                <td>Agent identity and persistent memory are central abstractions.</td>
+              </tr>
+              <tr>
+                <td>TypeScript app agents</td>
+                <td>Mastra memory plus app DB</td>
+                <td>Agent memory stays close to product code and workflows.</td>
+              </tr>
+              <tr>
+                <td>LangChain ecosystem</td>
+                <td>LangGraph stores plus LangMem</td>
+                <td>Strong split between checkpoints, stores, and memory extraction.</td>
+              </tr>
+              <tr>
+                <td>Enterprise shared memory</td>
+                <td>Caura/MemClaw or app-owned governed layer</td>
+                <td>Scopes, audit, tenant isolation, and fleet coordination dominate.</td>
+              </tr>
+              <tr>
+                <td>Relationship-heavy recall</td>
+                <td>Zep Graph API, Cognee, Rippletide, graph store</td>
+                <td>Temporal relationships and contradiction handling matter.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Recap</p>
+          <h2>The useful mental model</h2>
+          <div class="grid-2">
+            <div class="callout">
+              <h3>Memory is not RAG</h3>
+              <p>RAG retrieves external knowledge. Memory changes what the agent knows about users, work, itself, and prior outcomes.</p>
+            </div>
+            <div class="callout">
+              <h3>Memory is not a transcript</h3>
+              <p>Transcripts are evidence. Memory is structured, scoped, lifecycle-managed context derived from evidence.</p>
+            </div>
+            <div class="callout">
+              <h3>Memory is not only storage</h3>
+              <p>The hard parts are write policy, contradiction handling, retrieval timing, governance, and evaluation.</p>
+            </div>
+            <div class="callout">
+              <h3>Memory is product infrastructure</h3>
+              <p>It needs schemas, permissions, audit, correction, deletion, observability, and tests.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">References</p>
+          <h2>Sources used to build this deck</h2>
+          <div class="reference-list">
+            <h3>Memory concepts and databases</h3>
+            <ul>
+              <li><a href="https://www.mongodb.com/resources/basics/artificial-intelligence/agent-memory">MongoDB: What Is Agent Memory?</a></li>
+              <li><a href="https://www.mongodb.com/docs/atlas/atlas-vector-search/vector-search-overview/">MongoDB Atlas Vector Search overview</a></li>
+              <li><a href="https://github.com/pgvector/pgvector">pgvector project README</a></li>
+              <li><a href="https://arxiv.org/abs/2603.07670">Memory for Autonomous LLM Agents survey</a></li>
+            </ul>
+
+            <h3>Framework-native memory</h3>
+            <ul>
+              <li><a href="https://docs.langchain.com/oss/python/langchain/long-term-memory">LangChain long-term memory docs</a></li>
+              <li><a href="https://langchain-ai.github.io/langmem/concepts/conceptual_guide/">LangMem conceptual guide</a></li>
+              <li><a href="https://mastra.ai/docs/memory/overview">Mastra memory overview</a></li>
+              <li><a href="https://mastra.ai/docs/memory/semantic-recall">Mastra semantic recall docs</a></li>
+              <li><a href="https://mastra.ai/docs/memory/observational-memory">Mastra observational memory docs</a></li>
+              <li><a href="https://docs.llamaindex.ai/en/stable/module_guides/deploying/agents/memory/">LlamaIndex memory guide</a></li>
+              <li><a href="https://docs.crewai.com/concepts/memory">CrewAI memory docs</a></li>
+              <li><a href="https://openai.github.io/openai-agents-python/sessions/">OpenAI Agents SDK sessions docs</a></li>
+            </ul>
+
+            <h3>Dedicated memory services</h3>
+            <ul>
+              <li><a href="https://docs.mem0.ai/introduction">Mem0 documentation</a></li>
+              <li><a href="https://docs.letta.com/overview">Letta platform overview</a></li>
+              <li><a href="https://docs.letta.com/guides/agents/overview">Letta stateful agents overview</a></li>
+              <li><a href="https://help.getzep.com/v2/memory">Zep Memory API docs</a></li>
+              <li><a href="https://www.getzep.com/product/agent-memory/">Zep Agent Memory product page</a></li>
+              <li><a href="https://memorilabs.ai/docs/">Memori Labs documentation</a></li>
+            </ul>
+
+            <h3>Graph, governed, and emerging layers</h3>
+            <ul>
+              <li><a href="https://docs.cognee.ai/guides/agent-memory-quickstart">Cognee agent memory quickstart</a></li>
+              <li><a href="https://docs.rippletide.com/docs/mcp/overview">Rippletide Context Graph overview</a></li>
+              <li><a href="https://www.rippletide.com/developers/context-graph-for-agents">Rippletide context graph for agents</a></li>
+              <li><a href="https://pypi.org/project/semvec/">Semvec package page</a></li>
+              <li><a href="https://caura.ai/">Caura governed shared memory overview</a></li>
+              <li><a href="https://caura.ai/faq">Caura FAQ</a></li>
+              <li><a href="https://memclaw.net/">MemClaw governed shared memory</a></li>
+            </ul>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script src="../../../assets/vendor/reveal/dist/reveal.js"></script>
+    <script src="../../../assets/vendor/reveal/dist/plugin/highlight.js"></script>
+    <script>
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        hash: true,
+        slideNumber: true,
+        transition: "slide",
+        backgroundTransition: "fade",
+        plugins: [RevealHighlight],
+      });
+    </script>
+  </body>
+</html>
