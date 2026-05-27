@@ -23,8 +23,8 @@ body {
   margin: 0;
   min-height: 100vh;
   background:
-    linear-gradient(180deg, rgb(255 255 255 / 4%), transparent 360px),
-    radial-gradient(circle at 85% 12%, rgb(33 199 168 / 14%), transparent 280px),
+    linear-gradient(180deg, rgb(255 255 255 / 3%), transparent 220px),
+    radial-gradient(circle at 85% 8%, rgb(33 199 168 / 10%), transparent 220px),
     var(--bg);
   color: var(--text);
 }
@@ -45,7 +45,7 @@ a {
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  padding: 28px 0;
+  padding: 22px 0;
 }
 
 .brand {
@@ -78,28 +78,33 @@ a {
 }
 
 .hero {
-  padding: 64px 0 72px;
+  padding: 32px 0 34px;
   border-top: 1px solid rgb(255 255 255 / 5%);
 }
 
+.hero .section-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(280px, 0.55fr);
+  align-items: end;
+  gap: 36px;
+}
+
 .hero h1 {
-  max-width: 900px;
   margin: 0;
-  font-size: clamp(3rem, 7vw, 6.4rem);
-  line-height: 0.95;
+  font-size: clamp(2.2rem, 4vw, 4rem);
+  line-height: 1;
   letter-spacing: 0;
 }
 
 .hero p {
-  max-width: 760px;
-  margin: 24px 0 0;
+  margin: 0;
   color: var(--muted);
-  font-size: clamp(1.05rem, 2vw, 1.35rem);
-  line-height: 1.55;
+  font-size: clamp(1rem, 1.4vw, 1.16rem);
+  line-height: 1.48;
 }
 
 .band {
-  padding: 44px 0;
+  padding: 34px 0;
   border-top: 1px solid rgb(255 255 255 / 6%);
 }
 
@@ -249,12 +254,18 @@ a {
   }
 
   .site-header,
+  .hero .section-inner,
   .section-heading {
     align-items: flex-start;
     flex-direction: column;
   }
 
+  .hero .section-inner {
+    display: flex;
+    gap: 16px;
+  }
+
   .hero {
-    padding: 48px 0 56px;
+    padding: 30px 0 32px;
   }
 }
