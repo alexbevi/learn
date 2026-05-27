@@ -1,0 +1,911 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mastra for Agent Development</title>
+    <link rel="stylesheet" href="../../../assets/vendor/reveal/dist/reveal.css" />
+    <link
+      rel="stylesheet"
+      href="../../../assets/vendor/reveal/dist/plugin/highlight/monokai.css"
+    />
+    <link rel="stylesheet" href="../../../assets/css/deck.css" />
+  </head>
+  <body class="has-deck-topbar">
+    <header class="deck-topbar" aria-label="Presentation navigation">
+      <a class="deck-nav-link" href="../../../">Main menu</a>
+      <div class="deck-title">
+        <span>Mastra for Agent Development</span>
+        <small>Compared with LangChain, LangGraph, and LangSmith</small>
+      </div>
+      <a class="deck-nav-link" href="../../../topics/agent-development/">Topic</a>
+    </header>
+
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <p class="kicker">Agent Development</p>
+          <h1>Mastra for Agent Development</h1>
+          <p class="lead">
+            A TypeScript-first path to agents, tools, workflows, memory, RAG,
+            observability, and evals, compared against LangChain, LangGraph, and
+            LangSmith.
+          </p>
+          <p class="footnote">55 minutes / 35 slides</p>
+        </section>
+
+        <section>
+          <p class="kicker">Framing</p>
+          <h2>Mastra competes on product shape, not just API syntax</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>TypeScript-native</h3>
+              <p>Agent code, tool schemas, workflow steps, server routes, and app code can live in the same language and deployment stack.</p>
+            </div>
+            <div class="panel">
+              <h3>Integrated primitives</h3>
+              <p>Agents, tools, workflows, memory, RAG, MCP, traces, and scorers are presented as one framework surface.</p>
+            </div>
+            <div class="panel">
+              <h3>Builder workflow</h3>
+              <p>Local Studio, typed tools, and first-class observability aim to shorten the loop from idea to production behavior.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Learning goals</p>
+          <h2>By the end, you should be able to explain</h2>
+          <div class="grid-2">
+            <div class="callout">
+              <h3>How Mastra works</h3>
+              <p>Agents call typed tools, workflows make long-running business processes explicit, and memory/RAG/observability become framework concerns.</p>
+            </div>
+            <div class="callout">
+              <h3>How it compares</h3>
+              <p>Mastra overlaps with LangChain agents, LangGraph workflows, and LangSmith observability, but packages those concerns differently.</p>
+            </div>
+            <div class="callout">
+              <h3>Where it fits</h3>
+              <p>Mastra is compelling when your application and team already live in TypeScript and you want agent infrastructure inside that stack.</p>
+            </div>
+            <div class="callout">
+              <h3>Where to be careful</h3>
+              <p>LangChain's ecosystem maturity, LangGraph's low-level runtime control, and LangSmith's platform depth remain major comparison points.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Running example</p>
+          <h2>Customer operations agent</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Incoming request</h3>
+              <p>"Order A-123 is late, the customer is angry, and they want a refund."</p>
+            </div>
+            <div class="panel">
+              <h3>Agent responsibilities</h3>
+              <ul>
+                <li>Classify urgency and risk.</li>
+                <li>Retrieve order, account, and policy context.</li>
+                <li>Draft a response and proposed action.</li>
+                <li>Escalate destructive or high-value actions.</li>
+                <li>Update systems and learn durable preferences.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Common ground</p>
+          <h2>Most agent frameworks converge on the same primitives</h2>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Primitive</th>
+                <th>Product question</th>
+                <th>Failure if implicit</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Agent loop</td>
+                <td>Who decides the next action?</td>
+                <td>The model wanders without stop conditions.</td>
+              </tr>
+              <tr>
+                <td>Tools</td>
+                <td>What can the model do?</td>
+                <td>Side effects are too broad or poorly typed.</td>
+              </tr>
+              <tr>
+                <td>Workflow</td>
+                <td>Which steps must be deterministic?</td>
+                <td>Business process hides inside a prompt.</td>
+              </tr>
+              <tr>
+                <td>Memory/RAG</td>
+                <td>What context should persist or be retrieved?</td>
+                <td>Everything becomes one vague "memory" bucket.</td>
+              </tr>
+              <tr>
+                <td>Observability/evals</td>
+                <td>How do we know the agent is improving?</td>
+                <td>Debugging depends on anecdotes.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Ecosystem map</p>
+          <h2>Mastra is a unified TypeScript framework; LangChain is a layered ecosystem</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Mastra</h3>
+              <ul>
+                <li>Agent class and typed tools.</li>
+                <li>Workflow engine for explicit processes.</li>
+                <li>Memory, RAG, MCP, server, storage, tracing, and scorers.</li>
+                <li>Studio and cloud/platform story around local iteration and deployment.</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>LangChain ecosystem</h3>
+              <ul>
+                <li>LangChain: agent harness, models, tools, middleware, integrations.</li>
+                <li>LangGraph: orchestration runtime for stateful, long-running agents.</li>
+                <li>LangSmith: tracing, datasets, evals, prompts, deployment, and debugging.</li>
+                <li>Deep Agents and other harnesses layer on top.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Value proposition</p>
+          <h2>Mastra's pitch: keep agent development in your TypeScript product stack</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Fewer boundaries</h3>
+              <p>No separate Python service just to host agent orchestration if your app is already Node, Next.js, Hono, Express, or serverless TypeScript.</p>
+            </div>
+            <div class="panel">
+              <h3>Typed contracts</h3>
+              <p>Zod-backed inputs and outputs make tool and workflow boundaries inspectable by both the model and the compiler.</p>
+            </div>
+            <div class="panel">
+              <h3>Integrated shipping path</h3>
+              <p>Mastra treats local dev, server routes, storage, observability, and evals as part of the framework rather than an afterthought.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Project shape</p>
+          <h2>The core Mastra unit is a registry of agents, workflows, storage, and telemetry</h2>
+          <pre><code class="language-ts code-small">import { Mastra } from "@mastra/core/mastra";
+import { LibSQLStore } from "@mastra/libsql";
+import { customerOpsAgent } from "./agents/customer-ops";
+import { ticketWorkflow } from "./workflows/ticket-workflow";
+
+export const mastra = new Mastra({
+  agents: { customerOpsAgent },
+  workflows: { ticketWorkflow },
+  storage: new LibSQLStore({
+    url: "file:./mastra.db",
+  }),
+});</code></pre>
+          <p class="footnote">
+            The registry pattern matters: it is how local Studio, server APIs, workflows, memory, and observability discover the same application primitives.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Agent</p>
+          <h2>Start with the customer operations agent</h2>
+          <pre><code class="language-ts code-small">import { Agent } from "@mastra/core/agent";
+import { createTool } from "@mastra/core/tools";
+import { z } from "zod";
+
+export const getOrder = createTool({
+  id: "get-order",
+  description: "Fetch order, shipment, and account context by order id.",
+  inputSchema: z.object({ orderId: z.string() }),
+  outputSchema: z.object({
+    orderId: z.string(),
+    status: z.enum(["processing", "shipped", "delayed", "delivered"]),
+    customerTier: z.enum(["standard", "plus", "enterprise"]),
+    refundEligible: z.boolean(),
+  }),
+  execute: async ({ context }) => lookupOrder(context.orderId),
+});
+
+export const customerOpsAgent = new Agent({
+  id: "customer-ops",
+  name: "Customer Operations Agent",
+  instructions: "Triage support tickets, cite policy, and avoid irreversible actions without approval.",
+  model: "openai/gpt-5-mini",
+  tools: { getOrder },
+});</code></pre>
+        </section>
+
+        <section>
+          <p class="kicker">Tool design</p>
+          <h2>Typed tools are the agent's action boundary</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Mastra</h3>
+              <p>Tools are created with `createTool`, explicit `inputSchema`, optional `outputSchema`, and an `execute` function.</p>
+            </div>
+            <div class="panel">
+              <h3>LangChain</h3>
+              <p>JavaScript agents use `tool(fn, { name, description, schema })`, also commonly with Zod schemas.</p>
+            </div>
+          </div>
+          <p class="lead">
+            The shared lesson is framework-independent: tools should be narrow, typed, authorized, idempotent, and named in the language of the business.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Invocation</p>
+          <h2>The first useful version answers with tool-backed context</h2>
+          <pre><code class="language-ts code-small">const response = await customerOpsAgent.generate(
+  "Customer says order A-123 is late and wants a refund.",
+  {
+    threadId: "ticket-9482",
+    resourceId: "customer-c_123",
+  },
+);
+
+console.log(response.text);</code></pre>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Mastra concept</h3>
+              <p>`threadId` scopes the conversation; `resourceId` scopes the user or owning resource for memory and history.</p>
+            </div>
+            <div class="panel">
+              <h3>LangGraph comparison</h3>
+              <p>LangGraph uses thread-scoped checkpoints; LangChain agents pass `thread_id` through runtime config when persistence is enabled.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Developer loop</p>
+          <h2>Studio is part of the Mastra differentiation</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Try prompts</h3>
+              <p>Chat with registered agents locally and inspect how the agent used tools.</p>
+            </div>
+            <div class="panel">
+              <h3>Inspect traces</h3>
+              <p>See model calls, tool calls, workflow steps, logs, and span metadata during development.</p>
+            </div>
+            <div class="panel">
+              <h3>Iterate contracts</h3>
+              <p>Tighten tool schemas and instructions while staying close to TypeScript application code.</p>
+            </div>
+          </div>
+          <p class="footnote">LangSmith covers the same broad need at platform depth; Mastra's local Studio pitch is tighter integration with the framework.</p>
+        </section>
+
+        <section>
+          <p class="kicker">RAG</p>
+          <h2>Add product and policy retrieval as a tool</h2>
+          <pre><code class="language-ts code-small">import { openai } from "@ai-sdk/openai";
+import { createVectorQueryTool } from "@mastra/rag";
+
+export const policySearch = createVectorQueryTool({
+  id: "policy-search",
+  description: "Search refund, escalation, and shipping policy documents.",
+  vectorStoreName: "pgVector",
+  indexName: "support_policies",
+  model: openai.embedding("text-embedding-3-small"),
+  enableFilter: true,
+});
+
+export const customerOpsAgent = new Agent({
+  id: "customer-ops",
+  name: "Customer Operations Agent",
+  instructions: "Use policySearch before quoting policy. Cite the policy section.",
+  model: "openai/gpt-5-mini",
+  tools: { getOrder, policySearch },
+});</code></pre>
+        </section>
+
+        <section>
+          <p class="kicker">RAG comparison</p>
+          <h2>Mastra makes retrieval a first-class agent tool</h2>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Concern</th>
+                <th>Mastra</th>
+                <th>LangChain ecosystem</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Tool integration</td>
+                <td>`createVectorQueryTool` returns a model-callable tool.</td>
+                <td>Retrievers, tools, vector stores, chains, and agent middleware compose flexibly.</td>
+              </tr>
+              <tr>
+                <td>TypeScript DX</td>
+                <td>Primary value proposition; app and agent code share a stack.</td>
+                <td>JS support exists, but much ecosystem mindshare and examples remain Python-heavy.</td>
+              </tr>
+              <tr>
+                <td>Depth</td>
+                <td>Integrated path for common RAG needs.</td>
+                <td>Huge integration surface and mature retrieval patterns.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Memory</p>
+          <h2>Memory is not just conversation history</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Thread history</h3>
+              <p>What happened in this support ticket conversation?</p>
+            </div>
+            <div class="panel">
+              <h3>Working memory</h3>
+              <p>What stable details about this customer should the agent keep in mind?</p>
+            </div>
+            <div class="panel">
+              <h3>Semantic recall</h3>
+              <p>What prior conversations or facts are relevant to this new request?</p>
+            </div>
+          </div>
+          <p class="lead">Mastra's memory story is a major part of its product pitch, not an external notebook you bolt on later.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Memory code</p>
+          <h2>Configure memory explicitly for persistence and recall</h2>
+          <pre><code class="language-ts code-small">import { Memory } from "@mastra/memory";
+import { LibSQLStore, LibSQLVector } from "@mastra/libsql";
+
+const memory = new Memory({
+  storage: new LibSQLStore({ url: "file:./mastra.db" }),
+  vector: new LibSQLVector({ url: "file:./mastra.db" }),
+  options: {
+    workingMemory: { enabled: true },
+    semanticRecall: true,
+  },
+});
+
+export const customerOpsAgent = new Agent({
+  id: "customer-ops",
+  name: "Customer Operations Agent",
+  instructions: "Remember durable customer preferences only when they are explicit.",
+  model: "openai/gpt-5-mini",
+  tools: { getOrder, policySearch },
+  memory,
+});</code></pre>
+          <p class="footnote">The exact storage/vector adapter changes by environment; the design point is explicit persistence and recall.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Memory comparison</p>
+          <h2>Mastra and LangGraph split memory in similar conceptual ways</h2>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Memory type</th>
+                <th>Mastra framing</th>
+                <th>LangGraph framing</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Short-term</td>
+                <td>Threads, resources, conversation history, working memory.</td>
+                <td>Thread-scoped state persisted by checkpoints.</td>
+              </tr>
+              <tr>
+                <td>Long-term</td>
+                <td>Semantic recall and configured storage/vector backends.</td>
+                <td>Stores namespaced by user/app, searched separately from checkpoints.</td>
+              </tr>
+              <tr>
+                <td>Product risk</td>
+                <td>Bad memories become product behavior.</td>
+                <td>Same: durable memory needs write policy, correction, deletion, and evals.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Workflows</p>
+          <h2>Use workflows when the business process should not be improvised</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Agent loop</h3>
+              <p>Good when the model should decide which tool to call next under broad instructions.</p>
+            </div>
+            <div class="panel">
+              <h3>Workflow</h3>
+              <p>Good when triage, retrieval, drafting, approval, and side effects need auditable order.</p>
+            </div>
+          </div>
+          <p class="lead">
+            This is Mastra's closest conceptual overlap with LangGraph: explicit execution graphs for work that needs control.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Workflow code</p>
+          <h2>Promote the support process into explicit steps</h2>
+          <pre><code class="language-ts code-small">import { createStep, createWorkflow } from "@mastra/core/workflows";
+import { z } from "zod";
+
+const classifiedTicketSchema = z.object({
+  ticketId: z.string(),
+  orderId: z.string(),
+  risk: z.enum(["low", "high"]),
+});
+
+const draftSchema = z.object({
+  draft: z.string(),
+  risk: z.enum(["low", "high"]),
+});
+
+const classifyTicket = createStep({
+  id: "classify-ticket",
+  inputSchema: z.object({ ticketId: z.string(), message: z.string() }),
+  outputSchema: classifiedTicketSchema,
+  execute: async ({ inputData }) => classify(inputData),
+});
+
+const draftResponse = createStep({
+  id: "draft-response",
+  inputSchema: classifiedTicketSchema,
+  outputSchema: draftSchema,
+  execute: async ({ inputData }) => {
+    const result = await customerOpsAgent.generate(
+      `Draft a response for order ${inputData.orderId}. Risk: ${inputData.risk}`,
+    );
+    return { draft: result.text, risk: inputData.risk };
+  },
+});
+
+export const ticketWorkflow = createWorkflow({
+  id: "ticket-workflow",
+  inputSchema: z.object({ ticketId: z.string(), message: z.string() }),
+}).then(classifyTicket).then(draftResponse).commit();</code></pre>
+        </section>
+
+        <section>
+          <p class="kicker">Workflow comparison</p>
+          <h2>Mastra workflows and LangGraph both make control flow explicit</h2>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Dimension</th>
+                <th>Mastra workflows</th>
+                <th>LangGraph</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Developer feel</td>
+                <td>Step-oriented TypeScript workflow API with schemas and composition helpers.</td>
+                <td>State graph runtime with nodes, edges, reducers, checkpointers, and stores.</td>
+              </tr>
+              <tr>
+                <td>Best fit</td>
+                <td>TypeScript product teams wanting integrated agent + workflow + server primitives.</td>
+                <td>Teams needing low-level runtime control for long-running, stateful agents.</td>
+              </tr>
+              <tr>
+                <td>Abstraction level</td>
+                <td>Product-framework oriented.</td>
+                <td>Runtime-oriented and deliberately low-level.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Human approval</p>
+          <h2>Escalation belongs at the side-effect boundary</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Trigger</h3>
+              <p>Refund above threshold, enterprise account, legal/compliance concern, account cancellation, or model uncertainty.</p>
+            </div>
+            <div class="panel">
+              <h3>Runtime behavior</h3>
+              <p>Suspend, show context to a human, accept approve/edit/reject, then resume with the decision recorded.</p>
+            </div>
+          </div>
+          <p class="lead">
+            Whether implemented with Mastra workflow suspension or LangGraph interrupts, the durable pause is the important architectural primitive.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">MCP</p>
+          <h2>MCP turns tools into portable capabilities</h2>
+          <pre><code class="language-ts code-small">import { MCPServer } from "@mastra/mcp";
+
+export const supportMcp = new MCPServer({
+  name: "support-ops",
+  version: "1.0.0",
+  tools: {
+    getOrder,
+    policySearch,
+  },
+  agents: {
+    customerOpsAgent,
+  },
+});</code></pre>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Mastra angle</h3>
+              <p>Expose existing Mastra tools, agents, and workflows through an MCP server.</p>
+            </div>
+            <div class="panel">
+              <h3>LangChain angle</h3>
+              <p>MCP is ecosystem-wide plumbing; the differentiator is how smoothly a framework maps local primitives to MCP capabilities.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Observability</p>
+          <h2>Agents need traces, not just logs</h2>
+          <div class="grid-4">
+            <div class="panel">
+              <h3>Model calls</h3>
+              <p>Prompt, output, latency, tokens, provider errors.</p>
+            </div>
+            <div class="panel">
+              <h3>Tool calls</h3>
+              <p>Inputs, outputs, validation, authorization, failures.</p>
+            </div>
+            <div class="panel">
+              <h3>Workflow steps</h3>
+              <p>State transitions, retries, pauses, resumes.</p>
+            </div>
+            <div class="panel">
+              <h3>Memory/RAG</h3>
+              <p>Retrieved context, source quality, recall behavior.</p>
+            </div>
+          </div>
+          <p class="footnote">Mastra stores traces and can export to observability platforms; LangSmith specializes deeply in this layer.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Evals</p>
+          <h2>Scorers turn quality into a regression surface</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Correctness</h3>
+              <p>Did the agent identify refund eligibility and customer risk correctly?</p>
+            </div>
+            <div class="panel">
+              <h3>Grounding</h3>
+              <p>Did the response cite retrieved policy and avoid unsupported claims?</p>
+            </div>
+            <div class="panel">
+              <h3>Action safety</h3>
+              <p>Did the agent avoid destructive actions without approval?</p>
+            </div>
+          </div>
+          <p class="lead">
+            Mastra's scorer/eval story competes with the same operational need LangSmith serves: make agent behavior measurable.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Code comparison</p>
+          <h2>Equivalent first agent, different product feel</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Mastra</h3>
+              <pre><code class="language-ts code-small">const agent = new Agent({
+  id: "customer-ops",
+  name: "Customer Operations Agent",
+  instructions: "...",
+  model: "openai/gpt-5-mini",
+  tools: { getOrder, policySearch },
+  memory,
+});</code></pre>
+            </div>
+            <div class="panel">
+              <h3>LangChain JS</h3>
+              <pre><code class="language-ts code-small">const agent = createAgent({
+  model: "openai:gpt-5.4",
+  tools: [getOrder, policySearch],
+  systemPrompt: "...",
+  checkpointer: new MemorySaver(),
+});</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Differentiation</p>
+          <h2>Where Mastra feels different</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Language center</h3>
+              <p>Mastra starts from JavaScript/TypeScript product teams. LangChain started broader and Python remains highly influential.</p>
+            </div>
+            <div class="panel">
+              <h3>Framework packaging</h3>
+              <p>Mastra bundles adjacent needs into one framework surface. LangChain separates harness, runtime, and platform into related products.</p>
+            </div>
+            <div class="panel">
+              <h3>Local builder experience</h3>
+              <p>Mastra Studio is positioned as a natural dev companion to registered agents and workflows.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Where LangChain wins</p>
+          <h2>The incumbent ecosystem matters</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Integration breadth</h3>
+              <p>LangChain has years of model, retriever, vector store, middleware, and community integration surface.</p>
+            </div>
+            <div class="panel">
+              <h3>LangGraph control</h3>
+              <p>For complex state machines, reducers, checkpointers, stores, time travel, and graph-level control, LangGraph is purpose-built.</p>
+            </div>
+            <div class="panel">
+              <h3>LangSmith depth</h3>
+              <p>Tracing, eval datasets, production monitoring, debugging, and prompt workflows are mature platform capabilities.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Where Mastra wins</p>
+          <h2>The TypeScript product-stack argument is strong</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>App-adjacent agents</h3>
+              <p>Your agent can live beside Next.js, Express, Hono, server routes, product types, and deployment code.</p>
+            </div>
+            <div class="panel">
+              <h3>Compiler-backed contracts</h3>
+              <p>Tool and workflow schema mistakes surface closer to development, not just inside model behavior.</p>
+            </div>
+            <div class="panel">
+              <h3>Unified learning curve</h3>
+              <p>One framework story for agents, workflows, memory, RAG, MCP, storage, observability, and evals is easier to adopt.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Decision guide</p>
+          <h2>Choose based on system shape, not hype</h2>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>If your team needs...</th>
+                <th>Mastra is attractive because...</th>
+                <th>LangChain ecosystem is attractive because...</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>TypeScript-first app integration</td>
+                <td>It is the center of gravity.</td>
+                <td>JS support exists, but ecosystem examples can be more mixed.</td>
+              </tr>
+              <tr>
+                <td>Low-level graph runtime control</td>
+                <td>Workflows cover many explicit-process needs.</td>
+                <td>LangGraph is designed specifically for this layer.</td>
+              </tr>
+              <tr>
+                <td>Observability/eval platform depth</td>
+                <td>Tracing and scorers are integrated into the framework.</td>
+                <td>LangSmith is a specialized platform with strong ecosystem adoption.</td>
+              </tr>
+              <tr>
+                <td>Broad integrations and hiring familiarity</td>
+                <td>Growing quickly, especially for TypeScript teams.</td>
+                <td>Mature incumbent with large community footprint.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Architecture synthesis</p>
+          <h2>A production customer operations agent has the same bones in either stack</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Control plane</h3>
+              <p>Agent loop for flexible reasoning; workflow graph for predictable business process.</p>
+            </div>
+            <div class="panel">
+              <h3>Data plane</h3>
+              <p>App database for truth, vector index for policy/document evidence, memory store for durable user context.</p>
+            </div>
+            <div class="panel">
+              <h3>Quality plane</h3>
+              <p>Traces, evals, feedback, datasets, and release gates that keep behavior from drifting silently.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Implementation path</p>
+          <h2>How I would build the example in Mastra</h2>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Iteration</th>
+                <th>Capability</th>
+                <th>Mastra primitive</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>Draft support responses from order context.</td>
+                <td>Agent + typed tools.</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>Ground answers in refund/shipping policy.</td>
+                <td>RAG vector query tool.</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>Remember explicit customer preferences.</td>
+                <td>Memory with storage and semantic recall.</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>Make triage, approval, and updates auditable.</td>
+                <td>Workflow steps and suspension/resume.</td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td>Improve quality release over release.</td>
+                <td>Traces, scorers, and eval datasets.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Anti-patterns</p>
+          <h2>What not to learn from framework demos</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Do not expose giant tools</h3>
+              <p>`runSql` and `callInternalApi` are not product-safe tool boundaries.</p>
+            </div>
+            <div class="panel">
+              <h3>Do not let memory write itself</h3>
+              <p>Durable memory needs explicit write policy, review, correction, and deletion.</p>
+            </div>
+            <div class="panel">
+              <h3>Do not use agents for fixed logic</h3>
+              <p>If the path is deterministic, encode it as workflow automation and call the model only where judgment is useful.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Mental model</p>
+          <h2>Mastra is best understood as an agent application framework</h2>
+          <div class="grid-2">
+            <div class="callout">
+              <h3>It is not just a LangChain clone</h3>
+              <p>Its strongest claim is that agent primitives should feel native to TypeScript application development.</p>
+            </div>
+            <div class="callout">
+              <h3>It is not magic infrastructure</h3>
+              <p>You still need good tool boundaries, state models, memory policy, side-effect controls, and eval loops.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Recap</p>
+          <h2>The comparison in one slide</h2>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Layer</th>
+                <th>Mastra</th>
+                <th>LangChain ecosystem</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Agent harness</td>
+                <td>Agent class with tools, memory, workflows, model, evals.</td>
+                <td>LangChain agents and middleware.</td>
+              </tr>
+              <tr>
+                <td>Runtime control</td>
+                <td>Workflows and suspension/resume.</td>
+                <td>LangGraph state graph, checkpoints, interrupts, stores.</td>
+              </tr>
+              <tr>
+                <td>Quality loop</td>
+                <td>Studio, tracing, scorers, storage/exporters.</td>
+                <td>LangSmith tracing, datasets, evals, prompts, deployment.</td>
+              </tr>
+              <tr>
+                <td>Core differentiator</td>
+                <td>Integrated TypeScript product framework.</td>
+                <td>Mature layered ecosystem with deep runtime/platform specialization.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">References</p>
+          <h2>Follow-up reading by concept</h2>
+          <div class="reference-list">
+            <h3>Mastra framework and agents</h3>
+            <ul>
+              <li><a href="https://mastra.ai/">Mastra framework overview</a></li>
+              <li><a href="https://mastra.ai/agents">Mastra agents overview</a></li>
+              <li><a href="https://mastra.ai/reference/agents/agent">Mastra Agent class reference</a></li>
+              <li><a href="https://mastra.ai/reference/agents/createTool">Mastra createTool reference</a></li>
+            </ul>
+            <h3>Mastra workflows, memory, RAG, and storage</h3>
+            <ul>
+              <li><a href="https://mastra.ai/ai-workflows">Mastra workflows overview</a></li>
+              <li><a href="https://mastra.ai/docs/server-db/storage">Mastra storage docs</a></li>
+              <li><a href="https://mastra.ai/examples/memory/streaming-working-memory">Mastra working memory example</a></li>
+              <li><a href="https://mastra.ai/en/reference/tools/vector-query-tool">Mastra vector query tool reference</a></li>
+            </ul>
+            <h3>Mastra observability and evals</h3>
+            <ul>
+              <li><a href="https://mastra.ai/ai-agent-observability">Mastra observability overview</a></li>
+              <li><a href="https://mastra.ai/blog/mastra-scorers">Mastra scorers announcement</a></li>
+            </ul>
+            <h3>LangChain ecosystem comparison</h3>
+            <ul>
+              <li><a href="https://docs.langchain.com/oss/javascript/langchain/agents">LangChain JavaScript agents</a></li>
+              <li><a href="https://docs.langchain.com/oss/python/langgraph/overview">LangGraph overview</a></li>
+              <li><a href="https://docs.langchain.com/oss/javascript/langgraph/persistence">LangGraph JavaScript persistence</a></li>
+              <li><a href="https://docs.langchain.com/langsmith/observability-concepts">LangSmith observability concepts</a></li>
+              <li><a href="https://docs.langchain.com/langsmith/evaluation-concepts">LangSmith evaluation concepts</a></li>
+            </ul>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script src="../../../assets/vendor/reveal/dist/reveal.js"></script>
+    <script src="../../../assets/vendor/reveal/dist/plugin/highlight.js"></script>
+    <script>
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        hash: true,
+        slideNumber: true,
+        transition: "slide",
+        backgroundTransition: "fade",
+        plugins: [RevealHighlight],
+      });
+    </script>
+  </body>
+</html>
