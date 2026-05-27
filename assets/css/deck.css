@@ -144,6 +144,18 @@ body.has-deck-topbar .reveal {
   color: var(--deck-accent);
 }
 
+.reveal :not(pre) > code {
+  padding: 0.1em 0.32em;
+  border: 1px solid rgb(255 255 255 / 10%);
+  border-radius: 6px;
+  background: rgb(255 255 255 / 7%);
+  color: var(--deck-text);
+  font-family:
+    "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.86em;
+  white-space: nowrap;
+}
+
 .kicker {
   margin: 0 0 16px;
   color: var(--deck-accent);

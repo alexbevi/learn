@@ -237,11 +237,19 @@ export const customerOpsAgent = new Agent({
           <div class="grid-2">
             <div class="panel">
               <h3>Mastra</h3>
-              <p>Tools are created with `createTool`, explicit `inputSchema`, optional `outputSchema`, and an `execute` function.</p>
+              <p>
+                Tools are created with <code>createTool</code>, explicit
+                <code>inputSchema</code>, optional <code>outputSchema</code>,
+                and an <code>execute</code> function.
+              </p>
             </div>
             <div class="panel">
               <h3>LangChain</h3>
-              <p>JavaScript agents use `tool(fn, { name, description, schema })`, also commonly with Zod schemas.</p>
+              <p>
+                JavaScript agents use
+                <code>tool(fn, { name, description, schema })</code>, also
+                commonly with Zod schemas.
+              </p>
             </div>
           </div>
           <p class="lead">
@@ -264,11 +272,19 @@ console.log(response.text);</code></pre>
           <div class="grid-2">
             <div class="panel">
               <h3>Mastra concept</h3>
-              <p>`threadId` scopes the conversation; `resourceId` scopes the user or owning resource for memory and history.</p>
+              <p>
+                <code>threadId</code> scopes the conversation;
+                <code>resourceId</code> scopes the user or owning resource for
+                memory and history.
+              </p>
             </div>
             <div class="panel">
               <h3>LangGraph comparison</h3>
-              <p>LangGraph uses thread-scoped checkpoints; LangChain agents pass `thread_id` through runtime config when persistence is enabled.</p>
+              <p>
+                LangGraph uses thread-scoped checkpoints; LangChain agents pass
+                <code>thread_id</code> through runtime config when persistence
+                is enabled.
+              </p>
             </div>
           </div>
         </section>
@@ -331,7 +347,7 @@ export const customerOpsAgent = new Agent({
             <tbody>
               <tr>
                 <td>Tool integration</td>
-                <td>`createVectorQueryTool` returns a model-callable tool.</td>
+                <td><code>createVectorQueryTool</code> returns a model-callable tool.</td>
                 <td>Retrievers, tools, vector stores, chains, and agent middleware compose flexibly.</td>
               </tr>
               <tr>
@@ -794,7 +810,10 @@ export const supportMcp = new MCPServer({
           <div class="grid-3">
             <div class="panel">
               <h3>Do not expose giant tools</h3>
-              <p>`runSql` and `callInternalApi` are not product-safe tool boundaries.</p>
+              <p>
+                <code>runSql</code> and <code>callInternalApi</code> are not
+                product-safe tool boundaries.
+              </p>
             </div>
             <div class="panel">
               <h3>Do not let memory write itself</h3>

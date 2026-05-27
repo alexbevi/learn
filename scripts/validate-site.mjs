@@ -54,6 +54,11 @@ function hasReferencesSlide(source) {
   return /<p class=["']kicker["']>\s*References\s*<\/p>/i.test(source);
 }
 
+function hasMarkdownBackticksOutsideCode(source) {
+  const withoutCodeBlocks = source.replace(/<pre\b[\s\S]*?<\/pre>/gi, "");
+  return /`[^`]+`/.test(withoutCodeBlocks);
+}
+
 function contentType(pathname) {
   const ext = extname(pathname);
   if (ext === ".css") return "text/css";
@@ -133,6 +138,9 @@ for (const presentation of catalog.presentations) {
   }
   if (!hasReferencesSlide(source)) {
     fail(`${presentation.id}: missing References slide`);
+  }
+  if (hasMarkdownBackticksOutsideCode(source)) {
+    fail(`${presentation.id}: markdown-style backticks found outside code blocks; use <code> elements`);
   }
   if (!presentation.tags?.length) {
     fail(`${presentation.id}: missing tags`);

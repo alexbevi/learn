@@ -23,6 +23,8 @@ the source of truth.
   practical guidance, recap, and a final references slide.
 - Technical decks should be precise and can go deep. Prefer concrete mechanisms,
   interfaces, state flow, failure modes, and tradeoffs over vague summaries.
+- Use real HTML for formatting. Inline code must use `<code>...</code>` rather
+  than markdown-style backticks.
 - Use generated or local diagrams when they communicate the concept better than
   prose. If an external image is embedded, copy it into the repo and cite its
   source page in the deck.
