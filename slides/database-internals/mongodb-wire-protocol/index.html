@@ -1,0 +1,1317 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MongoDB Wire Protocol</title>
+    <link rel="stylesheet" href="../../../assets/vendor/reveal/dist/reveal.css" />
+    <link
+      rel="stylesheet"
+      href="../../../assets/vendor/reveal/dist/plugin/highlight/monokai.css"
+    />
+    <link rel="stylesheet" href="../../../assets/css/deck.css" />
+    <style>
+      .wp-grid {
+        display: grid;
+        gap: 14px;
+        margin-top: 22px;
+      }
+
+      .cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .cols-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .wp-card,
+      .wp-step,
+      .wp-cell,
+      .wp-head,
+      .byte {
+        border: 1px solid var(--deck-line);
+        border-radius: 8px;
+        background: linear-gradient(180deg, var(--deck-panel-2), var(--deck-panel));
+        padding: 14px;
+      }
+
+      .wp-card strong,
+      .wp-step strong,
+      .wp-cell strong,
+      .byte strong {
+        display: block;
+        color: var(--deck-text);
+        font-size: 0.55em;
+        line-height: 1.16;
+      }
+
+      .wp-card span,
+      .wp-step span,
+      .wp-cell span,
+      .byte span {
+        display: block;
+        margin-top: 7px;
+        color: var(--deck-muted);
+        font-size: 0.44em;
+        line-height: 1.3;
+      }
+
+      .wp-card h3,
+      .wp-head {
+        margin: 0 0 10px;
+        color: var(--deck-accent);
+        font-size: 0.72em;
+      }
+
+      .visual {
+        width: min(100%, 1100px);
+        margin: 20px auto 0;
+      }
+
+      .packet {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .byte {
+        min-height: 112px;
+      }
+
+      .wide-byte {
+        grid-column: span 4;
+      }
+
+      .accent {
+        border-color: rgb(33 199 168 / 65%);
+        box-shadow: inset 0 0 0 1px rgb(33 199 168 / 18%);
+      }
+
+      .amber {
+        border-color: rgb(255 184 77 / 55%);
+      }
+
+      .red {
+        border-color: rgb(242 109 109 / 55%);
+      }
+
+      .flow {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 9px;
+      }
+
+      .flow .wp-step {
+        position: relative;
+        min-height: 150px;
+      }
+
+      .flow .wp-step:not(:last-child)::after {
+        content: ">";
+        position: absolute;
+        top: 58px;
+        right: -13px;
+        z-index: 2;
+        color: var(--deck-accent);
+        font-size: 0.9em;
+        font-weight: 900;
+      }
+
+      .num {
+        display: inline-grid;
+        place-items: center;
+        width: 26px;
+        height: 26px;
+        margin-bottom: 10px;
+        border-radius: 999px;
+        background: rgb(33 199 168 / 16%);
+        color: var(--deck-accent);
+        font-size: 0.42em;
+        font-weight: 900;
+      }
+
+      .stack {
+        display: grid;
+        grid-template-columns: 0.95fr 1.12fr 0.95fr;
+        gap: 14px;
+      }
+
+      .stack-col {
+        display: grid;
+        gap: 10px;
+      }
+
+      .tag-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin-top: 10px;
+      }
+
+      .tag {
+        display: inline-flex;
+        padding: 5px 8px;
+        border: 1px solid rgb(255 255 255 / 12%);
+        border-radius: 999px;
+        color: var(--deck-muted);
+        font-size: 0.4em;
+        font-weight: 760;
+      }
+
+      .note {
+        margin-top: 12px;
+        color: var(--deck-amber);
+        font-size: 0.48em;
+        font-weight: 760;
+        line-height: 1.28;
+      }
+
+      .matrix {
+        display: grid;
+        grid-template-columns: 0.8fr 1.05fr 1.05fr 1.05fr;
+        gap: 8px;
+        margin-top: 20px;
+      }
+
+      .matrix-5 {
+        grid-template-columns: 0.82fr 0.95fr 0.95fr 0.95fr 0.95fr;
+      }
+
+      .wp-head {
+        border: 1px solid var(--deck-line);
+        border-radius: 8px;
+        background: linear-gradient(180deg, var(--deck-panel-2), var(--deck-panel));
+        padding: 12px;
+        font-weight: 860;
+      }
+
+      .wp-cell {
+        min-height: 92px;
+      }
+
+      .mini-card {
+        border: 1px solid var(--deck-line);
+        border-radius: 8px;
+        background: linear-gradient(180deg, var(--deck-panel-2), var(--deck-panel));
+        padding: 14px;
+      }
+
+      .mini-card strong {
+        display: block;
+        color: var(--deck-text);
+        font-size: 0.52em;
+      }
+
+      .mini-card span {
+        display: block;
+        margin-top: 7px;
+        color: var(--deck-muted);
+        font-size: 0.44em;
+        line-height: 1.32;
+      }
+
+      .tight-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 22px;
+      }
+
+      .path-list {
+        display: grid;
+        gap: 10px;
+        margin-top: 22px;
+      }
+
+      .trace-row {
+        display: grid;
+        grid-template-columns: 190px minmax(0, 1fr) 260px;
+        gap: 14px;
+        align-items: start;
+        border: 1px solid var(--deck-line);
+        border-radius: 8px;
+        background: linear-gradient(180deg, var(--deck-panel-2), var(--deck-panel));
+        padding: 14px;
+      }
+
+      .trace-row strong {
+        display: block;
+        color: var(--deck-text);
+        font-size: 0.52em;
+      }
+
+      .trace-row span {
+        display: block;
+        color: var(--deck-muted);
+        font-size: 0.44em;
+        line-height: 1.32;
+      }
+
+      .trace-row em {
+        color: var(--deck-amber);
+        font-size: 0.42em;
+        font-style: normal;
+        line-height: 1.28;
+      }
+
+      .code-tight {
+        font-size: 0.82em;
+        line-height: 1.22;
+      }
+
+      .code-small {
+        font-size: 0.56em;
+        line-height: 1.2;
+      }
+
+      .two-code {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-top: 20px;
+      }
+
+      .good {
+        color: var(--deck-accent);
+      }
+
+      .warn {
+        color: var(--deck-amber);
+      }
+
+      .bad {
+        color: var(--deck-red);
+      }
+
+      @media (max-width: 900px) {
+        .cols-2,
+        .cols-3,
+        .cols-4,
+        .packet,
+        .flow,
+        .stack,
+        .matrix,
+        .matrix-5,
+        .tight-grid,
+        .trace-row,
+        .two-code {
+          grid-template-columns: 1fr;
+        }
+
+        .wide-byte {
+          grid-column: span 1;
+        }
+
+        .flow .wp-step {
+          min-height: auto;
+        }
+
+        .flow .wp-step:not(:last-child)::after {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body class="has-deck-topbar">
+    <header class="deck-topbar" aria-label="Presentation navigation">
+      <a class="deck-nav-link" href="../../../">Main menu</a>
+      <div class="deck-title">
+        <span>MongoDB Wire Protocol</span>
+        <small>Opcodes, BSON messages, compression, and interoperability</small>
+      </div>
+      <a class="deck-nav-link" href="../../../topics/database-internals/">Topic</a>
+    </header>
+
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <p class="kicker">Database Internals</p>
+          <h1>MongoDB's Wire Protocol</h1>
+          <p class="lead">
+            Legacy opcodes, <code>OP_MSG</code>, <code>OP_COMPRESSED</code>,
+            BSON command transport, and why a standardized client/server protocol
+            enabled MongoDB drivers to talk to compatible systems such as
+            DocumentDB, FerretDB, Cosmos DB, and Percona Server.
+          </p>
+          <p class="footnote">90 minutes / 48 slides</p>
+        </section>
+
+        <section>
+          <p class="kicker">Learning Goals</p>
+          <h2>What you should be able to reason about</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Packet mechanics</h3>
+              <p>Read a MongoDB wire message from header to BSON payload, including request ids, response ids, opcodes, sections, and compression wrappers.</p>
+            </div>
+            <div class="panel">
+              <h3>Protocol evolution</h3>
+              <p>Explain why legacy CRUD opcodes gave way to command documents, <code>OP_QUERY</code> command transport, and finally <code>OP_MSG</code>.</p>
+            </div>
+            <div class="panel">
+              <h3>Interoperability</h3>
+              <p>Evaluate what “MongoDB-compatible” means for drivers, proxies, emulators, alternative backends, feature negotiation, and correctness gaps.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Anchor</p>
+          <h2>The wire protocol is the database's language boundary</h2>
+          <div class="visual stack" data-visual>
+            <div class="stack-col">
+              <div class="wp-card"><strong>Application code</strong><span>Calls driver APIs such as <code>insertOne()</code>, <code>find()</code>, and <code>aggregate()</code>.</span></div>
+              <div class="wp-card"><strong>MongoDB driver</strong><span>Builds BSON command documents, manages topology, pools sockets, retries, sessions, and cursors.</span></div>
+            </div>
+            <div class="wp-card accent">
+              <h3>Wire protocol</h3>
+              <strong>Stable message contract over TCP</strong>
+              <span>Standard header, opcode-specific body, BSON serialization, optional compression, request/response correlation, and negotiated features.</span>
+              <div class="tag-row">
+                <span class="tag">BSON</span>
+                <span class="tag">OP_MSG</span>
+                <span class="tag">OP_COMPRESSED</span>
+                <span class="tag">hello</span>
+                <span class="tag">maxWireVersion</span>
+              </div>
+            </div>
+            <div class="stack-col">
+              <div class="wp-card"><strong>MongoDB server</strong><span>Parses wire messages, authorizes commands, executes against storage and query engines.</span></div>
+              <div class="wp-card"><strong>Compatible server</strong><span>Implements enough of the same wire contract to satisfy existing drivers.</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Protocol Contract</p>
+          <h2>A driver does not send JavaScript methods; it sends BSON commands</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>API surface</h3>
+              <p><code>collection.find({ status: "paid" })</code> is a language helper, not the protocol itself.</p>
+            </div>
+            <div class="panel">
+              <h3>Command document</h3>
+              <p>The driver serializes a command document such as <code>{ find: "orders", filter: ... }</code>.</p>
+            </div>
+            <div class="panel">
+              <h3>Wire frame</h3>
+              <p>The command document is placed in an opcode-specific binary message and sent across a socket.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Byte Layout</p>
+          <h2>Every message starts with the same 16-byte header</h2>
+          <div class="visual packet" data-visual>
+            <div class="byte accent">
+              <strong><code>messageLength</code></strong>
+              <span>int32, total message bytes including this header.</span>
+            </div>
+            <div class="byte">
+              <strong><code>requestID</code></strong>
+              <span>int32 chosen by the sender so replies can be correlated.</span>
+            </div>
+            <div class="byte">
+              <strong><code>responseTo</code></strong>
+              <span>int32, usually zero for requests and request id for replies.</span>
+            </div>
+            <div class="byte accent">
+              <strong><code>opCode</code></strong>
+              <span>int32 identifying <code>OP_MSG</code>, <code>OP_COMPRESSED</code>, or legacy operation format.</span>
+            </div>
+            <div class="byte wide-byte amber">
+              <strong>Message body</strong>
+              <span>Opcode-specific fields followed by BSON documents, document sequences, cursor ids, flags, or compressed bytes.</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">BSON</p>
+          <h2>BSON gives the wire protocol typed command documents</h2>
+          <div class="tight-grid">
+            <div class="mini-card"><strong>Binary document</strong><span>Length-prefixed, little-endian, null-terminated keys, typed element values.</span></div>
+            <div class="mini-card"><strong>Command shape</strong><span>Commands, replies, filters, updates, write concern, sessions, and read concern travel as BSON fields.</span></div>
+            <div class="mini-card"><strong>Native types</strong><span>ObjectId, Date, Decimal128, binary, regex, timestamp, arrays, embedded documents, and numeric variants.</span></div>
+            <div class="mini-card"><strong>Driver boundary</strong><span>Each driver maps host-language types to BSON and back.</span></div>
+            <div class="mini-card"><strong>Compatibility burden</strong><span>Alternative servers must parse BSON precisely before they can emulate commands correctly.</span></div>
+            <div class="mini-card"><strong>Not JSON</strong><span>JSON-like syntax is user-facing notation; the socket carries BSON bytes.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">BSON Example</p>
+          <h2>A find command becomes a BSON document inside <code>OP_MSG</code></h2>
+          <pre><code class="language-js code-tight">// Driver API
+await db.collection("orders").find({
+  status: "paid",
+  totalCents: { $gte: 5000 }
+}).sort({ createdAt: -1 }).limit(25).toArray()
+
+// Command document before BSON serialization
+{
+  find: "orders",
+  filter: { status: "paid", totalCents: { $gte: 5000 } },
+  sort: { createdAt: -1 },
+  limit: 25,
+  lsid: { id: UUID("...") },
+  $db: "shop"
+}</code></pre>
+        </section>
+
+        <section>
+          <p class="kicker">Opcode Timeline</p>
+          <h2>The protocol moved from operation opcodes to command transport</h2>
+          <div class="visual flow" data-visual>
+            <div class="wp-step"><span class="num">1</span><strong>Legacy CRUD</strong><span><code>OP_INSERT</code>, <code>OP_QUERY</code>, <code>OP_UPDATE</code>, <code>OP_DELETE</code>, <code>OP_GET_MORE</code>, <code>OP_KILL_CURSORS</code>.</span></div>
+            <div class="wp-step"><span class="num">2</span><strong>Commands</strong><span>Server features increasingly exposed through command documents against <code>$cmd</code>.</span></div>
+            <div class="wp-step"><span class="num">3</span><strong><code>OP_QUERY</code> bridge</strong><span>Drivers sent commands through a query-shaped message for years.</span></div>
+            <div class="wp-step"><span class="num">4</span><strong><code>OP_MSG</code></strong><span>A command-native envelope with flags, sections, checksums, and better extensibility.</span></div>
+            <div class="wp-step"><span class="num">5</span><strong><code>OP_COMPRESSED</code></strong><span>A wrapper that compresses another wire message after negotiation.</span></div>
+            <div class="wp-step"><span class="num">6</span><strong>Modern baseline</strong><span>MongoDB 5.1 removed support for legacy opcodes except <code>OP_MSG</code> and <code>OP_COMPRESSED</code>.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Legacy Opcodes</p>
+          <h2>The original opcodes encoded database operations directly</h2>
+          <table class="table compare-table">
+            <thead>
+              <tr>
+                <th>Opcode</th>
+                <th>Intent</th>
+                <th>Body flavor</th>
+                <th>Modern replacement</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>OP_INSERT</code></td>
+                <td>Insert one or more documents into a namespace.</td>
+                <td>Flags, full namespace string, BSON document list.</td>
+                <td><code>insert</code> command over <code>OP_MSG</code>.</td>
+              </tr>
+              <tr>
+                <td><code>OP_QUERY</code></td>
+                <td>Query collection or send command via <code>$cmd</code>.</td>
+                <td>Flags, namespace, skip, return count, query BSON.</td>
+                <td><code>find</code>, <code>hello</code>, and other commands over <code>OP_MSG</code>.</td>
+              </tr>
+              <tr>
+                <td><code>OP_UPDATE</code> / <code>OP_DELETE</code></td>
+                <td>Mutate or delete documents matching a selector.</td>
+                <td>Namespace plus selector and update/delete flags.</td>
+                <td><code>update</code> and <code>delete</code> commands.</td>
+              </tr>
+              <tr>
+                <td><code>OP_GET_MORE</code> / <code>OP_KILL_CURSORS</code></td>
+                <td>Continue or kill server cursors.</td>
+                <td>Cursor id fields outside a command document.</td>
+                <td><code>getMore</code> and <code>killCursors</code> commands.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Why Legacy Hurt</p>
+          <h2>Feature growth did not fit operation-specific message bodies</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Feature sprawl</h3>
+              <p>Sessions, transactions, read concern, write concern, collation, API versioning, and retryability all fit naturally as command fields.</p>
+            </div>
+            <div class="panel">
+              <h3>Inconsistent envelopes</h3>
+              <p>Each legacy opcode had its own body layout, making new cross-cutting fields harder to standardize.</p>
+            </div>
+            <div class="panel">
+              <h3>Command universality</h3>
+              <p>A single command document model lets new server features ship without inventing a new top-level opcode.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">OP_QUERY Command Bridge</p>
+          <h2>Before <code>OP_MSG</code>, commands rode through <code>$cmd</code></h2>
+          <pre><code class="language-js code-small">// Conceptual legacy command transport
+OP_QUERY {
+  flags: 0,
+  fullCollectionName: "shop.$cmd",
+  numberToSkip: 0,
+  numberToReturn: -1,
+  query: {
+    find: "orders",
+    filter: { status: "paid" },
+    $readPreference: { mode: "primary" }
+  }
+}</code></pre>
+          <p class="lead">This compatibility bridge mattered historically, but it was still a query-shaped envelope pretending to be command transport.</p>
+        </section>
+
+        <section>
+          <p class="kicker">OP_MSG</p>
+          <h2><code>OP_MSG</code> is the modern command-native envelope</h2>
+          <div class="visual packet" data-visual>
+            <div class="byte accent"><strong>Header</strong><span>16-byte standard message header with opcode <code>2013</code>.</span></div>
+            <div class="byte"><strong><code>flagBits</code></strong><span>int32 for checksum, more-to-come, exhaust allowed, and future flags.</span></div>
+            <div class="byte accent"><strong>Section 0</strong><span>Kind 0: one BSON body document containing command fields.</span></div>
+            <div class="byte"><strong>Section 1</strong><span>Kind 1: optional document sequence for repeated documents.</span></div>
+            <div class="byte wide-byte amber"><strong>Optional checksum</strong><span>CRC-32C may follow sections when the checksum flag is set.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Sections</p>
+          <h2><code>OP_MSG</code> separates command body from bulk document sequences</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Kind 0 body</h3>
+              <p>Exactly one BSON command body. It contains fields such as <code>insert</code>, <code>$db</code>, <code>lsid</code>, <code>txnNumber</code>, and options.</p>
+            </div>
+            <div class="panel">
+              <h3>Kind 1 document sequence</h3>
+              <p>A typed sequence of BSON documents with an identifier such as <code>documents</code>, <code>updates</code>, or <code>deletes</code>.</p>
+            </div>
+          </div>
+          <pre><code class="language-js code-small">OP_MSG {
+  flagBits: 0,
+  sections: [
+    { kind: 0, body: { insert: "orders", ordered: true, $db: "shop" } },
+    { kind: 1, identifier: "documents", documents: [
+      { _id: ObjectId("..."), status: "created" },
+      { _id: ObjectId("..."), status: "paid" }
+    ] }
+  ]
+}</code></pre>
+        </section>
+
+        <section>
+          <p class="kicker">Why Section 1 Matters</p>
+          <h2>Bulk writes avoid nesting every document inside one huge command BSON</h2>
+          <div class="visual stack" data-visual>
+            <div class="wp-card red">
+              <h3>Naive body-only shape</h3>
+              <strong>Everything nested</strong>
+              <span>The command body would contain a massive array of documents, forcing extra structure and size pressure inside one BSON object.</span>
+            </div>
+            <div class="wp-card accent">
+              <h3><code>OP_MSG</code> section 1</h3>
+              <strong>Command body plus document stream</strong>
+              <span>Options stay in the body; repeated documents travel as an adjacent sequence with a named identifier.</span>
+            </div>
+            <div class="wp-card amber">
+              <h3>Driver/server benefit</h3>
+              <strong>Cleaner batching boundary</strong>
+              <span>Drivers can split batches by max message size and max BSON object size while preserving command semantics.</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Replies</p>
+          <h2>Replies are also command documents</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Success</h3>
+              <p>Most replies contain <code>ok: 1</code>, command-specific fields, cursor state, or write outcome fields.</p>
+            </div>
+            <div class="panel">
+              <h3>Failure</h3>
+              <p>Errors travel as BSON fields such as <code>ok: 0</code>, <code>errmsg</code>, <code>code</code>, <code>codeName</code>, and optional labels.</p>
+            </div>
+            <div class="panel">
+              <h3>Correlation</h3>
+              <p>The reply header uses <code>responseTo</code> to point back at the request's <code>requestID</code>.</p>
+            </div>
+          </div>
+          <pre><code class="language-js code-small">{
+  cursor: {
+    id: Long("734734..."),
+    ns: "shop.orders",
+    firstBatch: [{ _id: ObjectId("..."), status: "paid" }]
+  },
+  ok: 1
+}</code></pre>
+        </section>
+
+        <section>
+          <p class="kicker">Handshake</p>
+          <h2>The first conversation negotiates topology and capabilities</h2>
+          <div class="visual flow" data-visual>
+            <div class="wp-step"><span class="num">1</span><strong>Open socket</strong><span>Driver connects to seed host and starts monitoring.</span></div>
+            <div class="wp-step"><span class="num">2</span><strong>Send <code>hello</code></strong><span>Client metadata, compression candidates, API version, and topology context.</span></div>
+            <div class="wp-step"><span class="num">3</span><strong>Read reply</strong><span>Server reports role, wire versions, hosts, set name, election id, session timeout.</span></div>
+            <div class="wp-step"><span class="num">4</span><strong>Select server</strong><span>Driver chooses primary, secondary, mongos, or standalone based on read/write operation.</span></div>
+            <div class="wp-step"><span class="num">5</span><strong>Authenticate</strong><span>SASL or other auth exchange uses wire messages too.</span></div>
+            <div class="wp-step"><span class="num">6</span><strong>Use features</strong><span>Driver enables sessions, retryable writes, transactions, compression, and command options only when supported.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Wire Versions</p>
+          <h2><code>minWireVersion</code> and <code>maxWireVersion</code> are feature gates</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Protocol compatibility</h3>
+              <p>Drivers compare their supported wire version range with the server's range before using modern features.</p>
+            </div>
+            <div class="panel">
+              <h3>Not just marketing</h3>
+              <p>A compatible service often emulates wire version values so existing drivers will continue past handshake.</p>
+            </div>
+            <div class="panel">
+              <h3>Feature caveat</h3>
+              <p>Passing handshake does not guarantee every command, option, error label, transaction behavior, or aggregation feature is implemented.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Compression</p>
+          <h2><code>OP_COMPRESSED</code> wraps another complete wire message</h2>
+          <div class="visual packet" data-visual>
+            <div class="byte accent"><strong>Header</strong><span>Standard header with opcode <code>2012</code>.</span></div>
+            <div class="byte"><strong><code>originalOpcode</code></strong><span>Opcode of the message after decompression, usually <code>OP_MSG</code>.</span></div>
+            <div class="byte"><strong><code>uncompressedSize</code></strong><span>int32 size of the original opcode body.</span></div>
+            <div class="byte"><strong><code>compressorId</code></strong><span>One byte: snappy, zlib, zstd, or noop depending on negotiation.</span></div>
+            <div class="byte wide-byte amber"><strong><code>compressedMessage</code></strong><span>Compressed bytes for the original message body, not a new command model.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Compression Negotiation</p>
+          <h2>Compression is opt-in and per-connection</h2>
+          <div class="path-list">
+            <div class="trace-row">
+              <strong>Client advertises</strong>
+              <span>The initial handshake includes a list such as <code>["zstd", "snappy", "zlib"]</code>.</span>
+              <em>Driver config</em>
+            </div>
+            <div class="trace-row">
+              <strong>Server selects</strong>
+              <span>The server response identifies mutually supported compressor names.</span>
+              <em>Capability negotiation</em>
+            </div>
+            <div class="trace-row">
+              <strong>Messages wrap</strong>
+              <span>Eligible messages are sent as <code>OP_COMPRESSED</code> with the original opcode recorded in the wrapper.</span>
+              <em>Transport optimization</em>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Parser Example</p>
+          <h2>A proxy or compatible server starts by decoding the header</h2>
+          <pre><code class="language-python code-tight">import struct
+
+HEADER = struct.Struct("&lt;iiii")  # little-endian int32 x 4
+
+def parse_header(buf: bytes) -> dict:
+    if len(buf) &lt; HEADER.size:
+        raise ValueError("incomplete MongoDB wire header")
+    message_length, request_id, response_to, opcode = HEADER.unpack_from(buf)
+    if message_length &lt; HEADER.size:
+        raise ValueError("invalid message length")
+    return {
+        "messageLength": message_length,
+        "requestID": request_id,
+        "responseTo": response_to,
+        "opCode": opcode,
+        "body": buf[HEADER.size:message_length],
+    }</code></pre>
+        </section>
+
+        <section>
+          <p class="kicker">OP_MSG Parser</p>
+          <h2>After the header, parse flags and section kinds</h2>
+          <pre><code class="language-python code-small">def parse_op_msg(body: bytes, decode_bson):
+    flags = int.from_bytes(body[0:4], "little", signed=False)
+    pos = 4
+    sections = []
+    while pos &lt; len(body):
+        kind = body[pos]
+        pos += 1
+        if kind == 0:
+            doc, used = decode_bson(body[pos:])
+            sections.append(("body", doc))
+            pos += used
+        elif kind == 1:
+            size = int.from_bytes(body[pos:pos + 4], "little", signed=True)
+            payload_end = pos + size
+            identifier_end = body.index(b"\x00", pos + 4)
+            identifier = body[pos + 4:identifier_end].decode()
+            docs = []
+            pos = identifier_end + 1
+            while pos &lt; payload_end:
+                doc, used = decode_bson(body[pos:payload_end])
+                docs.append(doc)
+                pos += used
+            sections.append(("sequence", identifier, docs))
+        else:
+            raise ValueError(f"unknown OP_MSG section kind {kind}")
+    return flags, sections</code></pre>
+        </section>
+
+        <section>
+          <p class="kicker">Driver Path</p>
+          <h2>A driver turns API calls into protocol work plus topology state</h2>
+          <div class="visual flow" data-visual>
+            <div class="wp-step"><span class="num">1</span><strong>Build command</strong><span>Convert API inputs into command BSON and validate client-side options.</span></div>
+            <div class="wp-step"><span class="num">2</span><strong>Select server</strong><span>Use topology description, read preference, sessions, and writeability.</span></div>
+            <div class="wp-step"><span class="num">3</span><strong>Checkout connection</strong><span>Pick pooled socket with known negotiated capabilities.</span></div>
+            <div class="wp-step"><span class="num">4</span><strong>Frame message</strong><span>Encode <code>OP_MSG</code>, optional document sequences, and maybe compression.</span></div>
+            <div class="wp-step"><span class="num">5</span><strong>Read reply</strong><span>Decode header, opcode body, BSON reply, cursor ids, and error labels.</span></div>
+            <div class="wp-step"><span class="num">6</span><strong>Apply semantics</strong><span>Retry, throw, return cursor, update session state, or issue <code>getMore</code>.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Cursor Flow</p>
+          <h2>Queries often become multiple wire round trips</h2>
+          <div class="path-list">
+            <div class="trace-row">
+              <strong><code>find</code></strong>
+              <span>Client sends command; server returns <code>firstBatch</code> plus a cursor id if more results remain.</span>
+              <em>First reply</em>
+            </div>
+            <div class="trace-row">
+              <strong><code>getMore</code></strong>
+              <span>Driver requests another batch using cursor id, collection name, batch size, and database.</span>
+              <em>Continuation</em>
+            </div>
+            <div class="trace-row">
+              <strong><code>killCursors</code></strong>
+              <span>Driver closes server cursor when exhausted, abandoned, timed out, or explicitly closed.</span>
+              <em>Cleanup</em>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Sessions And Transactions</p>
+          <h2>Modern distributed semantics ride as command fields</h2>
+          <pre><code class="language-js code-small">{
+  update: "accounts",
+  updates: [
+    { q: { _id: "A" }, u: { $inc: { balance: -100 } } }
+  ],
+  lsid: { id: UUID("...") },
+  txnNumber: NumberLong(41),
+  autocommit: false,
+  startTransaction: true,
+  readConcern: { level: "snapshot" },
+  $db: "bank"
+}</code></pre>
+          <p class="lead">This is the key reason command-native transport matters: protocol evolution happens through BSON fields, not new TCP-level verbs.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Authentication</p>
+          <h2>Auth is also command traffic over the same channel</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>SASL exchange</h3>
+              <p>Mechanisms such as SCRAM use command documents to exchange client and server proof material.</p>
+            </div>
+            <div class="panel">
+              <h3>TLS boundary</h3>
+              <p>The wire protocol normally runs inside TLS when encryption in transit is enabled.</p>
+            </div>
+            <div class="panel">
+              <h3>Compatibility work</h3>
+              <p>Alternative servers must emulate not only CRUD commands, but also authentication mechanisms expected by drivers.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Load Balancing</p>
+          <h2>The wire protocol also carries deployment topology signals</h2>
+          <div class="tight-grid">
+            <div class="mini-card"><strong>Standalone</strong><span>One server, direct command execution.</span></div>
+            <div class="mini-card"><strong>Replica set</strong><span>Handshake reveals members, primary/secondary state, set name, election info, and read targets.</span></div>
+            <div class="mini-card"><strong>Sharded cluster</strong><span>Drivers usually connect to <code>mongos</code>, which speaks the same client protocol while routing internally.</span></div>
+            <div class="mini-card"><strong>Atlas/load balanced</strong><span>Drivers use load-balanced mode and service identifiers when the deployment advertises it.</span></div>
+            <div class="mini-card"><strong>Compatible services</strong><span>Often present as a replica-set-like or cluster endpoint even if the backend architecture is different.</span></div>
+            <div class="mini-card"><strong>Driver behavior</strong><span>Topology type changes server selection, pinning, retry behavior, and monitoring.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Why Interop Works</p>
+          <h2>Drivers trust the protocol boundary, not the storage engine</h2>
+          <div class="visual stack" data-visual>
+            <div class="wp-card">
+              <h3>Client expectation</h3>
+              <strong>Speak MongoDB wire protocol</strong>
+              <span>Handshake succeeds, commands serialize as BSON, replies follow command conventions, errors look familiar.</span>
+            </div>
+            <div class="wp-card accent">
+              <h3>Compatibility layer</h3>
+              <strong>Translate protocol to backend behavior</strong>
+              <span>Parse wire messages, implement command semantics, map errors, maintain cursor/session state, and serialize replies.</span>
+            </div>
+            <div class="wp-card">
+              <h3>Backend reality</h3>
+              <strong>Storage can be different</strong>
+              <span>MongoDB storage engine, PostgreSQL, cloud-native document store, forked server, or custom query service.</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Compatibility Is Layered</p>
+          <h2>“Wire-compatible” is necessary but not sufficient</h2>
+          <div class="visual matrix" data-visual>
+            <div class="wp-head">Layer</div>
+            <div class="wp-head">Question</div>
+            <div class="wp-head">Example requirement</div>
+            <div class="wp-head">Failure mode</div>
+            <div class="wp-cell good"><strong>Transport</strong><span>Can drivers connect and frame messages?</span></div>
+            <div class="wp-cell"><strong>Header/opcode</strong><span><code>OP_MSG</code>, compression, BSON, request ids.</span></div>
+            <div class="wp-cell"><strong>Socket succeeds</strong><span>Driver can handshake and send commands.</span></div>
+            <div class="wp-cell"><strong>Protocol error</strong><span>Driver disconnects or marks server unknown.</span></div>
+            <div class="wp-cell good"><strong>Command surface</strong><span>Are expected commands implemented?</span></div>
+            <div class="wp-cell"><strong>CRUD + admin</strong><span><code>find</code>, <code>insert</code>, <code>aggregate</code>, <code>hello</code>, indexes.</span></div>
+            <div class="wp-cell"><strong>App starts</strong><span>Common driver operations work.</span></div>
+            <div class="wp-cell"><strong>CommandNotFound</strong><span>Feature-specific app failures.</span></div>
+            <div class="wp-cell amber"><strong>Semantics</strong><span>Does behavior match MongoDB?</span></div>
+            <div class="wp-cell"><strong>Query, write, transactions</strong><span>Operators, collation, sessions, errors, consistency.</span></div>
+            <div class="wp-cell"><strong>Correct results</strong><span>Application assumptions remain valid.</span></div>
+            <div class="wp-cell"><strong>Subtle drift</strong><span>Same query shape, different behavior.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Compatible Technologies</p>
+          <h2>Who speaks enough of the MongoDB protocol to use MongoDB clients?</h2>
+          <div class="matrix matrix-5">
+            <div class="wp-head">Technology</div>
+            <div class="wp-head">Protocol role</div>
+            <div class="wp-head">Backend</div>
+            <div class="wp-head">Compatibility stance</div>
+            <div class="wp-head">Practical caveat</div>
+            <div class="wp-cell good"><strong>MongoDB Server / Atlas</strong><span>Reference implementation.</span></div>
+            <div class="wp-cell"><strong>Native server</strong><span>Wire protocol, commands, storage, replication, sharding.</span></div>
+            <div class="wp-cell"><strong>WiredTiger / Atlas services</strong><span>MongoDB-owned engine and platform.</span></div>
+            <div class="wp-cell"><strong>Full MongoDB target</strong><span>Driver specs are built around this behavior.</span></div>
+            <div class="wp-cell"><strong>Version matters</strong><span>Feature support still depends on server version and deployment type.</span></div>
+            <div class="wp-cell good"><strong>Percona Server for MongoDB</strong><span>MongoDB-compatible server distribution.</span></div>
+            <div class="wp-cell"><strong>Native-compatible endpoint</strong><span>Fork/distribution of MongoDB server with enterprise-style additions.</span></div>
+            <div class="wp-cell"><strong>MongoDB engine lineage</strong><span>Speaks the same client protocol.</span></div>
+            <div class="wp-cell"><strong>High compatibility</strong><span>Generally intended as a drop-in server alternative.</span></div>
+            <div class="wp-cell"><strong>Version alignment</strong><span>Track supported MongoDB version and feature matrix.</span></div>
+            <div class="wp-cell good"><strong>Amazon DocumentDB</strong><span>MongoDB API-compatible managed service.</span></div>
+            <div class="wp-cell"><strong>Wire-compatible service</strong><span>Clients use MongoDB drivers against a DocumentDB cluster endpoint.</span></div>
+            <div class="wp-cell"><strong>AWS document engine</strong><span>Cloud-managed storage and query service.</span></div>
+            <div class="wp-cell"><strong>Compatibility by API version</strong><span>4.0, 5.0, and elastic/document APIs differ.</span></div>
+            <div class="wp-cell"><strong>Feature gaps</strong><span>Always check supported commands, operators, and behavior.</span></div>
+            <div class="wp-cell good"><strong>FerretDB</strong><span>MongoDB-compatible proxy/server.</span></div>
+            <div class="wp-cell"><strong>Wire protocol translator</strong><span>Accepts MongoDB driver traffic and maps to backend database operations.</span></div>
+            <div class="wp-cell"><strong>PostgreSQL backend</strong><span>Open-source compatibility layer over Postgres.</span></div>
+            <div class="wp-cell"><strong>Compatibility-focused</strong><span>Aims to provide a MongoDB-compatible alternative for many apps.</span></div>
+            <div class="wp-cell"><strong>Subset behavior</strong><span>Unsupported commands/operators and behavioral differences must be tested.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Compatible Technologies</p>
+          <h2>Other compatibility layers follow the same northbound pattern</h2>
+          <div class="visual matrix matrix-5" data-visual>
+            <div class="wp-head">Technology</div>
+            <div class="wp-head">Protocol role</div>
+            <div class="wp-head">Backend</div>
+            <div class="wp-head">Compatibility stance</div>
+            <div class="wp-head">Practical caveat</div>
+            <div class="wp-cell good"><strong>Azure Cosmos DB for MongoDB</strong><span>MongoDB API endpoint.</span></div>
+            <div class="wp-cell"><strong>Driver-compatible endpoint</strong><span>Apps connect using MongoDB drivers and connection strings.</span></div>
+            <div class="wp-cell"><strong>Cosmos DB engine</strong><span>RU or vCore service depending on offering.</span></div>
+            <div class="wp-cell"><strong>API compatibility</strong><span>Compatibility tied to selected API/version and service model.</span></div>
+            <div class="wp-cell"><strong>Semantics differ</strong><span>Throughput, transactions, indexing, and feature support are service-specific.</span></div>
+            <div class="wp-cell good"><strong>Microsoft DocumentDB</strong><span>Open-source PostgreSQL extension ecosystem.</span></div>
+            <div class="wp-cell"><strong>Compatibility substrate</strong><span>Document database capabilities and MongoDB-compatible query behavior over Postgres.</span></div>
+            <div class="wp-cell"><strong>PostgreSQL</strong><span>Extension-backed storage and execution path.</span></div>
+            <div class="wp-cell"><strong>FerretDB backend direction</strong><span>Useful as a foundation for MongoDB-compatible servers.</span></div>
+            <div class="wp-cell"><strong>Not just wire parsing</strong><span>Still needs command surface, protocol gateway, and semantic coverage around it.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Amazon DocumentDB</p>
+          <h2>DocumentDB demonstrates protocol compatibility without MongoDB internals</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Client view</h3>
+              <p>Applications use MongoDB-compatible drivers, connection strings, authentication, and many familiar commands.</p>
+            </div>
+            <div class="panel">
+              <h3>Server view</h3>
+              <p>The service parses MongoDB wire messages and implements a MongoDB-compatible API surface over AWS-managed storage.</p>
+            </div>
+            <div class="panel">
+              <h3>Engineering reality</h3>
+              <p>Wire compatibility gets the driver connected; application compatibility still depends on command, operator, aggregation, index, and transaction semantics.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">FerretDB</p>
+          <h2>FerretDB is a protocol translation layer over PostgreSQL</h2>
+          <div class="visual flow" data-visual>
+            <div class="wp-step"><span class="num">1</span><strong>MongoDB driver</strong><span>Sends <code>OP_MSG</code> command BSON.</span></div>
+            <div class="wp-step"><span class="num">2</span><strong>FerretDB listener</strong><span>Parses header, sections, BSON, command name, and options.</span></div>
+            <div class="wp-step"><span class="num">3</span><strong>Command layer</strong><span>Implements compatible behavior for supported MongoDB commands.</span></div>
+            <div class="wp-step"><span class="num">4</span><strong>PostgreSQL mapping</strong><span>Maps document operations onto relational storage and query capabilities.</span></div>
+            <div class="wp-step"><span class="num">5</span><strong>Reply builder</strong><span>Serializes MongoDB-style BSON replies, errors, cursors, and metadata.</span></div>
+            <div class="wp-step"><span class="num">6</span><strong>Driver receives</strong><span>Existing application sees a MongoDB-shaped response.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Azure Cosmos DB</p>
+          <h2>MongoDB API services expose driver-compatible endpoints</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Connection reuse</h3>
+              <p>Applications can use MongoDB drivers and tools against a Cosmos DB MongoDB API endpoint.</p>
+            </div>
+            <div class="panel">
+              <h3>Service model</h3>
+              <p>Compatibility is mediated by the selected Cosmos DB model, API version, throughput model, and supported features.</p>
+            </div>
+            <div class="panel">
+              <h3>Protocol lesson</h3>
+              <p>A common wire contract lets cloud databases substitute a different distributed storage architecture behind a familiar client API.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Open Source DocumentDB</p>
+          <h2>PostgreSQL-backed MongoDB compatibility is becoming a broader pattern</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Microsoft DocumentDB project</h3>
+              <p>An open-source effort that brings MongoDB-compatible document database capabilities to PostgreSQL.</p>
+            </div>
+            <div class="panel">
+              <h3>FerretDB collaboration</h3>
+              <p>FerretDB has adopted the DocumentDB extension as a backend direction for MongoDB compatibility over PostgreSQL.</p>
+            </div>
+            <div class="panel">
+              <h3>Protocol implication</h3>
+              <p>The wire protocol becomes the northbound compatibility layer while PostgreSQL becomes the southbound execution/storage substrate.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Proxy Architecture</p>
+          <h2>A compatible implementation is often a wire-protocol proxy plus command engine</h2>
+          <div class="visual stack" data-visual>
+            <div class="stack-col">
+              <div class="wp-card"><strong>Socket server</strong><span>TLS, authentication, message framing, compression, request ids.</span></div>
+              <div class="wp-card"><strong>Protocol parser</strong><span>Decode <code>OP_MSG</code>, section payloads, BSON, flags, checksums.</span></div>
+            </div>
+            <div class="wp-card accent">
+              <h3>MongoDB compatibility core</h3>
+              <strong>Command dispatcher and semantic emulator</strong>
+              <span>Dispatch command names, validate options, implement operators, manage cursors/sessions, map errors, and enforce limits.</span>
+            </div>
+            <div class="stack-col">
+              <div class="wp-card"><strong>Backend adapter</strong><span>Translate to PostgreSQL, cloud storage service, custom engine, or native MongoDB fork.</span></div>
+              <div class="wp-card"><strong>Reply serializer</strong><span>Build BSON replies, batches, cursor ids, error labels, and topology metadata.</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Compliance Testing</p>
+          <h2>The hard part is semantic fidelity, not parsing bytes</h2>
+          <div class="tight-grid">
+            <div class="mini-card"><strong>Handshake tests</strong><span>Driver can discover server type, wire version, compression, sessions, and auth behavior.</span></div>
+            <div class="mini-card"><strong>Command tests</strong><span>Every command has option combinations, error cases, and version-specific semantics.</span></div>
+            <div class="mini-card"><strong>Operator tests</strong><span>Query and aggregation operators need edge-case equivalence: nulls, arrays, types, collation, regex.</span></div>
+            <div class="mini-card"><strong>Cursor tests</strong><span>Batching, cursor ids, getMore, timeout, killCursors, exhaust behavior, and error handling.</span></div>
+            <div class="mini-card"><strong>Write tests</strong><span>Write concern, bulk write ordering, duplicate keys, upsert results, retry labels, transaction state.</span></div>
+            <div class="mini-card"><strong>Tool tests</strong><span>Drivers, ORMs, mongosh, migration tools, BI tools, and backups exercise different corners.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Common Gaps</p>
+          <h2>Where MongoDB-compatible systems most often diverge</h2>
+          <table class="table compare-table">
+            <thead>
+              <tr>
+                <th>Area</th>
+                <th>Why it is hard</th>
+                <th>What to test</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Aggregation</td>
+                <td>Large operator surface, expression semantics, memory behavior, spill, stage ordering.</td>
+                <td>Pipelines with arrays, nulls, dates, numeric types, sort/group/window stages.</td>
+              </tr>
+              <tr>
+                <td>Transactions</td>
+                <td>Requires session, snapshot, retry, write concern, and backend isolation alignment.</td>
+                <td>Multi-statement rollback, transient errors, retry labels, read/write concern.</td>
+              </tr>
+              <tr>
+                <td>Indexes</td>
+                <td>MongoDB index semantics include multikey, sparse, partial, TTL, text, geo, unique rules.</td>
+                <td>Plan-dependent behavior and uniqueness edge cases.</td>
+              </tr>
+              <tr>
+                <td>Errors</td>
+                <td>Drivers and applications branch on codes, labels, and write result fields.</td>
+                <td>Error codes, duplicate key shape, retryability labels, bulk result details.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Versioning Trap</p>
+          <h2>Wire version, API version, and product version are different things</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Wire version</h3>
+              <p>Negotiated low-level protocol feature range from handshake. It gates driver behavior.</p>
+            </div>
+            <div class="panel">
+              <h3>MongoDB server version</h3>
+              <p>Product release with command, query, storage, and operational behavior changes.</p>
+            </div>
+            <div class="panel">
+              <h3>Compatibility claim</h3>
+              <p>A third-party product may target “MongoDB 4.0 API” or “5.0 compatible” while using a different internal version model.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Security Boundary</p>
+          <h2>Wire compatibility expands the blast radius of driver behavior</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Credential semantics</h3>
+              <p>Driver auth flows, TLS expectations, certificate validation, and connection string parsing all matter.</p>
+            </div>
+            <div class="panel">
+              <h3>Command authorization</h3>
+              <p>Compatible services need MongoDB-shaped authz semantics or clearly documented differences.</p>
+            </div>
+            <div class="panel">
+              <h3>Protocol parsing</h3>
+              <p>Any server that accepts wire traffic must defend against malformed lengths, oversized BSON, decompression bombs, and parser confusion.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Performance</p>
+          <h2>The protocol has real performance consequences</h2>
+          <div class="tight-grid">
+            <div class="mini-card"><strong>Batch size</strong><span>Drivers split writes and reads according to max BSON size, max message size, and server limits.</span></div>
+            <div class="mini-card"><strong>Compression tradeoff</strong><span>Compression can reduce network bytes but adds CPU and latency variance.</span></div>
+            <div class="mini-card"><strong>Connection pooling</strong><span>Each connection has negotiated capabilities and authentication state.</span></div>
+            <div class="mini-card"><strong>Round trips</strong><span>Handshake, auth, find, getMore, commit, retry, and topology monitoring all add traffic.</span></div>
+            <div class="mini-card"><strong>Cursor batches</strong><span>Large batches reduce round trips but increase memory and response size.</span></div>
+            <div class="mini-card"><strong>Compatible layers</strong><span>Translation layers add parse, dispatch, backend query, and reply serialization overhead.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Observability</p>
+          <h2>Useful protocol-level signals to capture</h2>
+          <div class="grid-4">
+            <div class="panel"><h3>Handshake</h3><p>Server type, wire versions, compressor, auth mechanism, topology.</p></div>
+            <div class="panel"><h3>Command</h3><p>Command name, database, collection, request id, duration, reply code.</p></div>
+            <div class="panel"><h3>Payload</h3><p>Message sizes, batch sizes, compressed/uncompressed byte counts.</p></div>
+            <div class="panel"><h3>Failure</h3><p>Network close, parse error, command error, retry label, timeout.</p></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Interop Checklist</p>
+          <h2>How to evaluate a MongoDB-compatible technology</h2>
+          <div class="path-list">
+            <div class="trace-row">
+              <strong>1. Driver handshake</strong>
+              <span>Confirm supported drivers connect without disabling modern features unexpectedly.</span>
+              <em>Wire compatibility</em>
+            </div>
+            <div class="trace-row">
+              <strong>2. Command inventory</strong>
+              <span>Map every application command, operator, index type, aggregation stage, and admin command to support docs.</span>
+              <em>API coverage</em>
+            </div>
+            <div class="trace-row">
+              <strong>3. Semantic tests</strong>
+              <span>Run production-shaped fixtures through MongoDB and the compatible system and diff results/errors.</span>
+              <em>Correctness</em>
+            </div>
+            <div class="trace-row">
+              <strong>4. Operational tests</strong>
+              <span>Exercise failover, retries, backup, monitoring, scaling, compression, TLS, and migration tooling.</span>
+              <em>Production fit</em>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Migration Implication</p>
+          <h2>The wire protocol lowers switching cost, but does not erase it</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Low friction</h3>
+              <p>Existing drivers, connection pools, ORMs, and some tools can often be reused.</p>
+            </div>
+            <div class="panel">
+              <h3>Medium friction</h3>
+              <p>Connection strings, TLS, auth mechanisms, indexes, retry settings, and server parameters may need adjustment.</p>
+            </div>
+            <div class="panel">
+              <h3>High friction</h3>
+              <p>Unsupported commands, aggregation semantics, transactions, performance behavior, and operational model changes require application work.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Why This Standard Matters</p>
+          <h2>The protocol created an ecosystem boundary</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Driver reuse</h3>
+              <p>Third-party systems can meet applications where they already are: MongoDB drivers and connection strings.</p>
+            </div>
+            <div class="panel">
+              <h3>Tool reuse</h3>
+              <p>Shells, ORMs, observability tools, migration scripts, and BI integrations can work when command coverage is sufficient.</p>
+            </div>
+            <div class="panel">
+              <h3>Backend innovation</h3>
+              <p>Protocol compatibility lets providers experiment with storage, scaling, licensing, and deployment models behind a familiar client contract.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Practical Mental Model</p>
+          <h2>Think in three contracts</h2>
+          <div class="visual stack" data-visual>
+            <div class="wp-card">
+              <h3>Wire contract</h3>
+              <strong>Can the driver talk?</strong>
+              <span>Message header, opcode, BSON, compression, handshake, auth, request/reply correlation.</span>
+            </div>
+            <div class="wp-card accent">
+              <h3>Command contract</h3>
+              <strong>Can the app express work?</strong>
+              <span>Commands, options, operators, indexes, sessions, transactions, cursors, errors.</span>
+            </div>
+            <div class="wp-card amber">
+              <h3>Semantic contract</h3>
+              <strong>Does it behave the same?</strong>
+              <span>Results, consistency, isolation, performance, limits, operational behavior, failure modes.</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Recap</p>
+          <h2>What the wire protocol explains</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>MongoDB client/server mechanics</h3>
+              <p>Drivers serialize BSON commands into <code>OP_MSG</code> frames, optionally wrapped by <code>OP_COMPRESSED</code>, and correlate replies by header ids.</p>
+            </div>
+            <div class="panel">
+              <h3>Protocol evolution</h3>
+              <p>Legacy opcodes encoded operations directly; modern MongoDB uses command documents over a more extensible message envelope.</p>
+            </div>
+            <div class="panel">
+              <h3>Interoperability</h3>
+              <p>MongoDB-compatible systems work by implementing the wire, command, and semantic contracts deeply enough for real drivers and applications.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Takeaways</p>
+          <h2>How to reason about MongoDB-compatible systems</h2>
+          <ul>
+            <li>Wire compatibility means the driver can speak; it does not automatically mean full MongoDB behavior.</li>
+            <li><code>OP_MSG</code> made command documents the center of protocol evolution.</li>
+            <li><code>OP_COMPRESSED</code> is a transport wrapper, not a different command model.</li>
+            <li>BSON type semantics are part of compatibility, not an incidental serialization detail.</li>
+            <li>DocumentDB, FerretDB, Cosmos DB, and similar systems exist because the northbound protocol is stable enough to emulate.</li>
+            <li>Production migration requires semantic, operational, and tooling tests, not only successful connection tests.</li>
+          </ul>
+        </section>
+
+        <section>
+          <p class="kicker">References</p>
+          <h2>Follow-up reading</h2>
+          <div class="reference-list">
+            <h3>MongoDB wire protocol and BSON</h3>
+            <ul>
+              <li><a href="https://www.mongodb.com/docs/manual/reference/mongodb-wire-protocol/">MongoDB Manual: Wire Protocol</a></li>
+              <li><a href="https://specifications.readthedocs.io/en/latest/message/OP_MSG/">MongoDB Driver Specs: <code>OP_MSG</code></a></li>
+              <li><a href="https://specifications.readthedocs.io/en/latest/compression/OP_COMPRESSED/">MongoDB Driver Specs: Compression and <code>OP_COMPRESSED</code></a></li>
+              <li><a href="https://bsonspec.org/spec.html">BSON Specification</a></li>
+              <li><a href="https://www.mongodb.com/docs/manual/reference/command/hello/">MongoDB Manual: <code>hello</code> Command</a></li>
+            </ul>
+            <h3>Drivers, handshake, and compatibility behavior</h3>
+            <ul>
+              <li><a href="https://github.com/mongodb/specifications/blob/master/source/mongodb-handshake/handshake.md">MongoDB Driver Specs: Handshake</a></li>
+              <li><a href="https://github.com/mongodb/specifications/blob/master/source/server-discovery-and-monitoring/server-discovery-and-monitoring.md">MongoDB Driver Specs: Server Discovery and Monitoring</a></li>
+              <li><a href="https://github.com/mongodb/specifications/blob/master/source/driver-bulk-update.rst">MongoDB Driver Specs: Bulk Write Behavior</a></li>
+              <li><a href="https://github.com/mongodb/specifications">MongoDB Driver Specifications Repository</a></li>
+            </ul>
+            <h3>MongoDB-compatible technologies</h3>
+            <ul>
+              <li><a href="https://docs.aws.amazon.com/documentdb/latest/developerguide/compatibility.html">Amazon DocumentDB: MongoDB Compatibility</a></li>
+              <li><a href="https://docs.ferretdb.io/migration/compatibility/">FerretDB: Compatibility</a></li>
+              <li><a href="https://docs.ferretdb.io/">FerretDB Documentation</a></li>
+              <li><a href="https://learn.microsoft.com/en-us/azure/cosmos-db/mongodb/introduction">Azure Cosmos DB for MongoDB Overview</a></li>
+              <li><a href="https://github.com/microsoft/documentdb">Microsoft DocumentDB GitHub Repository</a></li>
+              <li><a href="https://docs.percona.com/percona-server-for-mongodb/">Percona Server for MongoDB Documentation</a></li>
+            </ul>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script src="../../../assets/vendor/reveal/dist/reveal.js"></script>
+    <script src="../../../assets/vendor/reveal/dist/plugin/highlight.js"></script>
+    <script>
+      Reveal.initialize({
+        hash: true,
+        controls: true,
+        progress: true,
+        center: false,
+        width: 1280,
+        height: 720,
+        margin: 0.04,
+        plugins: [RevealHighlight],
+      });
+    </script>
+  </body>
+</html>
