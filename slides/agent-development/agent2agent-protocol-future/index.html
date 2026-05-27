@@ -1,0 +1,1313 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Agent2Agent Protocol and the Future of Agentic Workloads</title>
+    <link rel="stylesheet" href="../../../assets/vendor/reveal/dist/reveal.css" />
+    <link
+      rel="stylesheet"
+      href="../../../assets/vendor/reveal/dist/plugin/highlight/monokai.css"
+    />
+    <link rel="stylesheet" href="../../../assets/css/deck.css" />
+    <style>
+      .a2a-grid {
+        display: grid;
+        gap: 14px;
+        margin-top: 22px;
+      }
+
+      .cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .cols-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .a2a-card,
+      .lane,
+      .step,
+      .matrix-cell,
+      .matrix-head {
+        border: 1px solid var(--deck-line);
+        border-radius: 8px;
+        background: linear-gradient(180deg, var(--deck-panel-2), var(--deck-panel));
+        padding: 14px;
+      }
+
+      .a2a-card strong,
+      .lane strong,
+      .step strong,
+      .matrix-cell strong {
+        display: block;
+        color: var(--deck-text);
+        font-size: 0.55em;
+        line-height: 1.16;
+      }
+
+      .a2a-card span,
+      .lane span,
+      .step span,
+      .matrix-cell span {
+        display: block;
+        margin-top: 7px;
+        color: var(--deck-muted);
+        font-size: 0.44em;
+        line-height: 1.32;
+      }
+
+      .a2a-card h3,
+      .lane h3 {
+        margin-bottom: 10px;
+        color: var(--deck-accent);
+        font-size: 0.72em;
+      }
+
+      .tight-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 22px;
+      }
+
+      .mini-card {
+        border: 1px solid var(--deck-line);
+        border-radius: 8px;
+        background: linear-gradient(180deg, var(--deck-panel-2), var(--deck-panel));
+        padding: 14px;
+      }
+
+      .mini-card strong {
+        display: block;
+        color: var(--deck-text);
+        font-size: 0.52em;
+      }
+
+      .mini-card span {
+        display: block;
+        margin-top: 7px;
+        color: var(--deck-muted);
+        font-size: 0.44em;
+        line-height: 1.32;
+      }
+
+      .path-list {
+        display: grid;
+        gap: 10px;
+        margin-top: 22px;
+      }
+
+      .trace-row {
+        display: grid;
+        grid-template-columns: 190px minmax(0, 1fr) 250px;
+        gap: 14px;
+        align-items: start;
+        border: 1px solid var(--deck-line);
+        border-radius: 8px;
+        background: linear-gradient(180deg, var(--deck-panel-2), var(--deck-panel));
+        padding: 14px;
+      }
+
+      .trace-row strong {
+        display: block;
+        color: var(--deck-text);
+        font-size: 0.52em;
+      }
+
+      .trace-row span {
+        display: block;
+        color: var(--deck-muted);
+        font-size: 0.44em;
+        line-height: 1.32;
+      }
+
+      .trace-row em {
+        color: var(--deck-amber);
+        font-size: 0.42em;
+        font-style: normal;
+        line-height: 1.28;
+      }
+
+      .visual {
+        width: min(100%, 1080px);
+        margin: 20px auto 0;
+      }
+
+      .flow {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .flow .step {
+        position: relative;
+        min-height: 152px;
+      }
+
+      .flow .step:not(:last-child)::after {
+        content: ">";
+        position: absolute;
+        top: 58px;
+        right: -14px;
+        z-index: 2;
+        color: var(--deck-accent);
+        font-size: 0.9em;
+        font-weight: 900;
+      }
+
+      .num {
+        display: inline-grid;
+        place-items: center;
+        width: 26px;
+        height: 26px;
+        margin-bottom: 10px;
+        border-radius: 999px;
+        background: rgb(33 199 168 / 16%);
+        color: var(--deck-accent);
+        font-size: 0.42em;
+        font-weight: 900;
+      }
+
+      .stack {
+        display: grid;
+        grid-template-columns: 0.95fr 1.15fr 0.95fr;
+        gap: 14px;
+        align-items: stretch;
+      }
+
+      .stack-col {
+        display: grid;
+        gap: 10px;
+      }
+
+      .wire {
+        border-color: rgb(33 199 168 / 60%);
+        box-shadow: inset 0 0 0 1px rgb(33 199 168 / 18%);
+      }
+
+      .tag-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin-top: 10px;
+      }
+
+      .tag {
+        display: inline-flex;
+        padding: 5px 8px;
+        border: 1px solid rgb(255 255 255 / 12%);
+        border-radius: 999px;
+        color: var(--deck-muted);
+        font-size: 0.4em;
+        font-weight: 760;
+      }
+
+      .note {
+        margin-top: 12px;
+        color: var(--deck-amber);
+        font-size: 0.48em;
+        font-weight: 760;
+        line-height: 1.28;
+      }
+
+      .before-after {
+        display: grid;
+        grid-template-columns: 1fr 0.12fr 1fr;
+        gap: 12px;
+        align-items: stretch;
+      }
+
+      .arrow {
+        display: grid;
+        place-items: center;
+        color: var(--deck-accent);
+        font-size: 1.2em;
+        font-weight: 900;
+      }
+
+      .matrix {
+        display: grid;
+        grid-template-columns: 0.82fr 1fr 1fr 1fr;
+        gap: 8px;
+        margin-top: 20px;
+      }
+
+      .matrix-head {
+        color: var(--deck-accent);
+        font-size: 0.44em;
+        font-weight: 860;
+      }
+
+      .matrix-cell {
+        min-height: 92px;
+      }
+
+      .matrix-cell.good {
+        border-color: rgb(33 199 168 / 45%);
+      }
+
+      .matrix-cell.caution {
+        border-color: rgb(255 184 77 / 45%);
+      }
+
+      .code-tight {
+        font-size: 0.78em;
+        line-height: 1.22;
+      }
+
+      .code-small {
+        font-size: 0.56em;
+        line-height: 1.22;
+      }
+
+      .split-code {
+        display: grid;
+        grid-template-columns: 0.92fr 1.08fr;
+        gap: 16px;
+        margin-top: 20px;
+      }
+
+      .mini-list {
+        margin: 12px 0 0;
+        padding-left: 1.05em;
+      }
+
+      .mini-list li {
+        font-size: 0.52em;
+      }
+
+      .decision {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .decision .a2a-card {
+        min-height: 150px;
+      }
+
+      .ok {
+        color: var(--deck-accent);
+      }
+
+      .warn {
+        color: var(--deck-amber);
+      }
+
+      .bad {
+        color: var(--deck-red);
+      }
+
+      @media (max-width: 900px) {
+        .cols-2,
+        .cols-3,
+        .cols-4,
+        .tight-grid,
+        .trace-row,
+        .flow,
+        .stack,
+        .before-after,
+        .matrix,
+        .split-code,
+        .decision {
+          grid-template-columns: 1fr;
+        }
+
+        .flow .step {
+          min-height: auto;
+        }
+
+        .flow .step:not(:last-child)::after,
+        .arrow {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body class="has-deck-topbar">
+    <header class="deck-topbar" aria-label="Presentation navigation">
+      <a class="deck-nav-link" href="../../../">Main menu</a>
+      <div class="deck-title">
+        <span>Agent2Agent Protocol</span>
+        <small>Before state, after state, and workload evolution</small>
+      </div>
+      <a class="deck-nav-link" href="../../../topics/agent-development/">Topic</a>
+    </header>
+
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <p class="kicker">Agent Development</p>
+          <h1>Agent2Agent Protocol and the Future of Agentic Workloads</h1>
+          <p class="lead">
+            A practical deep dive into why A2A exists, what changes when agents
+            can collaborate across frameworks, and how production workloads need
+            to adapt around discovery, tasks, state, security, and operations.
+          </p>
+          <p class="footnote">75 minutes / 43 slides</p>
+        </section>
+
+        <section>
+          <p class="kicker">Learning Goals</p>
+          <h2>What you should be able to reason about</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Problem</h3>
+              <p>Explain the pre-A2A integration tax: bespoke agent APIs, tool-shaped wrappers, weak discovery, and fragile delegation.</p>
+            </div>
+            <div class="panel">
+              <h3>Protocol</h3>
+              <p>Map Agent Cards, Messages, Parts, Tasks, Artifacts, streaming, push notifications, and security to real workload needs.</p>
+            </div>
+            <div class="panel">
+              <h3>Adoption</h3>
+              <p>Choose where to use raw A2A, SDKs, framework adapters, and orchestration changes without over-agentifying everything.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Anchor Scenario</p>
+          <h2>Use a customer operations workflow as the thread</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Frontline agent</h3>
+              <p>Receives a customer request, owns the user experience, and decides which specialist agents are needed.</p>
+            </div>
+            <div class="panel">
+              <h3>Specialist agents</h3>
+              <p>Refund, logistics, account risk, data analysis, and policy agents may live in different frameworks or vendor platforms.</p>
+            </div>
+            <div class="panel">
+              <h3>Outcome</h3>
+              <p>The workflow needs progress updates, structured artifacts, human approval, audit trails, and graceful fallback.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Before State</p>
+          <h2>Agent integration usually starts as custom glue</h2>
+          <div class="visual before-after" data-visual>
+            <div class="a2a-card">
+              <h3>Application agent</h3>
+              <div class="tag-row">
+                <span class="tag">LangGraph</span>
+                <span class="tag">Tools</span>
+                <span class="tag">Memory</span>
+                <span class="tag">Trace IDs</span>
+              </div>
+              <p class="note">Knows too much about every downstream service.</p>
+            </div>
+            <div class="arrow">×</div>
+            <div class="a2a-grid">
+              <div class="a2a-card"><strong>Refund API</strong><span>REST shape, not agent behavior.</span></div>
+              <div class="a2a-card"><strong>Logistics bot</strong><span>Slack workflow, custom auth, no task model.</span></div>
+              <div class="a2a-card"><strong>Risk assistant</strong><span>Vendor API, opaque state, proprietary session IDs.</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">The Friction</p>
+          <h2>The hard part is not HTTP; it is agent semantics</h2>
+          <div class="tight-grid">
+            <div class="mini-card">
+              <strong>Discovery</strong>
+              <span>What can this remote agent do, what modes does it accept, and how should I authenticate?</span>
+            </div>
+            <div class="mini-card">
+              <strong>State</strong>
+              <span>How do I continue a task after clarification, approval, or a network interruption?</span>
+            </div>
+            <div class="mini-card">
+              <strong>Progress</strong>
+              <span>How does a remote agent report working, blocked, completed, failed, or input-required states?</span>
+            </div>
+            <div class="mini-card">
+              <strong>Artifacts</strong>
+              <span>Where do final deliverables live, and how are partial files or structured results streamed?</span>
+            </div>
+            <div class="mini-card">
+              <strong>Opacity</strong>
+              <span>How can agents collaborate without exposing private tools, prompts, memory, or proprietary logic?</span>
+            </div>
+            <div class="mini-card">
+              <strong>Operations</strong>
+              <span>How do auth, audit, retries, cancellation, tracing, and version negotiation survive composition?</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Agents Are Not Tools</p>
+          <h2>Tool wrappers flatten agent behavior into one call</h2>
+          <table class="table compare-table">
+            <thead>
+              <tr>
+                <th>Capability</th>
+                <th>Tool-shaped wrapper</th>
+                <th>A2A-shaped remote agent</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Interaction</td>
+                <td>One request, one structured response.</td>
+                <td>Multi-turn task with clarification, state, progress, and artifacts.</td>
+              </tr>
+              <tr>
+                <td>Ownership</td>
+                <td>Caller owns orchestration details and retry logic.</td>
+                <td>Remote agent owns its internal workflow behind a stable contract.</td>
+              </tr>
+              <tr>
+                <td>Evolution</td>
+                <td>API changes leak into every caller.</td>
+                <td>Agent Card and protocol versioning create a negotiation boundary.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">What A2A Is</p>
+          <h2>A2A standardizes how agents expose and consume delegated work</h2>
+          <div class="grid-3">
+            <div class="callout">
+              <h3>Discovery contract</h3>
+              <p>An Agent Card describes identity, interfaces, capabilities, security, modalities, and skills.</p>
+            </div>
+            <div class="callout">
+              <h3>Work contract</h3>
+              <p>Messages initiate or continue Tasks. Tasks produce status updates and Artifacts.</p>
+            </div>
+            <div class="callout">
+              <h3>Transport contract</h3>
+              <p>The 1.0 spec defines shared semantics across JSON-RPC, gRPC, and HTTP+JSON bindings.</p>
+            </div>
+          </div>
+          <p class="lead">The important shift: callers integrate with an agent surface, not a vendor-specific inner loop.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Protocol Shape</p>
+          <h2>The layers separate data model, operations, and binding</h2>
+          <div class="visual stack" data-visual>
+            <div class="stack-col">
+              <div class="a2a-card"><strong>Agent Card</strong><span>Identity, skills, interfaces, security, capabilities.</span></div>
+              <div class="a2a-card"><strong>Message + Part</strong><span>Text, files, URLs, and structured JSON.</span></div>
+              <div class="a2a-card"><strong>Task + Artifact</strong><span>Lifecycle state and concrete deliverables.</span></div>
+            </div>
+            <div class="a2a-card wire">
+              <h3>A2A operation model</h3>
+              <div class="tag-row">
+                <span class="tag">SendMessage</span>
+                <span class="tag">SendStreamingMessage</span>
+                <span class="tag">GetTask</span>
+                <span class="tag">ListTasks</span>
+                <span class="tag">CancelTask</span>
+                <span class="tag">SubscribeToTask</span>
+                <span class="tag">Push configs</span>
+                <span class="tag">Extended card</span>
+              </div>
+              <p class="note">Clients reason about agent work before choosing protocol binding details.</p>
+            </div>
+            <div class="stack-col">
+              <div class="a2a-card"><strong>JSON-RPC</strong><span>Useful where existing RPC clients fit.</span></div>
+              <div class="a2a-card"><strong>HTTP+JSON</strong><span>REST-like endpoints such as <code>/message:send</code>.</span></div>
+              <div class="a2a-card"><strong>gRPC</strong><span>Typed service boundary for internal platforms.</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Core Objects</p>
+          <h2>Learn these nouns first</h2>
+          <div class="tight-grid">
+            <div class="mini-card"><strong>Agent Card</strong><span>Self-describing manifest and discovery document.</span></div>
+            <div class="mini-card"><strong>Agent Interface</strong><span>URL, protocol binding, protocol version, optional tenant.</span></div>
+            <div class="mini-card"><strong>Message</strong><span>A client or agent turn with role, id, context, task, and parts.</span></div>
+            <div class="mini-card"><strong>Part</strong><span>Exactly one payload: text, raw bytes, URL, or structured data.</span></div>
+            <div class="mini-card"><strong>Task</strong><span>Stateful unit of work with lifecycle, status, history, and artifacts.</span></div>
+            <div class="mini-card"><strong>Artifact</strong><span>Concrete output generated during a task, including chunked updates.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Agent Card</p>
+          <h2>The card is the integration handshake</h2>
+          <pre><code class="language-json code-small">{
+  "name": "Refund Specialist",
+  "description": "Evaluates refund eligibility and drafts resolutions.",
+  "version": "1.4.0",
+  "supportedInterfaces": [
+    {
+      "url": "https://refunds.example.com/a2a/v1",
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0"
+    }
+  ],
+  "capabilities": { "streaming": true, "pushNotifications": true },
+  "defaultInputModes": ["text/plain", "application/json"],
+  "defaultOutputModes": ["text/plain", "application/json"],
+  "skills": [
+    {
+      "id": "refund-review",
+      "name": "Refund review",
+      "description": "Review order facts and produce a refund decision.",
+      "tags": ["commerce", "policy", "refunds"]
+    }
+  ]
+}</code></pre>
+        </section>
+
+        <section>
+          <p class="kicker">Discovery</p>
+          <h2>Discovery strategy is an architecture decision</h2>
+          <div class="visual flow" data-visual>
+            <div class="step">
+              <span class="num">1</span>
+              <strong>Known domain</strong>
+              <span>Fetch <code>/.well-known/agent-card.json</code> from a public or partner domain.</span>
+            </div>
+            <div class="step">
+              <span class="num">2</span>
+              <strong>Private registry</strong>
+              <span>Search governed cards by skill, owner, environment, policy, or trust tier.</span>
+            </div>
+            <div class="step">
+              <span class="num">3</span>
+              <strong>Direct config</strong>
+              <span>Use pinned card URLs for tightly coupled internal workflows and local development.</span>
+            </div>
+            <div class="step">
+              <span class="num">4</span>
+              <strong>Authenticate</strong>
+              <span>Read declared schemes and obtain the right token or credential outside the message body.</span>
+            </div>
+            <div class="step">
+              <span class="num">5</span>
+              <strong>Select interface</strong>
+              <span>Choose binding, version, modes, and tenant before sending work.</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Lifecycle</p>
+          <h2>A request becomes a task, then events and artifacts</h2>
+          <div class="visual flow" data-visual>
+            <div class="step"><span class="num">1</span><strong>Discover</strong><span>Client gets Agent Card and chooses a skill/interface.</span></div>
+            <div class="step"><span class="num">2</span><strong>Send message</strong><span>Client sends a Message with one or more Parts.</span></div>
+            <div class="step"><span class="num">3</span><strong>Create task</strong><span>Agent returns a Task or direct Message.</span></div>
+            <div class="step"><span class="num">4</span><strong>Track work</strong><span>Polling, streaming, or push delivers status and artifact updates.</span></div>
+            <div class="step"><span class="num">5</span><strong>Continue</strong><span>Client sends more input using <code>contextId</code>, <code>taskId</code>, or references.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Raw HTTP</p>
+          <h2>A minimal portable call is just protocol-shaped HTTP</h2>
+          <pre><code class="language-bash code-tight">curl -X POST https://refunds.example.com/a2a/v1/message:send \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "A2A-Version: 1.0" \
+  -H "Content-Type: application/a2a+json" \
+  -d '{
+    "message": {
+      "messageId": "msg-001",
+      "role": "ROLE_USER",
+      "parts": [
+        {
+          "mediaType": "application/json",
+          "data": {
+            "orderId": "O-1842",
+            "customerRequest": "Refund late delivery fee"
+          }
+        }
+      ]
+    },
+    "configuration": { "returnImmediately": true }
+  }'</code></pre>
+        </section>
+
+        <section>
+          <p class="kicker">Task States</p>
+          <h2>Workloads need to handle interrupted states, not only success/failure</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>In flight</h3>
+              <p><code>TASK_STATE_SUBMITTED</code> and <code>TASK_STATE_WORKING</code> mean the agent accepted work and may emit progress.</p>
+            </div>
+            <div class="panel">
+              <h3>Interrupted</h3>
+              <p><code>TASK_STATE_INPUT_REQUIRED</code> and <code>TASK_STATE_AUTH_REQUIRED</code> mean the caller must continue the interaction.</p>
+            </div>
+            <div class="panel">
+              <h3>Terminal</h3>
+              <p><code>COMPLETED</code>, <code>FAILED</code>, <code>CANCELED</code>, and <code>REJECTED</code> close the task's execution path.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Delivery Modes</p>
+          <h2>Choose polling, streaming, or push by workload shape</h2>
+          <div class="visual matrix" data-visual>
+            <div class="matrix-head">Mode</div>
+            <div class="matrix-head">Best fit</div>
+            <div class="matrix-head">Operational cost</div>
+            <div class="matrix-head">Failure concern</div>
+            <div class="matrix-cell good"><strong>Polling</strong><span><code>GetTask</code> after non-blocking send.</span></div>
+            <div class="matrix-cell"><strong>Simple backend jobs</strong><span>Works behind restrictive networks and is easy to debug.</span></div>
+            <div class="matrix-cell"><strong>Higher latency</strong><span>Clients must tune interval and timeout.</span></div>
+            <div class="matrix-cell"><strong>Waste or staleness</strong><span>Too frequent burns capacity; too slow hurts UX.</span></div>
+            <div class="matrix-cell good"><strong>Streaming</strong><span>SSE or binding-native streaming.</span></div>
+            <div class="matrix-cell"><strong>Interactive work</strong><span>Live dashboards, chat, incremental artifact creation.</span></div>
+            <div class="matrix-cell"><strong>Open connection</strong><span>Requires connection lifecycle and reconnect logic.</span></div>
+            <div class="matrix-cell"><strong>Event loss</strong><span>Reconnect should fetch current task before resubscribing.</span></div>
+            <div class="matrix-cell good"><strong>Push</strong><span>Agent calls client webhook.</span></div>
+            <div class="matrix-cell"><strong>Long-running work</strong><span>Hours or days, serverless clients, event-driven systems.</span></div>
+            <div class="matrix-cell"><strong>Webhook security</strong><span>Requires auth, idempotency, allowlists, and SSRF controls.</span></div>
+            <div class="matrix-cell"><strong>Duplicate delivery</strong><span>Receiver must validate task and process idempotently.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Artifacts</p>
+          <h2>Messages are conversation; artifacts are deliverables</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Message</h3>
+              <p>Status text, clarification, progress update, or instruction. Useful for user-facing narration and task continuation.</p>
+            </div>
+            <div class="panel">
+              <h3>Artifact</h3>
+              <p>Decision record, report, invoice draft, JSON payload, file reference, generated media, or other concrete output.</p>
+            </div>
+          </div>
+          <pre><code class="language-json code-small">{
+  "artifactUpdate": {
+    "taskId": "task-1842",
+    "contextId": "ctx-77",
+    "artifact": {
+      "artifactId": "refund-decision",
+      "name": "Refund decision",
+      "parts": [
+        { "mediaType": "application/json", "data": { "approved": true, "amountCents": 1299 } }
+      ]
+    },
+    "lastChunk": true
+  }
+}</code></pre>
+        </section>
+
+        <section>
+          <p class="kicker">Security</p>
+          <h2>A2A delegates auth to standard web security, but composition raises the bar</h2>
+          <div class="tight-grid">
+            <div class="mini-card"><strong>Card authenticity</strong><span>Use HTTPS, signed cards where appropriate, and governed registries for private estates.</span></div>
+            <div class="mini-card"><strong>Caller identity</strong><span>Security schemes are declared in the card; credentials travel in headers, not prompt text.</span></div>
+            <div class="mini-card"><strong>Authorization scope</strong><span>Agents must restrict task visibility and artifacts to authorized clients.</span></div>
+            <div class="mini-card"><strong>Webhook safety</strong><span>Push requires SSRF protection, origin verification, replay handling, and idempotent receivers.</span></div>
+            <div class="mini-card"><strong>Prompt boundary</strong><span>Remote agent messages are untrusted inputs; validate artifacts before execution or persistence.</span></div>
+            <div class="mini-card"><strong>Audit</strong><span>Record who delegated what to which agent version under which card and policy.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">A2A And MCP</p>
+          <h2>Use MCP for tools; use A2A for peer agents</h2>
+          <div class="visual before-after" data-visual>
+            <div class="a2a-card">
+              <h3>MCP side</h3>
+              <strong>Agent uses capabilities</strong>
+              <span>Database lookup, search, calendar, file system, code runner, product API.</span>
+              <p class="note">Usually structured, tool-like, and owned by the calling agent.</p>
+            </div>
+            <div class="arrow">+</div>
+            <div class="a2a-card">
+              <h3>A2A side</h3>
+              <strong>Agent partners with agents</strong>
+              <span>Refund specialist, travel planner, procurement agent, legal reviewer, operations analyst.</span>
+              <p class="note">Usually stateful, multi-turn, policy-bearing, and internally opaque.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">After State</p>
+          <h2>The system becomes a network of capability-owning agents</h2>
+          <div class="visual stack" data-visual>
+            <div class="a2a-card">
+              <h3>Client experience</h3>
+              <strong>Frontline coordinator</strong>
+              <span>Owns UX, policy, routing, and final response. Does not need every specialist's internals.</span>
+            </div>
+            <div class="stack-col">
+              <div class="a2a-card wire"><strong>A2A protocol boundary</strong><span>Discovery, task lifecycle, streaming, artifacts, security, versioning.</span></div>
+              <div class="a2a-card"><strong>Governed registry</strong><span>Which agents exist, who can call them, which versions are trusted.</span></div>
+            </div>
+            <div class="stack-col">
+              <div class="a2a-card"><strong>Refund agent</strong><span>CrewAI, policy tools, approval workflow.</span></div>
+              <div class="a2a-card"><strong>Logistics agent</strong><span>ADK, tracking tools, carrier integrations.</span></div>
+              <div class="a2a-card"><strong>Analysis agent</strong><span>LangGraph, notebooks, data warehouse tools.</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">What Changes</p>
+          <h2>The “after” is not magic; it moves responsibilities</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>From integration code to agent contracts</h3>
+              <p>Teams publish capabilities and lifecycle semantics instead of private SDK assumptions.</p>
+            </div>
+            <div class="panel">
+              <h3>From monolith agent to agent mesh</h3>
+              <p>Coordinators select remote specialists at runtime based on cards, trust, cost, latency, and policy.</p>
+            </div>
+            <div class="panel">
+              <h3>From function output to task state</h3>
+              <p>Systems need durable task stores, event processing, idempotency, cancellation, and artifact validation.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Workload Architecture</p>
+          <h2>A2A fits best at service boundaries, not inside every loop</h2>
+          <div class="visual stack" data-visual>
+            <div class="stack-col">
+              <div class="a2a-card"><strong>Inside a service</strong><span>Framework-native graph, tools, prompts, model calls, local memory.</span></div>
+              <div class="a2a-card"><strong>Use direct calls</strong><span>Fast internal functions and deterministic tools do not need A2A overhead.</span></div>
+            </div>
+            <div class="a2a-card wire">
+              <h3>A2A boundary</h3>
+              <strong>Expose the useful delegation surface</strong>
+              <span>Stable skills, accepted modes, task lifecycle, artifacts, auth, and observable events.</span>
+            </div>
+            <div class="stack-col">
+              <div class="a2a-card"><strong>Across services</strong><span>Different teams, languages, frameworks, vendors, trust domains, or release cycles.</span></div>
+              <div class="a2a-card"><strong>Use A2A</strong><span>Long-running, interactive, stateful, or opaque specialist work.</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Adoption Path</p>
+          <h2>Practical adoption is a wrapping and governance exercise</h2>
+          <div class="path-list">
+            <div class="trace-row">
+              <strong>1. Inventory agents</strong>
+              <span>Identify which workflows are true remote specialists and which are just tools or APIs.</span>
+              <em>Do not wrap everything</em>
+            </div>
+            <div class="trace-row">
+              <strong>2. Define cards</strong>
+              <span>Write skills, modes, examples, security, supported interfaces, and operational owners.</span>
+              <em>Contract first</em>
+            </div>
+            <div class="trace-row">
+              <strong>3. Add adapters</strong>
+              <span>Bridge framework state to A2A messages, task store, artifacts, streaming, and cancellation.</span>
+              <em>Framework-specific work</em>
+            </div>
+            <div class="trace-row">
+              <strong>4. Govern runtime</strong>
+              <span>Registry, auth, trace correlation, retries, cost limits, rate limits, and safety gates.</span>
+              <em>Production platform</em>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Framework Reality</p>
+          <h2>Support exists, but it is not uniform</h2>
+          <div class="matrix">
+            <div class="matrix-head">Framework</div>
+            <div class="matrix-head">Current fit</div>
+            <div class="matrix-head">What you get</div>
+            <div class="matrix-head">Work still required</div>
+            <div class="matrix-cell good"><strong>Google ADK</strong><span>A2A is an explicit ADK protocol area.</span></div>
+            <div class="matrix-cell"><strong>Expose and consume</strong><span>Guides cover local agents plus remote A2A agents.</span></div>
+            <div class="matrix-cell"><strong>Good Google path</strong><span>Natural if ADK is already your agent runtime.</span></div>
+            <div class="matrix-cell caution"><strong>Platform choices</strong><span>Still design cards, auth, state, and registry policy.</span></div>
+            <div class="matrix-cell good"><strong>LangGraph/LangSmith</strong><span>Agent Server exposes A2A endpoints.</span></div>
+            <div class="matrix-cell"><strong>Message-state agents</strong><span>A2A context maps into thread-oriented tracing.</span></div>
+            <div class="matrix-cell"><strong>Strong ops story</strong><span>Useful when LangSmith traces are central.</span></div>
+            <div class="matrix-cell caution"><strong>State shape</strong><span>Agents need compatible message-based state.</span></div>
+            <div class="matrix-cell good"><strong>CrewAI/Mastra</strong><span>Both publish A2A-facing support.</span></div>
+            <div class="matrix-cell"><strong>Delegation primitive</strong><span>Remote agents become selectable collaboration targets.</span></div>
+            <div class="matrix-cell"><strong>Fast adoption</strong><span>Less adapter code for common cases.</span></div>
+            <div class="matrix-cell caution"><strong>Maturity variance</strong><span>Version, transport, scaling, and auth features differ.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">LangGraph Example</p>
+          <h2>Expose message-based graph state as an A2A-compatible agent</h2>
+          <pre><code class="language-python code-tight">from typing import Any, TypedDict
+from langgraph.graph import StateGraph
+
+class State(TypedDict):
+    messages: list[dict[str, Any]]
+
+async def call_model(state: State) -> dict[str, Any]:
+    last = state["messages"][-1]["content"]
+    decision = await refund_chain.ainvoke({"request": last})
+    return {"messages": state["messages"] + [{
+        "role": "assistant",
+        "content": decision.summary
+    }]}
+
+graph = StateGraph(State)
+graph.add_node("refund_review", call_model)
+graph.set_entry_point("refund_review")
+graph.set_finish_point("refund_review")
+agent = graph.compile()
+
+# Deployed through an Agent Server A2A endpoint.
+# Client A2A contextId maps naturally to a conversation thread.</code></pre>
+        </section>
+
+        <section>
+          <p class="kicker">ADK Example</p>
+          <h2>ADK shows the value of local plus remote agents</h2>
+          <pre><code class="language-python code-tight">from google.adk.agents.llm_agent import Agent
+from google.adk.agents.remote_a2a_agent import RemoteA2aAgent
+
+logistics_agent = RemoteA2aAgent(
+    name="logistics_specialist",
+    description="Handles carrier tracking and delivery exception analysis.",
+    agent_card="https://logistics.example.com/.well-known/agent-card.json",
+    use_legacy=False,
+)
+
+root_agent = Agent(
+    name="customer_ops_coordinator",
+    instruction=(
+        "Resolve customer operations requests. Use the remote logistics "
+        "specialist when delivery status or carrier exception analysis is needed."
+    ),
+    sub_agents=[logistics_agent],
+)
+
+# The coordinator can keep local policy logic while delegating remote expertise.</code></pre>
+        </section>
+
+        <section>
+          <p class="kicker">Mastra And CrewAI</p>
+          <h2>Newer framework support turns A2A into a delegation option</h2>
+          <div class="split-code">
+            <pre><code class="language-ts code-tight">// Mastra-style narrative
+// A2A agent card -> execution endpoint
+const weather = await client.getA2AAgent({
+  agentCardUrl:
+    "https://py.example.com/api/a2a/weather/.well-known/agent-card.json",
+});
+
+const result = await weather.generate({
+  messages: [{ role: "user", content: "Will ORD delays affect order O-1842?" }],
+});</code></pre>
+            <pre><code class="language-python code-tight">from crewai import Agent
+from crewai.a2a import A2AClientConfig
+
+coordinator = Agent(
+    role="Research Coordinator",
+    goal="Delegate specialist work when useful",
+    backstory="Coordinates internal and partner agents",
+    a2a=A2AClientConfig(
+        endpoint="https://research.example.com/.well-known/agent-card.json",
+        fail_fast=False,
+    ),
+)</code></pre>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Adapter Work</p>
+          <h2>Every framework still has to bridge the same concepts</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>State mapping</h3>
+              <p>Map <code>contextId</code>, <code>taskId</code>, message history, and continuation into the framework's session or graph state.</p>
+            </div>
+            <div class="panel">
+              <h3>Task persistence</h3>
+              <p>Keep task status, history, artifacts, callback configs, and cancellation state outside ephemeral model calls.</p>
+            </div>
+            <div class="panel">
+              <h3>Streaming bridge</h3>
+              <p>Convert framework events into A2A status and artifact updates without leaking internal chain-of-thought or private traces.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Client Code</p>
+          <h2>A portable client has five responsibilities</h2>
+          <pre><code class="language-python code-tight">import httpx
+
+async def delegate(card_url: str, token: str, text: str) -> dict:
+    async with httpx.AsyncClient(timeout=30) as http:
+        card = (await http.get(card_url)).json()
+        iface = next(
+            i for i in card["supportedInterfaces"]
+            if i["protocolBinding"] == "HTTP+JSON" and i["protocolVersion"] == "1.0"
+        )
+        response = await http.post(
+            f'{iface["url"]}/message:send',
+            headers={
+                "Authorization": f"Bearer {token}",
+                "A2A-Version": "1.0",
+                "Content-Type": "application/a2a+json",
+            },
+            json={
+                "message": {
+                    "messageId": "msg-1842",
+                    "role": "ROLE_USER",
+                    "parts": [{"text": text, "mediaType": "text/plain"}],
+                },
+                "configuration": {"returnImmediately": True},
+            },
+        )
+        response.raise_for_status()
+        return response.json()</code></pre>
+        </section>
+
+        <section>
+          <p class="kicker">Routing</p>
+          <h2>The coordinator becomes a runtime router, not a giant prompt</h2>
+          <pre><code class="language-python code-tight">def choose_agent(goal: str, cards: list[dict]) -> dict:
+    candidates = []
+    for card in cards:
+        for skill in card["skills"]:
+            if semantic_match(goal, skill["description"], skill.get("tags", [])):
+                candidates.append((card, skill))
+
+    return rank(
+        candidates,
+        by=["required_auth_available", "trust_tier", "latency_slo", "cost_budget"],
+    )[0][0]
+
+async def handle_customer_request(request: str):
+    card = choose_agent(request, registry.list_cards())
+    task = await delegate(card["cardUrl"], token_for(card), request)
+    return await wait_for_result(task)</code></pre>
+        </section>
+
+        <section>
+          <p class="kicker">State And Identity</p>
+          <h2>Long-running delegation needs durable correlation</h2>
+          <div class="grid-4">
+            <div class="panel">
+              <h3><code>contextId</code></h3>
+              <p>Conversation or collaboration continuity across multiple tasks.</p>
+            </div>
+            <div class="panel">
+              <h3><code>taskId</code></h3>
+              <p>Specific unit of work with lifecycle, history, status, and artifacts.</p>
+            </div>
+            <div class="panel">
+              <h3>Trace ID</h3>
+              <p>Observability correlation across coordinator and remote agent boundaries.</p>
+            </div>
+            <div class="panel">
+              <h3>Principal</h3>
+              <p>User, service account, tenant, scopes, consent, and delegated authority.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Data Contracts</p>
+          <h2>A2A transports structured data, but it does not design your domain schema</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Use <code>Part.data</code></h3>
+              <p>For machine-readable order facts, policy inputs, entity IDs, and decision records.</p>
+            </div>
+            <div class="panel">
+              <h3>Validate artifacts</h3>
+              <p>Use JSON Schema, Pydantic, Zod, or internal contracts before downstream automation.</p>
+            </div>
+            <div class="panel">
+              <h3>Version domain payloads</h3>
+              <p>A2A protocol version is not a substitute for your business schema version.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Long-Running Work</p>
+          <h2>A2A makes human-in-the-loop and slow operations first-class</h2>
+          <div class="path-list">
+            <div class="trace-row">
+              <strong>Submit task</strong>
+              <span>Coordinator asks a refund specialist to evaluate a high-value refund.</span>
+              <em>Task: submitted</em>
+            </div>
+            <div class="trace-row">
+              <strong>Require input</strong>
+              <span>Specialist requests manager approval or asks for missing shipment evidence.</span>
+              <em>Task: input-required</em>
+            </div>
+            <div class="trace-row">
+              <strong>Resume</strong>
+              <span>Coordinator sends approval back with the same task or context identifiers.</span>
+              <em>Task: working</em>
+            </div>
+            <div class="trace-row">
+              <strong>Complete</strong>
+              <span>Specialist returns a decision artifact and a user-facing explanation.</span>
+              <em>Task: completed</em>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Failure Modes</p>
+          <h2>Agent networks fail differently than single-agent apps</h2>
+          <div class="tight-grid">
+            <div class="mini-card"><strong>Card drift</strong><span>Caller cached old skills or interface URLs after a remote deployment.</span></div>
+            <div class="mini-card"><strong>Semantic mismatch</strong><span>The selected skill accepts the request but interprets domain terms differently.</span></div>
+            <div class="mini-card"><strong>Partial completion</strong><span>Task returns artifacts but misses required fields or final business approval.</span></div>
+            <div class="mini-card"><strong>Callback loss</strong><span>Push notification fails or duplicates; receiver must fetch task state idempotently.</span></div>
+            <div class="mini-card"><strong>Auth interruption</strong><span>Remote agent needs a user-scoped token mid-task.</span></div>
+            <div class="mini-card"><strong>Prompt injection propagation</strong><span>Remote agent output enters another agent unless artifacts are validated and scoped.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Observability</p>
+          <h2>Trace the protocol boundary, not only the model call</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Protocol events</h3>
+              <p>Card fetched, interface selected, message sent, task created, status changed, artifact emitted.</p>
+            </div>
+            <div class="panel">
+              <h3>Business events</h3>
+              <p>Refund approved, logistics exception detected, human approval requested, customer notified.</p>
+            </div>
+            <div class="panel">
+              <h3>Operational events</h3>
+              <p>Auth failure, version mismatch, timeout, retry, cancellation, callback delivery, rate limit.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Governance</p>
+          <h2>A2A makes agent publishing look more like API product management</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Ownership</h3>
+              <p>Every card needs an owner, support channel, version policy, uptime target, and deprecation path.</p>
+            </div>
+            <div class="panel">
+              <h3>Trust</h3>
+              <p>Registries should encode trusted issuers, allowed callers, scopes, environments, and data classification.</p>
+            </div>
+            <div class="panel">
+              <h3>Evaluation</h3>
+              <p>Specialist agents need contract tests and task-level evals, not only chat transcript review.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Workload Evolution</p>
+          <h2>To benefit from A2A, workloads need to become task-native</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Durable task stores</h3>
+              <p>Tasks, status, history, artifacts, callback config, and cancellation state need persistence.</p>
+            </div>
+            <div class="panel">
+              <h3>Event-driven orchestration</h3>
+              <p>Coordinators should react to status and artifact events rather than blocking every request thread.</p>
+            </div>
+            <div class="panel">
+              <h3>Contracted outputs</h3>
+              <p>Artifacts should be typed, validated, versioned, and suitable for downstream automation.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Anti-Patterns</p>
+          <h2>A2A does not fix weak agent design</h2>
+          <div class="tight-grid">
+            <div class="mini-card"><strong>Wrapping everything</strong><span>Simple deterministic APIs should stay tools or services.</span></div>
+            <div class="mini-card"><strong>Prompt-only contracts</strong><span>If the output drives automation, require structured artifact validation.</span></div>
+            <div class="mini-card"><strong>Trusting remote text</strong><span>Treat remote messages as untrusted content until validated or reviewed.</span></div>
+            <div class="mini-card"><strong>No cancellation</strong><span>Long-running work needs cancel, timeout, retry, and compensation behavior.</span></div>
+            <div class="mini-card"><strong>No registry</strong><span>Hardcoded card URLs do not scale across teams, environments, and deprecations.</span></div>
+            <div class="mini-card"><strong>Hidden handoffs</strong><span>Users and operators need auditability when work crosses agent boundaries.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Maturity</p>
+          <h2>Expect a mixed world for a while</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Protocol is ahead of platforms</h3>
+              <p>The 1.0 spec is stable enough to learn, but framework implementations vary by binding, version, and operational depth.</p>
+            </div>
+            <div class="panel">
+              <h3>Adapters will matter</h3>
+              <p>Teams will need thin wrappers for OpenAI Agents SDK, custom services, older LangChain apps, and domain-specific agents.</p>
+            </div>
+            <div class="panel">
+              <h3>Enterprises will add control planes</h3>
+              <p>Registry, identity, policy, observability, cost governance, and approvals become the real differentiators.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Decision Framework</p>
+          <h2>Should this boundary use A2A?</h2>
+          <div class="visual decision" data-visual>
+            <div class="a2a-card">
+              <h3 class="ok">Strong yes</h3>
+              <strong>Remote specialist</strong>
+              <span>Different team, runtime, vendor, or trust domain; multi-turn or long-running work.</span>
+            </div>
+            <div class="a2a-card">
+              <h3 class="ok">Likely yes</h3>
+              <strong>Agent marketplace</strong>
+              <span>Capability discovery, versioning, auth, and interoperability are product requirements.</span>
+            </div>
+            <div class="a2a-card">
+              <h3 class="warn">Maybe</h3>
+              <strong>Internal workflow</strong>
+              <span>Useful if teams independently deploy agents; overkill for one codebase.</span>
+            </div>
+            <div class="a2a-card">
+              <h3 class="bad">No</h3>
+              <strong>Deterministic tool</strong>
+              <span>Use MCP, direct APIs, queue jobs, or local functions for simple capability calls.</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Build Checklist</p>
+          <h2>What to implement for a production A2A agent</h2>
+          <div class="grid-4">
+            <div class="panel"><h3>Card</h3><p>Accurate skills, interfaces, modes, security, owner, version, examples.</p></div>
+            <div class="panel"><h3>Runtime</h3><p>Task store, status updates, artifacts, cancellation, continuation.</p></div>
+            <div class="panel"><h3>Security</h3><p>Auth, authorization, scopes, card integrity, webhook controls.</p></div>
+            <div class="panel"><h3>Ops</h3><p>Tracing, metrics, retries, idempotency, cost controls, evals.</p></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Concrete Example</p>
+          <h2>Before and after for customer operations</h2>
+          <table class="table compare-table">
+            <thead>
+              <tr>
+                <th>Concern</th>
+                <th>Before A2A</th>
+                <th>After A2A</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Refund specialist</td>
+                <td>Called through a custom REST endpoint with bespoke payloads and no task state.</td>
+                <td>Publishes a card and returns task updates plus a structured decision artifact.</td>
+              </tr>
+              <tr>
+                <td>Logistics specialist</td>
+                <td>Wrapped as a tool, losing its ability to ask clarifying questions.</td>
+                <td>Runs as a remote agent that can request more evidence and stream investigation progress.</td>
+              </tr>
+              <tr>
+                <td>Coordinator</td>
+                <td>Hardcodes integrations and owns every retry, timeout, and domain nuance.</td>
+                <td>Selects specialists from a registry and manages user experience, policy, and final response.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Recap</p>
+          <h2>The mental model</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Before</h3>
+              <p>Agents are isolated apps or tool-shaped wrappers connected by brittle, custom glue.</p>
+            </div>
+            <div class="panel">
+              <h3>A2A</h3>
+              <p>A standard contract for discovering agents, delegating tasks, exchanging multimodal parts, and tracking artifacts.</p>
+            </div>
+            <div class="panel">
+              <h3>After</h3>
+              <p>Agentic workloads become distributed systems: task-native, event-driven, governed, observable, and framework-agnostic at the boundary.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">References</p>
+          <h2>Follow-up reading</h2>
+          <div class="reference-list">
+            <h3>A2A protocol specification and concepts</h3>
+            <ul>
+              <li><a href="https://a2a-protocol.org/latest/specification/">A2A Protocol Specification 1.0.0</a></li>
+              <li><a href="https://a2a-protocol.org/latest/topics/what-is-a2a/">A2A Protocol: What is A2A?</a></li>
+              <li><a href="https://a2a-protocol.org/latest/topics/key-concepts/">A2A Protocol: Core Concepts</a></li>
+              <li><a href="https://a2a-protocol.org/latest/topics/agent-discovery/">A2A Protocol: Agent Discovery</a></li>
+              <li><a href="https://a2a-protocol.org/latest/topics/streaming-and-async/">A2A Protocol: Streaming and Asynchronous Operations</a></li>
+              <li><a href="https://github.com/a2aproject/A2A">A2A Project GitHub Repository</a></li>
+            </ul>
+            <h3>A2A with tools, frameworks, and platforms</h3>
+            <ul>
+              <li><a href="https://a2a-protocol.org/v0.2.5/topics/a2a-and-mcp/">A2A Protocol: A2A and MCP</a></li>
+              <li><a href="https://google.github.io/adk-docs/a2a/">Google ADK: ADK with Agent2Agent Protocol</a></li>
+              <li><a href="https://docs.langchain.com/langsmith/server-a2a">LangChain Docs: A2A endpoint in Agent Server</a></li>
+              <li><a href="https://docs.crewai.com/en/learn/a2a-agent-delegation">CrewAI Docs: Agent-to-Agent Protocol</a></li>
+              <li><a href="https://mastra.ai/blog/introducing-agent-to-agent-support">Mastra Blog: Introducing Agent-to-Agent support</a></li>
+            </ul>
+            <h3>SDKs and implementation references</h3>
+            <ul>
+              <li><a href="https://a2a-protocol.org/latest/sdk/python/api/">A2A Python SDK Reference</a></li>
+              <li><a href="https://www.npmjs.com/package/@a2a-js/sdk">A2A JavaScript SDK on npm</a></li>
+              <li><a href="https://github.com/a2aproject/a2a-samples">A2A Samples Repository</a></li>
+              <li><a href="https://platform.openai.com/docs/guides/agents-sdk/">OpenAI Agents SDK Overview</a></li>
+            </ul>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script src="../../../assets/vendor/reveal/dist/reveal.js"></script>
+    <script src="../../../assets/vendor/reveal/dist/plugin/highlight.js"></script>
+    <script>
+      Reveal.initialize({
+        hash: true,
+        controls: true,
+        progress: true,
+        center: false,
+        width: 1280,
+        height: 720,
+        margin: 0.04,
+        plugins: [RevealHighlight],
+      });
+    </script>
+  </body>
+</html>
