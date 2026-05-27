@@ -28,6 +28,7 @@ window.LEARN_CATALOG = {
       ],
       durationMinutes: 40,
       slideCount: 28,
+      lastUpdated: "2026-05-27",
       tags: [
         { slug: "agent-development", label: "Agent Development" },
         { slug: "agents", label: "Agents" },
@@ -63,6 +64,7 @@ window.LEARN_CATALOG = {
       ],
       durationMinutes: 55,
       slideCount: 35,
+      lastUpdated: "2026-05-27",
       tags: [
         { slug: "agent-development", label: "Agent Development" },
         { slug: "agents", label: "Agents" },
@@ -98,6 +100,7 @@ window.LEARN_CATALOG = {
       ],
       durationMinutes: 70,
       slideCount: 42,
+      lastUpdated: "2026-05-27",
       tags: [
         { slug: "agent-development", label: "Agent Development" },
         { slug: "agents", label: "Agents" },

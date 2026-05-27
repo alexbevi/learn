@@ -25,6 +25,17 @@
     return `${presentation.durationMinutes} min / ${presentation.slideCount} slides`;
   }
 
+  function formatDate(value) {
+    if (!value) return "";
+    const date = new Date(`${value}T00:00:00`);
+    if (Number.isNaN(date.getTime())) return value;
+    return new Intl.DateTimeFormat("en", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }).format(date);
+  }
+
   function tagButton(tag, activeTag) {
     const button = document.createElement("button");
     button.className = `tag-button${activeTag === tag.slug ? " is-active" : ""}`;
@@ -71,6 +82,16 @@
     meta.className = "meta-line";
     meta.textContent = formatDuration(presentation);
 
+    const updated = document.createElement("p");
+    updated.className = "updated-line";
+    updated.textContent = `Updated ${formatDate(presentation.lastUpdated)}`;
+
+    const intro = document.createElement("div");
+    intro.className = "presentation-intro";
+
+    const body = document.createElement("div");
+    body.className = "presentation-body";
+
     const goals = document.createElement("div");
     goals.className = "learning-goals";
     const goalsTitle = document.createElement("strong");
@@ -87,7 +108,9 @@
     tags.className = "tag-row";
     presentation.tags.forEach((tag) => tags.appendChild(tagChip(tag)));
 
-    href.append(eyebrow, title, subtitle, summary, meta, goals, tags);
+    intro.append(eyebrow, title, subtitle, meta, updated);
+    body.append(summary, goals);
+    href.append(intro, body, tags);
     article.appendChild(href);
     return article;
   }

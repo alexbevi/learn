@@ -50,7 +50,7 @@ Validate a Learn presentation for structural health, rendering readiness, and fa
 
 When the user confirms fixes:
 
-1. Update the deck, catalog metadata, references slide, and tags as needed.
+1. Update the deck, catalog metadata, references slide, last updated date, and tags as needed.
 2. Preserve the existing visual system and use `<code>...</code>` for inline code.
 3. Add or adjust references so every corrected concept has a source.
 4. Run `node scripts/validate-site.mjs`.

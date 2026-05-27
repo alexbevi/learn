@@ -36,7 +36,7 @@ the publishing target.
 - `topics/<topic>/index.html` lists presentations for one topic.
 - `slides/<topic>/<deck>/index.html` contains a reveal.js slideshow.
 - `assets/js/catalog.js` is the source of truth for topics, presentations,
-  summaries, learning goals, duration, slide count, and tags.
+  summaries, learning goals, duration, slide count, last updated dates, and tags.
 - `assets/vendor/reveal/` contains the vendored reveal.js runtime.
 - `assets/img/` stores local visual assets used by decks.
 
@@ -57,7 +57,7 @@ When creating a new learning plan:
 4. Add a final references slide grouped by concept.
 5. Generate tags after the deck is drafted, based on actual concepts covered.
 6. Update `assets/js/catalog.js` with the final summary, learning goals,
-   duration estimate, slide count, and tags.
+   duration estimate, slide count, last updated date, and tags.
 7. Validate local links, assets, slide count, references, tags, and local HTTP
    smoke URLs with `node scripts/validate-site.mjs`.
 

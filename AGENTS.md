@@ -55,7 +55,7 @@ the source of truth.
 
 - Update `assets/js/catalog.js` after each deck is drafted.
 - Presentation metadata must include summary, coverage outline, learning goals,
-  estimated duration, slide count, and tags.
+  estimated duration, slide count, last updated date, and tags.
 - Generate tags after writing the deck so tags reflect actual content.
 - Tags should optimize future discovery by concept.
 - Prefer 6-12 tags for substantial decks.

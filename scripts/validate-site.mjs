@@ -148,6 +148,9 @@ for (const presentation of catalog.presentations) {
   if (!presentation.learningGoals?.length) {
     fail(`${presentation.id}: missing learning goals`);
   }
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(presentation.lastUpdated || "")) {
+    fail(`${presentation.id}: missing lastUpdated date in YYYY-MM-DD format`);
+  }
   smokePaths.push(`/${presentation.path}`);
 }
 

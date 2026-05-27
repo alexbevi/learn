@@ -42,7 +42,7 @@ Create source-grounded, static HTML learning decks for the Learn repository. The
 
 6. Update catalog metadata after the deck is drafted.
    - Edit `assets/js/catalog.js`.
-   - Include summary, coverage outline, learning goals, estimated duration, slide count, and tags.
+   - Include summary, coverage outline, learning goals, estimated duration, slide count, last updated date, and tags.
    - Generate tags from actual deck content after authoring.
    - Use canonical lowercase slugs and useful concept-level labels; avoid near-duplicates.
 
@@ -62,6 +62,7 @@ Create source-grounded, static HTML learning decks for the Learn repository. The
 
 - Deck exists under `slides/<topic>/<deck>/index.html`.
 - Catalog entry is complete and tags are useful.
+- Catalog entry includes a `lastUpdated` date in `YYYY-MM-DD` format.
 - Every source used is listed on the deck's references slide, grouped by concept.
 - Local validation passes.
 - Visual spot checks show no obvious overflow or broken navigation.
