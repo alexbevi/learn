@@ -1,0 +1,407 @@
+[
+  {
+    "slide": 1,
+    "title": "Vector Databases, Atlas Vector Search, and Voyage Embeddings",
+    "objective": "Frame the deck around benchmarkable retrieval behavior.",
+    "coreClaim": "Vector database choice should be evaluated through a fixed workload, fixed embeddings, fixed labels, and explicit metrics.",
+    "sourceIds": ["beir-benchmark", "ir-measures"],
+    "visual": "none",
+    "practicalTakeaway": "Do not compare vendor claims; compare measured retrieval behavior."
+  },
+  {
+    "slide": 2,
+    "title": "Learning Goals",
+    "objective": "Set the technical goals for the deck.",
+    "coreClaim": "A useful evaluation separates embeddings, indexes, filtering, reranking, operations, and cost.",
+    "sourceIds": ["voyage-embeddings", "voyage-reranker", "ir-measures"],
+    "visual": "none",
+    "practicalTakeaway": "Keep the benchmark surfaces separate."
+  },
+  {
+    "slide": 3,
+    "title": "Running Workload",
+    "objective": "Define support/customer-ticket retrieval as the anchor.",
+    "coreClaim": "Support-ticket search stresses semantic recall, exact terms, metadata filters, freshness, and tenant isolation.",
+    "sourceIds": ["mongodb-atlas-vector-search", "pinecone-filtering", "qdrant-filtering"],
+    "visual": "none",
+    "practicalTakeaway": "Benchmark filtered and unfiltered retrieval."
+  },
+  {
+    "slide": 4,
+    "title": "What A Vector Database Actually Owns",
+    "objective": "Separate storage/index responsibilities from embeddings and application logic.",
+    "coreClaim": "A vector database owns vector storage, ANN/exact search, metadata filtering, update/delete behavior, and serving operations, not embedding quality.",
+    "sourceIds": ["weaviate-vector-index", "qdrant-indexing", "pgvector-github"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "Do not credit the database for embedding model behavior."
+  },
+  {
+    "slide": 5,
+    "title": "Benchmark Harness Topology",
+    "objective": "Show the fair comparison boundary.",
+    "coreClaim": "The harness fixes corpus, labels, Voyage embeddings, queries, filters, and metric code while swapping store adapters.",
+    "sourceIds": ["voyage-embeddings", "beir-benchmark", "ir-measures"],
+    "visual": "architecture",
+    "practicalTakeaway": "The adapter is the only thing that should change across vector stores."
+  },
+  {
+    "slide": 6,
+    "title": "Corpus Shape",
+    "objective": "Define the ticket document model.",
+    "coreClaim": "Support tickets should be benchmarked as documents with text, comments, resolution, product area, priority, tenant, and timestamps.",
+    "sourceIds": ["mongodb-atlas-vector-search"],
+    "visual": "code",
+    "practicalTakeaway": "Preserve metadata needed by real filters."
+  },
+  {
+    "slide": 7,
+    "title": "Query Set",
+    "objective": "Define what queries should look like.",
+    "coreClaim": "Queries should include natural-language symptoms plus exact identifiers and structured constraints.",
+    "sourceIds": ["mongodb-hybrid-search", "weaviate-hybrid-search"],
+    "visual": "none",
+    "practicalTakeaway": "Support search is rarely pure semantic nearest neighbor search."
+  },
+  {
+    "slide": 8,
+    "title": "Relevance Judgments",
+    "objective": "Explain labels and qrels.",
+    "coreClaim": "A benchmark without qrels measures latency but not retrieval quality.",
+    "sourceIds": ["beir-benchmark", "ir-measures"],
+    "visual": "code",
+    "practicalTakeaway": "Create ticket-level or graded relevance labels before tuning stores."
+  },
+  {
+    "slide": 9,
+    "title": "Voyage Embeddings",
+    "objective": "Explain the embedding layer.",
+    "coreClaim": "Voyage embeddings should be treated as a fixed input artifact for vector-store comparison.",
+    "sourceIds": ["voyage-embeddings"],
+    "visual": "code",
+    "practicalTakeaway": "Cache vectors so database runs do not include embedding variability."
+  },
+  {
+    "slide": 10,
+    "title": "Retrieval Pipeline",
+    "objective": "Trace the query lifecycle.",
+    "coreClaim": "A benchmark run embeds a query, applies filters, retrieves candidates, optionally reranks, and calculates metrics.",
+    "sourceIds": ["voyage-reranker", "ir-measures"],
+    "visual": "flow",
+    "practicalTakeaway": "Measure first-stage and reranked quality separately."
+  },
+  {
+    "slide": 11,
+    "title": "ANN Versus Exact Search",
+    "objective": "Explain recall/latency tradeoffs.",
+    "coreClaim": "ANN improves latency by trading away exhaustive comparison; exact search is useful for ground truth and small filtered sets.",
+    "sourceIds": ["weaviate-vector-index", "pgvector-github", "mongodb-atlas-vector-search"],
+    "visual": "comparison",
+    "practicalTakeaway": "Use exact search or high-recall settings to calibrate ANN loss."
+  },
+  {
+    "slide": 12,
+    "title": "HNSW Mental Model",
+    "objective": "Explain the common ANN index.",
+    "coreClaim": "HNSW-style indexes search a navigable neighbor graph instead of scanning every vector.",
+    "sourceIds": ["weaviate-vector-index", "qdrant-indexing", "pgvector-github"],
+    "visual": "none",
+    "practicalTakeaway": "Tune recall/latency through index and search parameters where exposed."
+  },
+  {
+    "slide": 13,
+    "title": "IVF, Disk, And Quantization",
+    "objective": "Explain alternative index and compression families.",
+    "coreClaim": "IVF, DiskANN-style indexes, and quantization exist to manage memory, storage, and latency at larger scales.",
+    "sourceIds": ["milvus-indexing", "weaviate-vector-index", "qdrant-indexing", "pgvector-github"],
+    "visual": "comparison",
+    "practicalTakeaway": "Benchmark scale and memory footprint, not just top-k latency."
+  },
+  {
+    "slide": 14,
+    "title": "Distance Metrics",
+    "objective": "Explain metric compatibility.",
+    "coreClaim": "Embedding model normalization and index distance metric must align across stores.",
+    "sourceIds": ["voyage-embeddings", "pinecone-indexes", "pgvector-github"],
+    "visual": "none",
+    "practicalTakeaway": "Standardize cosine, dot product, or euclidean semantics before comparing."
+  },
+  {
+    "slide": 15,
+    "title": "Chunking Tickets",
+    "objective": "Explain corpus unit choices.",
+    "coreClaim": "Ticket-level, comment-level, and resolution-level chunks produce different retrieval behavior.",
+    "sourceIds": ["voyage-embeddings"],
+    "visual": "none",
+    "practicalTakeaway": "Benchmark chunking as a retrieval design variable."
+  },
+  {
+    "slide": 16,
+    "title": "Metric Map",
+    "objective": "Separate metric categories.",
+    "coreClaim": "Quality, latency, throughput, cost, freshness, and correctness must not collapse into one score.",
+    "sourceIds": ["ir-measures", "beir-benchmark"],
+    "visual": "metric-map",
+    "practicalTakeaway": "Report a scorecard, not a winner headline."
+  },
+  {
+    "slide": 17,
+    "title": "Recall@k",
+    "objective": "Explain candidate recall.",
+    "coreClaim": "Recall@k tells whether the relevant ticket appears in the candidate set.",
+    "sourceIds": ["ir-measures"],
+    "visual": "none",
+    "practicalTakeaway": "Use Recall@50 before reranking because the reranker cannot recover missing candidates."
+  },
+  {
+    "slide": 18,
+    "title": "nDCG And MRR",
+    "objective": "Explain ordering quality.",
+    "coreClaim": "nDCG rewards graded ranking quality; MRR rewards placing the first relevant result early.",
+    "sourceIds": ["ir-measures", "beir-benchmark"],
+    "visual": "none",
+    "practicalTakeaway": "Use nDCG@10 and MRR@10 for analyst-facing search quality."
+  },
+  {
+    "slide": 19,
+    "title": "Latency And Throughput",
+    "objective": "Define system metrics.",
+    "coreClaim": "p50, p95, p99 latency and QPS under concurrency should be reported separately from relevance.",
+    "sourceIds": ["ir-measures"],
+    "visual": "none",
+    "practicalTakeaway": "Do warm and cold runs; report concurrency."
+  },
+  {
+    "slide": 20,
+    "title": "Cost Model",
+    "objective": "Show what cost includes.",
+    "coreClaim": "Cost includes embeddings, reranking, database compute/storage, operational overhead, and index rebuild/update work.",
+    "sourceIds": ["voyage-embeddings", "voyage-reranker"],
+    "visual": "none",
+    "practicalTakeaway": "A cheap vector query can still be expensive after embedding and reranking."
+  },
+  {
+    "slide": 21,
+    "title": "Python Harness Interfaces",
+    "objective": "Define the adapter contract.",
+    "coreClaim": "All stores should implement the same Python adapter methods for create, upsert, query, delete, and stats.",
+    "sourceIds": ["mongodb-atlas-vector-search", "pinecone-indexes", "qdrant-indexing", "pgvector-github"],
+    "visual": "code",
+    "practicalTakeaway": "The harness should make store-specific behavior explicit at the boundary."
+  },
+  {
+    "slide": 22,
+    "title": "Adapter Contract",
+    "objective": "Explain what adapter parity means.",
+    "coreClaim": "Adapter parity means identical ids, vectors, metadata, filters, requested top-k, and result normalization.",
+    "sourceIds": ["pinecone-filtering", "qdrant-filtering", "chroma-querying"],
+    "visual": "code",
+    "practicalTakeaway": "Normalize result shape before metric calculation."
+  },
+  {
+    "slide": 23,
+    "title": "MongoDB Atlas Vector Search",
+    "objective": "Explain MongoDB's design center.",
+    "coreClaim": "MongoDB Atlas Vector Search co-locates vectors with operational documents and supports retrieval that composes with MongoDB/Atlas Search patterns.",
+    "sourceIds": ["mongodb-atlas-vector-search", "mongodb-hybrid-search"],
+    "visual": "none",
+    "practicalTakeaway": "Benchmark MongoDB as an operational data plus vector search platform."
+  },
+  {
+    "slide": 24,
+    "title": "MongoDB Benchmark Path",
+    "objective": "Show code-level shape.",
+    "coreClaim": "A MongoDB adapter should store ticket fields, metadata, and vectors in one document and query through the vector index.",
+    "sourceIds": ["mongodb-atlas-vector-search"],
+    "visual": "code",
+    "practicalTakeaway": "Keep support-ticket metadata queryable next to the embedding."
+  },
+  {
+    "slide": 25,
+    "title": "Pinecone",
+    "objective": "Explain Pinecone's benchmark role.",
+    "coreClaim": "Pinecone is a managed vector-first service benchmark with explicit index configuration and metadata filtering.",
+    "sourceIds": ["pinecone-indexes", "pinecone-filtering"],
+    "visual": "none",
+    "practicalTakeaway": "Measure vector-service ergonomics and filtered retrieval behavior."
+  },
+  {
+    "slide": 26,
+    "title": "Weaviate",
+    "objective": "Explain Weaviate's benchmark role.",
+    "coreClaim": "Weaviate exposes vector indexing, hybrid search, and multi-index concepts that make it useful for semantic plus lexical support search.",
+    "sourceIds": ["weaviate-vector-index", "weaviate-hybrid-search"],
+    "visual": "none",
+    "practicalTakeaway": "Evaluate hybrid behavior separately from pure vector retrieval."
+  },
+  {
+    "slide": 27,
+    "title": "Qdrant",
+    "objective": "Explain Qdrant's benchmark role.",
+    "coreClaim": "Qdrant combines vector search with payload filtering and indexing, making filter selectivity an important evaluation dimension.",
+    "sourceIds": ["qdrant-indexing", "qdrant-filtering"],
+    "visual": "none",
+    "practicalTakeaway": "Benchmark payload indexes for tenant/product filters."
+  },
+  {
+    "slide": 28,
+    "title": "Store Comparison Matrix",
+    "objective": "Compare systems at a high level.",
+    "coreClaim": "MongoDB, vector-first systems, Chroma, and pgvector optimize for different ownership and operational boundaries.",
+    "sourceIds": ["mongodb-atlas-vector-search", "pinecone-indexes", "weaviate-vector-index", "qdrant-indexing", "milvus-indexing", "chroma-collections", "pgvector-github"],
+    "visual": "comparison",
+    "practicalTakeaway": "Use the matrix to decide what to test, not to choose without testing."
+  },
+  {
+    "slide": 29,
+    "title": "Milvus",
+    "objective": "Explain Milvus's benchmark role.",
+    "coreClaim": "Milvus is a vector database benchmark target for index-family breadth, scale-oriented deployment, and filtered search behavior.",
+    "sourceIds": ["milvus-indexing", "milvus-filtered-search"],
+    "visual": "none",
+    "practicalTakeaway": "Include Milvus when scale and index family choice are central."
+  },
+  {
+    "slide": 30,
+    "title": "Chroma",
+    "objective": "Explain Chroma's benchmark role.",
+    "coreClaim": "Chroma is valuable for local development and baseline harness workflows, but should be labeled differently from managed production services.",
+    "sourceIds": ["chroma-collections", "chroma-querying"],
+    "visual": "none",
+    "practicalTakeaway": "Use Chroma to develop the benchmark before scaling the test matrix."
+  },
+  {
+    "slide": 31,
+    "title": "pgvector",
+    "objective": "Explain pgvector's benchmark role.",
+    "coreClaim": "pgvector is strongest when vector search must live inside Postgres with SQL filters, transactions, and existing relational data.",
+    "sourceIds": ["pgvector-github"],
+    "visual": "none",
+    "practicalTakeaway": "Benchmark SQL filter plans and index choices, not only vector distance."
+  },
+  {
+    "slide": 32,
+    "title": "Hybrid Search",
+    "objective": "Explain semantic plus lexical retrieval.",
+    "coreClaim": "Support search often needs hybrid search because exact error codes, account ids, product names, and invoice terms matter.",
+    "sourceIds": ["mongodb-hybrid-search", "weaviate-hybrid-search"],
+    "visual": "none",
+    "practicalTakeaway": "Add a hybrid track to the benchmark rather than judging pure vector search alone."
+  },
+  {
+    "slide": 33,
+    "title": "Filter Selectivity",
+    "objective": "Explain why filters change benchmark behavior.",
+    "coreClaim": "Tenant, product, priority, and date filters can change both recall and latency because they restrict candidate generation and ranking.",
+    "sourceIds": ["pinecone-filtering", "qdrant-filtering", "milvus-filtered-search"],
+    "visual": "flow",
+    "practicalTakeaway": "Run low-, medium-, and high-selectivity filter suites."
+  },
+  {
+    "slide": 34,
+    "title": "Freshness And Updates",
+    "objective": "Explain update/delete benchmarks.",
+    "coreClaim": "Support tickets evolve, so ingest-only benchmarks miss update, delete, and visibility behavior.",
+    "sourceIds": ["mongodb-atlas-vector-search", "weaviate-vector-index", "pgvector-github"],
+    "visual": "none",
+    "practicalTakeaway": "Measure update lag and deletion visibility."
+  },
+  {
+    "slide": 35,
+    "title": "Reranking With Voyage",
+    "objective": "Explain two-stage retrieval.",
+    "coreClaim": "Voyage reranking should be measured as a second-stage quality improvement over each store's candidate set.",
+    "sourceIds": ["voyage-reranker"],
+    "visual": "code",
+    "practicalTakeaway": "Compare top-50 candidate recall before reranking and top-10 quality after reranking."
+  },
+  {
+    "slide": 36,
+    "title": "Failure Analysis",
+    "objective": "Explain qualitative error review.",
+    "coreClaim": "Benchmark tables identify differences; failure analysis explains why they happen.",
+    "sourceIds": ["ir-measures"],
+    "visual": "none",
+    "practicalTakeaway": "Sample false negatives, false positives, filter misses, and stale results."
+  },
+  {
+    "slide": 37,
+    "title": "Experiment Matrix",
+    "objective": "Define the test plan.",
+    "coreClaim": "A practical comparison varies store, top-k, filters, hybrid mode, reranking, corpus scale, and concurrency deliberately.",
+    "sourceIds": ["beir-benchmark", "ir-measures"],
+    "visual": "comparison",
+    "practicalTakeaway": "Keep one experiment variable changing at a time."
+  },
+  {
+    "slide": 38,
+    "title": "Reporting",
+    "objective": "Show the final scorecard.",
+    "coreClaim": "The report should separate candidate recall, final ranking, latency, ingest, updates, cost, and operational notes.",
+    "sourceIds": ["ir-measures"],
+    "visual": "none",
+    "practicalTakeaway": "A scorecard is harder to misread than a leaderboard."
+  },
+  {
+    "slide": 39,
+    "title": "MongoDB Versus Vector-First",
+    "objective": "Compare the core tradeoff.",
+    "coreClaim": "MongoDB's core advantage is operational document context; vector-first systems' core advantage is focused vector-serving ergonomics and tuning.",
+    "sourceIds": ["mongodb-atlas-vector-search", "pinecone-indexes", "qdrant-indexing", "weaviate-vector-index"],
+    "visual": "comparison",
+    "practicalTakeaway": "Choose based on where data ownership and serving complexity should live."
+  },
+  {
+    "slide": 40,
+    "title": "MongoDB Plus Voyage",
+    "objective": "Explain the integrated baseline.",
+    "coreClaim": "MongoDB Atlas Vector Search plus Voyage embeddings is a strong baseline when support data already lives in MongoDB and retrieval needs both semantic and operational filters.",
+    "sourceIds": ["mongodb-atlas-vector-search", "voyage-embeddings", "mongodb-hybrid-search"],
+    "visual": "none",
+    "practicalTakeaway": "Start here if MongoDB is already your ticket/customer system of record."
+  },
+  {
+    "slide": 41,
+    "title": "When Dedicated Vector DB Wins",
+    "objective": "Define scenarios favoring vector-first systems.",
+    "coreClaim": "Dedicated vector databases are compelling when vector scale, ANN tuning, vector-native operations, or managed vector service ownership dominate.",
+    "sourceIds": ["pinecone-indexes", "weaviate-vector-index", "qdrant-indexing", "milvus-indexing"],
+    "visual": "none",
+    "practicalTakeaway": "Move when the benchmark shows store-specific vector behavior matters."
+  },
+  {
+    "slide": 42,
+    "title": "When pgvector Or Chroma Wins",
+    "objective": "Define smaller-system alternatives.",
+    "coreClaim": "pgvector and Chroma can be the right choices when operational simplicity, local development, or SQL-native integration matters more than managed vector specialization.",
+    "sourceIds": ["pgvector-github", "chroma-collections"],
+    "visual": "none",
+    "practicalTakeaway": "Do not overbuy infrastructure before workload evidence justifies it."
+  },
+  {
+    "slide": 43,
+    "title": "Decision Framework",
+    "objective": "Give practical selection guidance.",
+    "coreClaim": "The right system follows data ownership, filter selectivity, scale, update rate, hybrid needs, and operational team boundaries.",
+    "sourceIds": ["mongodb-atlas-vector-search", "pinecone-indexes", "weaviate-vector-index", "qdrant-indexing", "milvus-indexing", "pgvector-github"],
+    "visual": "comparison",
+    "practicalTakeaway": "Use the benchmark to choose for your workload, not the average workload."
+  },
+  {
+    "slide": 44,
+    "title": "Benchmark Checklist",
+    "objective": "Summarize implementation steps.",
+    "coreClaim": "A trustworthy benchmark is reproducible, labeled, isolated, metric-complete, and inspected qualitatively.",
+    "sourceIds": ["beir-benchmark", "ir-measures"],
+    "visual": "none",
+    "practicalTakeaway": "Version every corpus, embedding, query, qrel, adapter, and result artifact."
+  },
+  {
+    "slide": 45,
+    "title": "References",
+    "objective": "Provide grouped follow-up material.",
+    "coreClaim": "The deck is grounded in official vendor docs and retrieval evaluation references.",
+    "sourceIds": ["mongodb-atlas-vector-search", "voyage-embeddings", "pinecone-indexes", "weaviate-vector-index", "qdrant-indexing", "milvus-indexing", "chroma-collections", "pgvector-github", "beir-benchmark", "ir-measures"],
+    "visual": "none",
+    "practicalTakeaway": "Use the references to tune the benchmark for exact service versions."
+  }
+]

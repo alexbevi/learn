@@ -1,0 +1,172 @@
+[
+  {
+    "id": "mongodb-atlas-vector-search",
+    "title": "MongoDB Atlas Vector Search Documentation",
+    "url": "https://www.mongodb.com/docs/atlas/atlas-vector-search/",
+    "sourceType": "primary",
+    "publisher": "MongoDB",
+    "retrieved": "2026-05-27",
+    "confidence": "high",
+    "concepts": ["atlas vector search", "vector indexes", "ann search", "filtering", "hybrid search"]
+  },
+  {
+    "id": "mongodb-hybrid-search",
+    "title": "MongoDB Atlas: Hybrid Search Tutorial",
+    "url": "https://www.mongodb.com/docs/atlas/atlas-search/tutorial/hybrid-search/",
+    "sourceType": "primary",
+    "publisher": "MongoDB",
+    "retrieved": "2026-05-27",
+    "confidence": "high",
+    "concepts": ["hybrid search", "full text search", "vector search", "reciprocal rank fusion"]
+  },
+  {
+    "id": "voyage-embeddings",
+    "title": "Voyage AI Documentation: Embeddings",
+    "url": "https://docs.voyageai.com/docs/embeddings",
+    "sourceType": "primary",
+    "publisher": "Voyage AI",
+    "retrieved": "2026-05-27",
+    "confidence": "high",
+    "concepts": ["embeddings", "query embeddings", "document embeddings", "model dimensions"]
+  },
+  {
+    "id": "voyage-reranker",
+    "title": "Voyage AI Documentation: Rerankers",
+    "url": "https://docs.voyageai.com/docs/reranker",
+    "sourceType": "primary",
+    "publisher": "Voyage AI",
+    "retrieved": "2026-05-27",
+    "confidence": "high",
+    "concepts": ["reranking", "cross encoder", "retrieval quality", "two-stage retrieval"]
+  },
+  {
+    "id": "pinecone-indexes",
+    "title": "Pinecone Documentation: Indexes",
+    "url": "https://docs.pinecone.io/guides/indexes/create-an-index",
+    "sourceType": "primary",
+    "publisher": "Pinecone",
+    "retrieved": "2026-05-27",
+    "confidence": "high",
+    "concepts": ["vector indexes", "serverless indexes", "dimension", "metric"]
+  },
+  {
+    "id": "pinecone-filtering",
+    "title": "Pinecone Documentation: Metadata Filtering",
+    "url": "https://docs.pinecone.io/guides/search/filter-by-metadata",
+    "sourceType": "primary",
+    "publisher": "Pinecone",
+    "retrieved": "2026-05-27",
+    "confidence": "high",
+    "concepts": ["metadata filtering", "filtered vector search", "support ticket filters"]
+  },
+  {
+    "id": "weaviate-vector-index",
+    "title": "Weaviate Documentation: Vector Indexing",
+    "url": "https://docs.weaviate.io/weaviate/concepts/vector-index",
+    "sourceType": "primary",
+    "publisher": "Weaviate",
+    "retrieved": "2026-05-27",
+    "confidence": "high",
+    "concepts": ["hnsw", "flat index", "dynamic index", "vector indexing", "memory footprint"]
+  },
+  {
+    "id": "weaviate-hybrid-search",
+    "title": "Weaviate Documentation: Hybrid Search",
+    "url": "https://docs.weaviate.io/weaviate/search/hybrid",
+    "sourceType": "primary",
+    "publisher": "Weaviate",
+    "retrieved": "2026-05-27",
+    "confidence": "high",
+    "concepts": ["hybrid search", "bm25", "vector search", "fusion"]
+  },
+  {
+    "id": "qdrant-indexing",
+    "title": "Qdrant Documentation: Indexing",
+    "url": "https://qdrant.tech/documentation/concepts/indexing/",
+    "sourceType": "primary",
+    "publisher": "Qdrant",
+    "retrieved": "2026-05-27",
+    "confidence": "high",
+    "concepts": ["hnsw", "payload indexes", "filtering", "quantization"]
+  },
+  {
+    "id": "qdrant-filtering",
+    "title": "Qdrant Documentation: Filtering",
+    "url": "https://qdrant.tech/documentation/concepts/filtering/",
+    "sourceType": "primary",
+    "publisher": "Qdrant",
+    "retrieved": "2026-05-27",
+    "confidence": "high",
+    "concepts": ["metadata filtering", "payload", "must should must_not filters"]
+  },
+  {
+    "id": "milvus-indexing",
+    "title": "Milvus GitHub Repository",
+    "url": "https://github.com/milvus-io/milvus",
+    "sourceType": "primary",
+    "publisher": "Milvus",
+    "retrieved": "2026-05-27",
+    "confidence": "high",
+    "concepts": ["vector index", "hnsw", "ivf", "diskann", "scalar quantization"]
+  },
+  {
+    "id": "milvus-filtered-search",
+    "title": "Milvus Python SDK Repository",
+    "url": "https://github.com/milvus-io/pymilvus",
+    "sourceType": "primary",
+    "publisher": "Milvus",
+    "retrieved": "2026-05-27",
+    "confidence": "medium",
+    "concepts": ["filtered search", "metadata filters", "iterative filtering"]
+  },
+  {
+    "id": "chroma-collections",
+    "title": "Chroma Documentation: Collections",
+    "url": "https://docs.trychroma.com/docs/collections/manage-collections",
+    "sourceType": "primary",
+    "publisher": "Chroma",
+    "retrieved": "2026-05-27",
+    "confidence": "high",
+    "concepts": ["collections", "metadata", "embedding functions", "local vector store"]
+  },
+  {
+    "id": "chroma-querying",
+    "title": "Chroma Documentation: Querying Collections",
+    "url": "https://docs.trychroma.com/docs/querying-collections/query-and-get",
+    "sourceType": "primary",
+    "publisher": "Chroma",
+    "retrieved": "2026-05-27",
+    "confidence": "high",
+    "concepts": ["querying", "metadata filters", "document filters", "nearest neighbors"]
+  },
+  {
+    "id": "pgvector-github",
+    "title": "pgvector GitHub Repository",
+    "url": "https://github.com/pgvector/pgvector",
+    "sourceType": "primary",
+    "publisher": "pgvector",
+    "retrieved": "2026-05-27",
+    "confidence": "high",
+    "concepts": ["postgres", "hnsw", "ivfflat", "sql filtering", "vector distance"]
+  },
+  {
+    "id": "beir-benchmark",
+    "title": "BEIR Benchmark Repository",
+    "url": "https://github.com/beir-cellar/beir",
+    "sourceType": "primary",
+    "publisher": "BEIR",
+    "retrieved": "2026-05-27",
+    "confidence": "medium",
+    "concepts": ["information retrieval evaluation", "ndcg", "recall", "retrieval datasets"]
+  },
+  {
+    "id": "ir-measures",
+    "title": "ir-measures Documentation",
+    "url": "https://ir-measur.es/",
+    "sourceType": "primary",
+    "publisher": "ir-measures",
+    "retrieved": "2026-05-27",
+    "confidence": "medium",
+    "concepts": ["retrieval metrics", "nDCG", "MRR", "Recall", "evaluation"]
+  }
+]

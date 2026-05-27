@@ -1,0 +1,765 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Vector Databases Benchmarking</title>
+    <link rel="stylesheet" href="../../../assets/vendor/reveal/dist/reveal.css" />
+    <link
+      rel="stylesheet"
+      href="../../../assets/vendor/reveal/dist/plugin/highlight/monokai.css"
+    />
+    <link rel="stylesheet" href="../../../assets/css/deck.css" />
+    <style>
+      .compact-grid,
+      .store-grid,
+      .metric-grid,
+      .decision-grid,
+      .flow,
+      .topology {
+        display: grid;
+        gap: 14px;
+        margin-top: 24px;
+      }
+
+      .compact-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .store-grid,
+      .metric-grid,
+      .decision-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .card,
+      .mini,
+      .flow-step,
+      .topology-node,
+      .decision-card {
+        border: 1px solid var(--deck-line);
+        border-radius: 8px;
+        background: linear-gradient(180deg, var(--deck-panel-2), var(--deck-panel));
+        padding: 14px 16px;
+      }
+
+      .card strong,
+      .mini strong,
+      .flow-step strong,
+      .topology-node strong,
+      .decision-card strong {
+        display: block;
+        color: var(--deck-text);
+        font-size: 0.58em;
+        line-height: 1.15;
+      }
+
+      .card span,
+      .mini span,
+      .flow-step span,
+      .topology-node span,
+      .decision-card span {
+        display: block;
+        margin-top: 8px;
+        color: var(--deck-muted);
+        font-size: 0.46em;
+        line-height: 1.28;
+      }
+
+      .flow {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+
+      .flow-step {
+        position: relative;
+        min-height: 136px;
+      }
+
+      .flow-step:not(:last-child)::after {
+        content: ">";
+        position: absolute;
+        top: 50%;
+        right: -12px;
+        color: var(--deck-accent);
+        font-size: 0.7em;
+        font-weight: 900;
+        transform: translateY(-50%);
+      }
+
+      .topology {
+        grid-template-columns: 1fr 1.2fr 1fr;
+        align-items: stretch;
+      }
+
+      .topology-column {
+        display: grid;
+        gap: 12px;
+      }
+
+      .topology-node.accent {
+        border-color: rgb(33 199 168 / 60%);
+      }
+
+      .wide-table {
+        font-size: 0.43em;
+      }
+
+      .wide-table th,
+      .wide-table td {
+        padding: 9px;
+      }
+
+      .code-tight {
+        font-size: 0.42em;
+        line-height: 1.22;
+      }
+
+      .reference-list {
+        columns: 3;
+        column-gap: 28px;
+      }
+
+      .reference-list li {
+        font-size: 0.44em;
+        overflow-wrap: anywhere;
+      }
+
+      @media (max-width: 900px) {
+        .compact-grid,
+        .store-grid,
+        .metric-grid,
+        .decision-grid,
+        .flow,
+        .topology {
+          grid-template-columns: 1fr;
+        }
+
+        .reference-list {
+          columns: 1;
+        }
+      }
+    </style>
+  </head>
+  <body class="has-deck-topbar">
+    <header class="deck-topbar" aria-label="Presentation navigation">
+      <a class="deck-nav-link" href="../../../">Main menu</a>
+      <div class="deck-title">
+        <span>Vector Databases Benchmarking</span>
+        <small>MongoDB Atlas Vector Search, Voyage embeddings, and common alternatives</small>
+      </div>
+      <a class="deck-nav-link" href="../../../topics/database-internals/">Topic</a>
+    </header>
+
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <p class="kicker">Database Internals</p>
+          <h1>Vector Databases Benchmarking</h1>
+          <p class="lead">
+            A deep technical guide to evaluating vector databases with a Python
+            support-ticket benchmark: MongoDB Atlas Vector Search, Voyage
+            embeddings and reranking, and the usual vector-first alternatives.
+          </p>
+          <p class="footnote">80 minutes / 45 slides / Last updated 2026-05-27</p>
+        </section>
+
+        <section>
+          <p class="kicker">Learning goals</p>
+          <h2>Compare systems through evidence, not positioning</h2>
+          <div class="grid-2">
+            <div class="callout"><h3>Mechanics</h3><p>Understand embeddings, ANN indexes, exact search, filters, hybrid search, reranking, and update paths.</p></div>
+            <div class="callout"><h3>Benchmarking</h3><p>Design a fair Python harness with fixed corpus, vectors, labels, queries, filters, metrics, and adapters.</p></div>
+            <div class="callout"><h3>Systems</h3><p>Compare MongoDB Atlas Vector Search with Pinecone, Weaviate, Qdrant, Milvus, Chroma, and pgvector.</p></div>
+            <div class="callout"><h3>Decisions</h3><p>Use support-ticket retrieval evidence to choose storage, serving, and embedding architecture.</p></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Running workload</p>
+          <h2>Support and customer-ticket retrieval</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Corpus</h3>
+              <p>Tickets, comments, resolution notes, product area, severity, tenant, customer tier, timestamps, and internal tags.</p>
+            </div>
+            <div class="panel">
+              <h3>Queries</h3>
+              <p>Natural-language symptoms mixed with exact identifiers: invoice ids, error codes, product names, regions, and time windows.</p>
+            </div>
+          </div>
+          <p class="lead">
+            This workload is useful because it punishes pure vector demos. Real
+            support search needs semantics, lexical recall, metadata filters,
+            freshness, and tenant isolation.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Boundary</p>
+          <h2>What a vector database owns</h2>
+          <div class="compact-grid">
+            <div class="mini"><strong>Vectors</strong><span>Store embeddings with ids and metadata.</span></div>
+            <div class="mini"><strong>Index</strong><span>ANN or exact structures for nearest-neighbor search.</span></div>
+            <div class="mini"><strong>Filters</strong><span>Constrain candidates by tenant, product, date, or status.</span></div>
+            <div class="mini"><strong>Serving</strong><span>Latency, throughput, concurrency, updates, deletes, and scale.</span></div>
+          </div>
+          <p class="lead">
+            It does not own embedding quality. That is why the benchmark fixes
+            Voyage embeddings and swaps only the database adapter.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Benchmark topology</p>
+          <h2>The adapter is the comparison boundary</h2>
+          <div class="topology" data-visual="benchmark topology">
+            <div class="topology-column">
+              <div class="topology-node accent"><strong>Fixed inputs</strong><span>Tickets, queries, qrels, filters, and Voyage vectors.</span></div>
+              <div class="topology-node"><strong>Cached artifacts</strong><span>JSONL corpus, embeddings cache, query vectors, relevance labels.</span></div>
+            </div>
+            <div class="topology-column">
+              <div class="topology-node accent"><strong>Python harness</strong><span>Adapter contract, ingest runner, query runner, reranker, metric calculator.</span></div>
+              <div class="topology-node"><strong>Store adapters</strong><span>MongoDB, Pinecone, Weaviate, Qdrant, Milvus, Chroma, pgvector.</span></div>
+            </div>
+            <div class="topology-column">
+              <div class="topology-node accent"><strong>Outputs</strong><span>Runs, metrics, traces, errors, latency histograms, cost model.</span></div>
+              <div class="topology-node"><strong>Decision report</strong><span>Scorecard plus qualitative failure analysis.</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Corpus shape</p>
+          <h2>Support tickets need rich metadata</h2>
+          <pre><code class="language-json code-tight">{
+  "id": "ticket_9182",
+  "tenant_id": "acme",
+  "product": "billing",
+  "priority": "p1",
+  "created_at": "2026-04-19T14:11:00Z",
+  "text": "Customer reports invoice doubled after plan change...",
+  "resolution": "Proration rule incorrectly applied after renewal.",
+  "embedding": [0.013, -0.021, 0.044]
+}</code></pre>
+          <p class="footnote">The metadata fields are not decoration. They are benchmark dimensions.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Queries</p>
+          <h2>Use queries that look like support work</h2>
+          <div class="store-grid">
+            <div class="card"><strong>Semantic symptom</strong><span>Customer says monthly invoice doubled after renewal.</span></div>
+            <div class="card"><strong>Exact signal</strong><span>Error <code>BILLING-409</code> appears after plan migration.</span></div>
+            <div class="card"><strong>Structured constraint</strong><span>Tenant <code>acme</code>, product <code>billing</code>, last 90 days.</span></div>
+          </div>
+          <p class="lead">Pure semantic search can miss exact identifiers; pure lexical search can miss paraphrased symptoms.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Labels</p>
+          <h2>No qrels means no quality benchmark</h2>
+          <pre><code class="language-json code-tight">{
+  "query_id": "q_billing_proration_001",
+  "query": "invoice doubled after plan change",
+  "filters": { "product": "billing", "tenant_id": "acme" },
+  "relevant": {
+    "ticket_9182": 3,
+    "ticket_7741": 2,
+    "ticket_6139": 1
+  }
+}</code></pre>
+          <p class="footnote">Use binary labels for recall, or graded labels when nDCG matters.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Voyage embeddings</p>
+          <h2>Fix embeddings before comparing stores</h2>
+          <pre><code class="language-python code-tight">import voyageai
+
+vo = voyageai.Client()
+
+doc_vectors = vo.embed(
+    documents,
+    model="voyage-3-large",
+    input_type="document",
+).embeddings
+
+query_vectors = vo.embed(
+    queries,
+    model="voyage-3-large",
+    input_type="query",
+).embeddings</code></pre>
+          <p class="footnote">Cache vectors by model, input type, text hash, and dimension.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Retrieval pipeline</p>
+          <h2>Measure every stage separately</h2>
+          <div class="flow" data-visual="retrieval pipeline">
+            <div class="flow-step"><strong>Embed query</strong><span>Voyage query vector from fixed model.</span></div>
+            <div class="flow-step"><strong>Filter</strong><span>Tenant, product, priority, date range.</span></div>
+            <div class="flow-step"><strong>Retrieve</strong><span>Top N candidates from one adapter.</span></div>
+            <div class="flow-step"><strong>Rerank</strong><span>Optional Voyage pairwise reranking.</span></div>
+            <div class="flow-step"><strong>Score</strong><span>Recall, nDCG, MRR, latency, errors.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">ANN versus exact</p>
+          <h2>Approximate search trades recall for speed</h2>
+          <div class="grid-2">
+            <div class="panel"><h3>Exact search</h3><p>Compares against all eligible vectors. Useful for small sets, validation, and ground-truth calibration.</p></div>
+            <div class="panel"><h3>ANN search</h3><p>Uses an index to avoid exhaustive comparison. Useful at scale, but it can miss relevant candidates.</p></div>
+          </div>
+          <p class="lead">In benchmark reports, ANN recall loss should be visible rather than hidden behind final answer quality.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Index mental model</p>
+          <h2>HNSW is a navigable neighbor graph</h2>
+          <div class="compact-grid">
+            <div class="mini"><strong>Build</strong><span>Connect vectors into a layered neighbor graph.</span></div>
+            <div class="mini"><strong>Search</strong><span>Navigate from entry points toward closer candidates.</span></div>
+            <div class="mini"><strong>Tune</strong><span>Trade index memory/build cost for search recall and latency.</span></div>
+            <div class="mini"><strong>Update</strong><span>Incremental changes can behave differently by engine.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Scale mechanics</p>
+          <h2>Index families manage memory, disk, and candidate generation</h2>
+          <table class="table wide-table">
+            <thead><tr><th>Family</th><th>Purpose</th><th>Benchmark pressure</th></tr></thead>
+            <tbody>
+              <tr><td>HNSW</td><td>Fast graph-based ANN.</td><td>Memory footprint, recall/latency tuning, updates.</td></tr>
+              <tr><td>IVF</td><td>Partition vectors into coarse clusters.</td><td>Candidate coverage and cluster probe settings.</td></tr>
+              <tr><td>Disk-oriented</td><td>Reduce memory pressure by using disk-backed access.</td><td>p95/p99 latency and warm/cold behavior.</td></tr>
+              <tr><td>Quantization</td><td>Compress vectors or index representation.</td><td>Memory/cost savings versus recall loss.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Distance metrics</p>
+          <h2>Metric mismatch makes comparisons meaningless</h2>
+          <div class="store-grid">
+            <div class="card"><strong>Cosine</strong><span>Compares angle. Common for normalized text embeddings.</span></div>
+            <div class="card"><strong>Dot product</strong><span>Can encode magnitude when vectors are not normalized.</span></div>
+            <div class="card"><strong>Euclidean</strong><span>Distance in vector space; less common for modern text retrieval setups.</span></div>
+          </div>
+          <p class="lead">Normalize metric semantics across MongoDB, Pinecone, Weaviate, Qdrant, Milvus, Chroma, and pgvector before scoring.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Chunking</p>
+          <h2>Ticket chunking changes retrieval behavior</h2>
+          <table class="table wide-table">
+            <thead><tr><th>Unit</th><th>Strength</th><th>Failure mode</th></tr></thead>
+            <tbody>
+              <tr><td>Whole ticket</td><td>Preserves case context.</td><td>Long noisy tickets dilute the signal.</td></tr>
+              <tr><td>Comment</td><td>Finds precise symptoms and fixes.</td><td>Can lose full case resolution context.</td></tr>
+              <tr><td>Resolution note</td><td>Great for known-fix retrieval.</td><td>Misses unresolved symptoms.</td></tr>
+              <tr><td>Hybrid fields</td><td>Balances symptoms and outcomes.</td><td>Requires careful text construction.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Metrics</p>
+          <h2>Use a scorecard, not one number</h2>
+          <div class="metric-grid" data-visual="metric map">
+            <div class="card"><strong>Quality</strong><span>Recall@50, nDCG@10, MRR@10, precision@k.</span></div>
+            <div class="card"><strong>Serving</strong><span>p50/p95/p99 latency, QPS, timeout rate.</span></div>
+            <div class="card"><strong>Ingest</strong><span>Throughput, index build time, update lag.</span></div>
+            <div class="card"><strong>Correctness</strong><span>Filter accuracy, tenant isolation, delete visibility.</span></div>
+            <div class="card"><strong>Cost</strong><span>Embedding, reranking, storage, compute, operations.</span></div>
+            <div class="card"><strong>Operations</strong><span>Backup, scaling, observability, schema/index management.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Recall</p>
+          <h2>Recall@k protects the reranker from missing candidates</h2>
+          <div class="grid-2">
+            <div class="panel"><h3>First-stage target</h3><p>Use Recall@50 or Recall@100 to measure whether the database can surface the right tickets at all.</p></div>
+            <div class="panel"><h3>Why it matters</h3><p>If the relevant ticket is absent from candidates, Voyage reranking cannot rescue final quality.</p></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Ranking</p>
+          <h2>nDCG and MRR measure different user pain</h2>
+          <div class="grid-2">
+            <div class="panel"><h3>nDCG@10</h3><p>Rewards high-quality graded relevance near the top of the result list.</p></div>
+            <div class="panel"><h3>MRR@10</h3><p>Rewards getting the first relevant ticket as high as possible.</p></div>
+          </div>
+          <p class="lead">For support agents, both matter: analysts need the first useful answer quickly, but also need a strong top set.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Latency</p>
+          <h2>Report p95 and concurrency, not only average latency</h2>
+          <div class="compact-grid">
+            <div class="mini"><strong>p50</strong><span>Typical interactive behavior.</span></div>
+            <div class="mini"><strong>p95</strong><span>Most user-visible pain starts here.</span></div>
+            <div class="mini"><strong>p99</strong><span>Operational tail risk.</span></div>
+            <div class="mini"><strong>QPS</strong><span>Throughput under fixed concurrency.</span></div>
+          </div>
+          <p class="lead">Separate cold index behavior, warmed cache behavior, and steady-state load behavior.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Cost</p>
+          <h2>Vector search cost is not only the database query</h2>
+          <div class="compact-grid">
+            <div class="mini"><strong>Embedding</strong><span>Documents, queries, retries, model upgrades.</span></div>
+            <div class="mini"><strong>Reranking</strong><span>Top N pairs per query.</span></div>
+            <div class="mini"><strong>Storage</strong><span>Vectors, metadata, raw text, replicas.</span></div>
+            <div class="mini"><strong>Compute</strong><span>Index build, query serving, filters, concurrency.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Python harness</p>
+          <h2>Every store implements the same contract</h2>
+          <pre><code class="language-python code-tight">from typing import Protocol, Sequence
+
+class VectorStore(Protocol):
+    name: str
+
+    def recreate(self, *, dim: int, metric: str) -> None: ...
+    def upsert(self, records: Sequence[VectorRecord]) -> None: ...
+    def query(self, vector: list[float], *, top_k: int, filters: dict) -> list[Hit]: ...
+    def delete(self, ids: Sequence[str]) -> None: ...
+    def stats(self) -> dict: ...</code></pre>
+          <p class="footnote">The harness changes adapters, not benchmark semantics.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Result normalization</p>
+          <h2>Normalize before scoring</h2>
+          <pre><code class="language-python code-tight">@dataclass(frozen=True)
+class Hit:
+    id: str
+    score: float
+    rank: int
+    metadata: dict
+    raw: dict | None = None
+
+def normalize(store_hits: list[dict]) -> list[Hit]:
+    return [
+        Hit(id=h["id"], score=float(h["score"]), rank=i + 1, metadata=h.get("metadata", {}))
+        for i, h in enumerate(store_hits)
+    ]</code></pre>
+          <p class="footnote">Score direction and distance semantics differ; ranks are safer for cross-store metrics.</p>
+        </section>
+
+        <section>
+          <p class="kicker">MongoDB Atlas Vector Search</p>
+          <h2>MongoDB's differentiator is data co-location</h2>
+          <div class="grid-2">
+            <div class="panel"><h3>Vector search role</h3><p>Embed ticket text and query similar tickets through an Atlas Vector Search index.</p></div>
+            <div class="panel"><h3>Platform role</h3><p>Keep vectors near operational ticket documents, metadata, full-text search, and application queries.</p></div>
+          </div>
+          <p class="lead">The benchmark should test MongoDB as a document database plus vector search system, not as a detached ANN library.</p>
+        </section>
+
+        <section>
+          <p class="kicker">MongoDB adapter</p>
+          <h2>Store ticket state and embedding together</h2>
+          <pre><code class="language-python code-tight">def upsert(self, records: Sequence[VectorRecord]) -> None:
+    ops = [
+        ReplaceOne(
+            {"_id": r.id},
+            {
+                "_id": r.id,
+                "text": r.text,
+                "embedding": r.vector,
+                "tenant_id": r.metadata["tenant_id"],
+                "product": r.metadata["product"],
+                "priority": r.metadata["priority"],
+                "created_at": r.metadata["created_at"],
+            },
+            upsert=True,
+        )
+        for r in records
+    ]
+    self.collection.bulk_write(ops, ordered=False)</code></pre>
+        </section>
+
+        <section>
+          <p class="kicker">Pinecone</p>
+          <h2>Pinecone is the managed vector-first reference point</h2>
+          <div class="store-grid">
+            <div class="card"><strong>Design center</strong><span>Managed vector index with explicit dimension and metric setup.</span></div>
+            <div class="card"><strong>Benchmark focus</strong><span>Filtered search latency, service ergonomics, scale, and cost.</span></div>
+            <div class="card"><strong>Watchout</strong><span>Operational data usually lives elsewhere, so joins and source-of-truth updates matter.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Weaviate</p>
+          <h2>Weaviate brings vector, lexical, and object concepts together</h2>
+          <div class="store-grid">
+            <div class="card"><strong>Indexes</strong><span>HNSW, flat, dynamic, and compression concepts.</span></div>
+            <div class="card"><strong>Search</strong><span>Vector, keyword, and hybrid search modes.</span></div>
+            <div class="card"><strong>Benchmark focus</strong><span>Hybrid quality, memory footprint, and filter behavior.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Qdrant</p>
+          <h2>Qdrant makes payload filtering central</h2>
+          <div class="store-grid">
+            <div class="card"><strong>Payload</strong><span>Metadata stored with points and used in filters.</span></div>
+            <div class="card"><strong>Indexing</strong><span>Vector and payload indexes both affect benchmark behavior.</span></div>
+            <div class="card"><strong>Benchmark focus</strong><span>Tenant/product/date filters and quantization tradeoffs.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Comparison matrix</p>
+          <h2>Systems optimize for different boundaries</h2>
+          <table class="table wide-table" data-visual="store comparison matrix">
+            <thead><tr><th>System</th><th>Design center</th><th>Strong benchmark signal</th><th>Watchout</th></tr></thead>
+            <tbody>
+              <tr><td>MongoDB Atlas</td><td>Operational documents plus vector/full-text search.</td><td>Metadata-rich support tickets and hybrid app queries.</td><td>Must test vector recall like every other store.</td></tr>
+              <tr><td>Pinecone</td><td>Managed vector-first service.</td><td>Vector serving ergonomics and filtered ANN latency.</td><td>Operational data integration lives outside.</td></tr>
+              <tr><td>Weaviate</td><td>Vector/object/hybrid search platform.</td><td>Hybrid retrieval and index configuration.</td><td>Memory/index sizing and tuning matter.</td></tr>
+              <tr><td>Qdrant</td><td>Vector search with payload indexing/filtering.</td><td>Filtered retrieval and payload-heavy workloads.</td><td>Filter/index design drives results.</td></tr>
+              <tr><td>Milvus</td><td>Scale-oriented vector database.</td><td>Index-family breadth and large-scale behavior.</td><td>Operational complexity can be higher.</td></tr>
+              <tr><td>Chroma</td><td>Local/dev vector store.</td><td>Harness development and small baselines.</td><td>Label separately from managed production services.</td></tr>
+              <tr><td>pgvector</td><td>Postgres-native vector search.</td><td>SQL filters, transactions, existing relational data.</td><td>Index and query plans need Postgres tuning.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Milvus</p>
+          <h2>Milvus is the index-family and scale benchmark target</h2>
+          <div class="store-grid">
+            <div class="card"><strong>Index breadth</strong><span>HNSW, IVF, disk-oriented, and quantization-related options depending on version/config.</span></div>
+            <div class="card"><strong>Filtered search</strong><span>Support-ticket filters need explicit measurement.</span></div>
+            <div class="card"><strong>Benchmark focus</strong><span>Large corpus, index build, memory, storage, and operational complexity.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Chroma</p>
+          <h2>Chroma is a useful local baseline</h2>
+          <div class="grid-2">
+            <div class="panel"><h3>Use it for</h3><p>Harness development, local experiments, quick corpus checks, and regression tests.</p></div>
+            <div class="panel"><h3>Do not overclaim</h3><p>Do not present local Chroma results as equivalent to production managed-service behavior.</p></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">pgvector</p>
+          <h2>pgvector wins when SQL ownership matters</h2>
+          <div class="store-grid">
+            <div class="card"><strong>Data boundary</strong><span>Vectors live with relational customers, tickets, entitlements, and permissions.</span></div>
+            <div class="card"><strong>Index choices</strong><span>HNSW and IVFFlat give different build/query tradeoffs.</span></div>
+            <div class="card"><strong>Benchmark focus</strong><span>SQL filters, query plans, transactions, and operational simplicity.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Hybrid retrieval</p>
+          <h2>Support search needs semantic plus lexical recall</h2>
+          <div class="grid-2">
+            <div class="panel"><h3>Semantic finds</h3><p>Paraphrased symptoms, similar resolutions, and conceptual matches.</p></div>
+            <div class="panel"><h3>Lexical finds</h3><p>Error codes, invoice ids, internal feature names, customer-specific wording, and exact logs.</p></div>
+          </div>
+          <p class="lead">Benchmark a pure-vector track and a hybrid track so the architecture decision is visible.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Filter selectivity</p>
+          <h2>Filters can dominate vector search behavior</h2>
+          <div class="flow" data-visual="filter selectivity map">
+            <div class="flow-step"><strong>Broad</strong><span>All tickets across tenants and products.</span></div>
+            <div class="flow-step"><strong>Tenant</strong><span>Only one customer or organization.</span></div>
+            <div class="flow-step"><strong>Product</strong><span>Subset such as billing or auth.</span></div>
+            <div class="flow-step"><strong>Date</strong><span>Recent tickets or incident window.</span></div>
+            <div class="flow-step"><strong>Priority</strong><span>P1/P2 only, often a tiny subset.</span></div>
+          </div>
+          <p class="lead">Run low-, medium-, and high-selectivity suites. A store can win unfiltered and lose under selective filters.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Freshness</p>
+          <h2>Support tickets mutate after ingestion</h2>
+          <div class="compact-grid">
+            <div class="mini"><strong>New comment</strong><span>Embedding may need refresh.</span></div>
+            <div class="mini"><strong>Status change</strong><span>Metadata filter behavior changes.</span></div>
+            <div class="mini"><strong>Delete</strong><span>Result visibility must disappear.</span></div>
+            <div class="mini"><strong>Merge</strong><span>Duplicate tickets need id and relevance handling.</span></div>
+          </div>
+          <p class="lead">Measure update lag and deletion visibility as first-class correctness metrics.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Voyage reranking</p>
+          <h2>Reranking is a second-stage experiment</h2>
+          <pre><code class="language-python code-tight">reranked = vo.rerank(
+    query=query.text,
+    documents=[hit.text for hit in candidates[:50]],
+    model="rerank-2",
+    top_k=10,
+)
+
+final_ids = [candidates[item.index].id for item in reranked.results]</code></pre>
+          <p class="footnote">Report candidate Recall@50 before reranking and final nDCG@10 after reranking.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Failure analysis</p>
+          <h2>Look at misses, not just aggregate metrics</h2>
+          <div class="compact-grid">
+            <div class="mini"><strong>False negative</strong><span>Relevant ticket missing from candidates.</span></div>
+            <div class="mini"><strong>False positive</strong><span>Semantically close but wrong resolution.</span></div>
+            <div class="mini"><strong>Filter miss</strong><span>Correct ticket excluded or wrong tenant included.</span></div>
+            <div class="mini"><strong>Freshness miss</strong><span>Updated ticket state not reflected.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Experiment matrix</p>
+          <h2>Change one variable at a time</h2>
+          <table class="table wide-table">
+            <thead><tr><th>Variable</th><th>Values</th><th>Why it matters</th></tr></thead>
+            <tbody>
+              <tr><td>Store</td><td>MongoDB, Pinecone, Weaviate, Qdrant, Milvus, Chroma, pgvector</td><td>Database behavior.</td></tr>
+              <tr><td>Mode</td><td>Pure vector, filtered vector, hybrid, reranked</td><td>Retrieval architecture.</td></tr>
+              <tr><td>Scale</td><td>10k, 100k, 1M, 10M chunks</td><td>Index and serving pressure.</td></tr>
+              <tr><td>Concurrency</td><td>1, 10, 50, 100 users</td><td>Tail latency and throughput.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Reporting</p>
+          <h2>Report the scorecard plus caveats</h2>
+          <div class="store-grid">
+            <div class="card"><strong>Quality table</strong><span>Recall@50, nDCG@10, MRR@10 by query suite.</span></div>
+            <div class="card"><strong>System table</strong><span>p50/p95/p99, ingest throughput, update lag, error rate.</span></div>
+            <div class="card"><strong>Decision notes</strong><span>Operational fit, integration friction, cost, and failure patterns.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Tradeoff</p>
+          <h2>MongoDB versus vector-first systems</h2>
+          <div class="grid-2">
+            <div class="panel"><h3>MongoDB Atlas Vector Search</h3><p>Compelling when ticket/customer data, metadata, operational updates, and search belong in the same application data platform.</p></div>
+            <div class="panel"><h3>Vector-first systems</h3><p>Compelling when specialized vector serving, managed vector operations, ANN tuning, or vector scale dominates the architecture.</p></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">MongoDB plus Voyage</p>
+          <h2>A strong baseline for MongoDB-centered support systems</h2>
+          <div class="store-grid">
+            <div class="card"><strong>Voyage</strong><span>Embeddings and reranking become fixed retrieval-model components.</span></div>
+            <div class="card"><strong>Atlas Vector Search</strong><span>ANN retrieval over ticket embeddings stored with documents.</span></div>
+            <div class="card"><strong>Atlas Search</strong><span>Hybrid search path for error codes, product names, and lexical signals.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">When vector-first wins</p>
+          <h2>Move when the benchmark proves vector serving is the bottleneck</h2>
+          <div class="compact-grid">
+            <div class="mini"><strong>Scale</strong><span>Very large vector corpus and specialized serving needs.</span></div>
+            <div class="mini"><strong>Tuning</strong><span>ANN knobs materially improve quality/latency.</span></div>
+            <div class="mini"><strong>Operations</strong><span>Team wants vector infrastructure owned separately.</span></div>
+            <div class="mini"><strong>Cost</strong><span>Specialized serving wins at target QPS and corpus size.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Smaller alternatives</p>
+          <h2>pgvector and Chroma are not consolation prizes</h2>
+          <div class="grid-2">
+            <div class="panel"><h3>pgvector</h3><p>Strong when SQL ownership, transactions, relational filters, and operational simplicity are the main constraints.</p></div>
+            <div class="panel"><h3>Chroma</h3><p>Strong for local development, small internal tools, and benchmark harness iteration before managed infrastructure.</p></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Decision framework</p>
+          <h2>Choose by workload boundary</h2>
+          <div class="decision-grid" data-visual="decision framework">
+            <div class="decision-card"><strong>Choose MongoDB Atlas</strong><span>Tickets already live in MongoDB; filters, updates, full text, and document context matter.</span></div>
+            <div class="decision-card"><strong>Choose vector-first</strong><span>Vector serving scale, ANN tuning, and managed vector operations dominate.</span></div>
+            <div class="decision-card"><strong>Choose pgvector</strong><span>Postgres is the system of record and SQL filters/transactions matter most.</span></div>
+            <div class="decision-card"><strong>Use Chroma locally</strong><span>You need fast local iteration, not production-scale service claims.</span></div>
+            <div class="decision-card"><strong>Add Voyage reranking</strong><span>Candidate recall is good but top-10 ordering still disappoints users.</span></div>
+            <div class="decision-card"><strong>Add hybrid search</strong><span>Error codes, invoice ids, and product names are critical to retrieval.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Checklist</p>
+          <h2>A benchmark worth trusting is reproducible</h2>
+          <div class="compact-grid">
+            <div class="mini"><strong>Version inputs</strong><span>Corpus, queries, qrels, filters, vectors.</span></div>
+            <div class="mini"><strong>Pin settings</strong><span>Model, dimension, metric, top-k, index config.</span></div>
+            <div class="mini"><strong>Capture outputs</strong><span>Runs, hits, scores, latencies, errors, costs.</span></div>
+            <div class="mini"><strong>Inspect failures</strong><span>Sample misses and explain them before deciding.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">References</p>
+          <h2>Follow-up sources by concept</h2>
+          <div class="reference-list">
+            <h3>MongoDB and Voyage</h3>
+            <ul>
+              <li><a href="https://www.mongodb.com/docs/atlas/atlas-vector-search/">MongoDB Atlas Vector Search</a></li>
+              <li><a href="https://www.mongodb.com/docs/atlas/atlas-search/tutorial/hybrid-search/">MongoDB Atlas Hybrid Search Tutorial</a></li>
+              <li><a href="https://docs.voyageai.com/docs/embeddings">Voyage AI Embeddings</a></li>
+              <li><a href="https://docs.voyageai.com/docs/reranker">Voyage AI Rerankers</a></li>
+            </ul>
+            <h3>Vector-first systems</h3>
+            <ul>
+              <li><a href="https://docs.pinecone.io/guides/indexes/create-an-index">Pinecone Indexes</a></li>
+              <li><a href="https://docs.pinecone.io/guides/search/filter-by-metadata">Pinecone Metadata Filtering</a></li>
+              <li><a href="https://docs.weaviate.io/weaviate/concepts/vector-index">Weaviate Vector Indexing</a></li>
+              <li><a href="https://docs.weaviate.io/weaviate/search/hybrid">Weaviate Hybrid Search</a></li>
+              <li><a href="https://qdrant.tech/documentation/concepts/indexing/">Qdrant Indexing</a></li>
+              <li><a href="https://qdrant.tech/documentation/concepts/filtering/">Qdrant Filtering</a></li>
+              <li><a href="https://github.com/milvus-io/milvus">Milvus GitHub Repository</a></li>
+              <li><a href="https://github.com/milvus-io/pymilvus">Milvus Python SDK Repository</a></li>
+            </ul>
+            <h3>Local and relational alternatives</h3>
+            <ul>
+              <li><a href="https://docs.trychroma.com/docs/collections/manage-collections">Chroma Collections</a></li>
+              <li><a href="https://docs.trychroma.com/docs/querying-collections/query-and-get">Chroma Querying</a></li>
+              <li><a href="https://github.com/pgvector/pgvector">pgvector GitHub Repository</a></li>
+            </ul>
+            <h3>Evaluation</h3>
+            <ul>
+              <li><a href="https://github.com/beir-cellar/beir">BEIR Benchmark</a></li>
+              <li><a href="https://ir-measur.es/">ir-measures</a></li>
+            </ul>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script src="../../../assets/vendor/reveal/dist/reveal.js"></script>
+    <script src="../../../assets/vendor/reveal/dist/plugin/highlight.js"></script>
+    <script>
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        hash: true,
+        slideNumber: true,
+        transition: "slide",
+        backgroundTransition: "fade",
+        plugins: [RevealHighlight],
+      });
+    </script>
+  </body>
+</html>
