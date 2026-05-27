@@ -11,11 +11,327 @@
     />
     <link rel="stylesheet" href="../../../assets/css/deck.css" />
     <style>
-      .diagram-wide {
+      .wt-visual {
+        width: min(100%, 1080px);
+        margin: 20px auto 0;
+        color: var(--deck-text);
+        font-size: 0.54em;
+      }
+
+      .wt-visual h3 {
+        margin: 0 0 12px;
+        color: var(--deck-accent);
+        font-size: 1.1em;
+      }
+
+      .wt-lane h3 {
+        color: var(--deck-accent);
+      }
+
+      .wt-card,
+      .wt-step,
+      .wt-cell,
+      .wt-head {
+        border: 1px solid var(--deck-line);
+        border-radius: 8px;
+        background: linear-gradient(180deg, var(--deck-panel-2), var(--deck-panel));
+        padding: 12px;
+      }
+
+      .wt-card strong,
+      .wt-step strong,
+      .wt-cell strong {
         display: block;
-        width: min(100%, 1040px);
-        max-height: 510px;
-        margin: 24px auto 0;
+        color: var(--deck-text);
+        font-size: 0.98em;
+        line-height: 1.12;
+      }
+
+      .wt-card span,
+      .wt-step span,
+      .wt-cell span {
+        display: block;
+        margin-top: 6px;
+        color: var(--deck-muted);
+        font-size: 0.8em;
+        line-height: 1.25;
+      }
+
+      .wt-stack {
+        display: grid;
+        grid-template-columns: 1.22fr 0.95fr 0.95fr;
+        gap: 14px;
+        align-items: stretch;
+      }
+
+      .wt-stack-layers {
+        display: grid;
+        gap: 10px;
+      }
+
+      .wt-stack .wt-card.is-engine {
+        border-color: rgb(33 199 168 / 65%);
+        box-shadow: inset 0 0 0 1px rgb(33 199 168 / 20%);
+      }
+
+      .wt-pill-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin-top: 6px;
+      }
+
+      .wt-pill {
+        display: inline-flex;
+        padding: 5px 8px;
+        border-radius: 999px;
+        background: rgb(255 255 255 / 7%);
+        color: var(--deck-muted);
+        font-size: 0.72em;
+        font-weight: 760;
+      }
+
+      .wt-note {
+        margin: 12px 0 0;
+        color: var(--deck-amber);
+        font-size: 0.82em;
+        font-weight: 760;
+        line-height: 1.24;
+      }
+
+      .wt-page {
+        display: grid;
+        grid-template-columns: 0.86fr 1.12fr 1.02fr;
+        gap: 14px;
+      }
+
+      .wt-node,
+      .wt-row,
+      .wt-version {
+        border: 1px solid rgb(255 255 255 / 12%);
+        border-radius: 8px;
+        background: rgb(255 255 255 / 5%);
+      }
+
+      .wt-node {
+        margin: 9px auto;
+        padding: 10px;
+        text-align: center;
+        font-weight: 820;
+      }
+
+      .wt-node.root {
+        width: 64%;
+      }
+
+      .wt-node.internal {
+        width: 82%;
+      }
+
+      .wt-node.leaf {
+        width: 100%;
+        border-color: rgb(33 199 168 / 50%);
+      }
+
+      .wt-rows,
+      .wt-chain {
+        display: grid;
+        gap: 8px;
+      }
+
+      .wt-row {
+        display: grid;
+        grid-template-columns: 84px 1fr;
+        gap: 9px;
+        align-items: center;
+        padding: 9px;
+      }
+
+      .wt-key {
+        color: var(--deck-amber);
+        font-size: 0.82em;
+        font-weight: 860;
+      }
+
+      .wt-value {
+        color: var(--deck-muted);
+        font-size: 0.78em;
+        line-height: 1.22;
+      }
+
+      .wt-version {
+        position: relative;
+        padding: 10px 12px;
+      }
+
+      .wt-version:not(:last-child)::after {
+        content: "visible?";
+        position: absolute;
+        right: 12px;
+        bottom: -12px;
+        color: var(--deck-accent);
+        font-size: 0.62em;
+        font-weight: 800;
+      }
+
+      .wt-timeline {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .wt-time {
+        display: block;
+        margin-bottom: 10px;
+        color: var(--deck-amber);
+        font-weight: 860;
+      }
+
+      .wt-rail {
+        height: 5px;
+        margin: 16px 0 14px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, var(--deck-accent), var(--deck-amber), var(--deck-red));
+      }
+
+      .wt-callouts {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .wt-callout {
+        border-left: 4px solid var(--deck-accent);
+        background: rgb(255 255 255 / 5%);
+        padding: 10px;
+        color: var(--deck-muted);
+        font-size: 0.82em;
+        line-height: 1.24;
+      }
+
+      .wt-flow {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 9px;
+      }
+
+      .wt-step {
+        position: relative;
+        min-height: 230px;
+      }
+
+      .wt-step:not(:last-child)::after {
+        content: ">";
+        position: absolute;
+        top: 94px;
+        right: -13px;
+        z-index: 2;
+        color: var(--deck-accent);
+        font-size: 1.25em;
+        font-weight: 900;
+      }
+
+      .wt-num {
+        display: inline-grid;
+        place-items: center;
+        width: 26px;
+        height: 26px;
+        border-radius: 999px;
+        background: rgb(33 199 168 / 16%);
+        color: var(--deck-accent);
+        font-size: 0.78em;
+        font-weight: 900;
+      }
+
+      .wt-step strong {
+        margin-top: 12px;
+      }
+
+      .wt-tag {
+        color: var(--deck-amber);
+        font-size: 0.72em;
+        font-weight: 820;
+      }
+
+      .wt-bottom,
+      .wt-agg,
+      .wt-storage {
+        display: grid;
+        gap: 10px;
+      }
+
+      .wt-bottom {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        margin-top: 12px;
+      }
+
+      .wt-mini {
+        border-left: 4px solid var(--deck-accent);
+        background: rgb(255 255 255 / 5%);
+        padding: 10px;
+        color: var(--deck-muted);
+        font-size: 0.8em;
+        line-height: 1.24;
+      }
+
+      .wt-mini strong {
+        color: var(--deck-text);
+      }
+
+      .wt-lanes {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+
+      .wt-agg {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .wt-storage {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .wt-agg .wt-card,
+      .wt-storage .wt-card {
+        min-height: 106px;
+      }
+
+      .wt-lane-note {
+        margin-top: 12px;
+        border-left: 4px solid var(--deck-amber);
+        background: rgb(255 255 255 / 5%);
+        padding: 10px;
+        color: var(--deck-muted);
+        font-size: 0.8em;
+        line-height: 1.24;
+      }
+
+      .wt-ops {
+        display: grid;
+        grid-template-columns: 0.95fr 1.12fr 1.1fr;
+        gap: 8px;
+      }
+
+      .wt-head {
+        color: var(--deck-accent);
+        font-weight: 860;
+      }
+
+      .wt-cell {
+        min-height: 86px;
+        padding: 10px;
+      }
+
+      .wt-metric {
+        margin-top: 7px;
+        color: var(--deck-amber);
+        font-size: 0.72em;
+        font-weight: 800;
+      }
+
+      .wt-risk {
+        color: var(--deck-red);
       }
 
       .tight-grid {
@@ -129,8 +445,29 @@
         .wide-grid,
         .trace-row,
         .metric-grid,
-        .two-col-code {
+        .two-col-code,
+        .wt-stack,
+        .wt-page,
+        .wt-lanes {
           grid-template-columns: 1fr;
+        }
+
+        .wt-timeline,
+        .wt-flow,
+        .wt-bottom,
+        .wt-callouts,
+        .wt-agg,
+        .wt-storage,
+        .wt-ops {
+          grid-template-columns: 1fr;
+        }
+
+        .wt-step {
+          min-height: auto;
+        }
+
+        .wt-step:not(:last-child)::after {
+          display: none;
         }
       }
     </style>
@@ -196,11 +533,48 @@
         <section>
           <p class="kicker">Stack Map</p>
           <h2>MongoDB operations cross server, engine, and OS boundaries</h2>
-          <img
-            class="diagram-wide"
-            src="../../../assets/img/database-internals/wiredtiger-storage-engine/storage-stack.png"
-            alt="Layered diagram showing a MongoDB command moving through server execution, WiredTiger, and operating system storage layers."
-          />
+          <div class="wt-visual wt-stack" data-visual>
+            <div class="wt-stack-layers">
+              <div class="wt-card">
+                <strong>Client command</strong>
+                <span><code>insertMany()</code>, <code>aggregate()</code>, read/write concern, sessions, transactions</span>
+              </div>
+              <div class="wt-card">
+                <strong>MongoDB server execution</strong>
+                <span>Parsing, validation, authorization, locks, planner, SBE/classic execution, storage cursor API.</span>
+              </div>
+              <div class="wt-card is-engine">
+                <strong>WiredTiger engine</strong>
+                <span>Transactions, row-store B-trees, cache, eviction, reconciliation, history store, checkpoints, log.</span>
+              </div>
+              <div class="wt-card">
+                <strong>Operating system and media</strong>
+                <span>Filesystem cache, compressed pages, data files, journal files, fsync latency, block device behavior.</span>
+              </div>
+            </div>
+            <div class="wt-card">
+              <h3>Write surface</h3>
+              <div class="wt-pill-row">
+                <span class="wt-pill">collection table</span>
+                <span class="wt-pill">index tables</span>
+                <span class="wt-pill">WT transaction</span>
+                <span class="wt-pill">journal</span>
+                <span class="wt-pill">checkpoint</span>
+              </div>
+              <p class="wt-note">A write is a coordinated set of collection and index mutations, not one append.</p>
+            </div>
+            <div class="wt-card">
+              <h3>Read surface</h3>
+              <div class="wt-pill-row">
+                <span class="wt-pill">optimizer</span>
+                <span class="wt-pill">planner</span>
+                <span class="wt-pill">cursor</span>
+                <span class="wt-pill">index scan</span>
+                <span class="wt-pill">page read</span>
+              </div>
+              <p class="wt-note">A read shape decides how much of the storage engine must be touched.</p>
+            </div>
+          </div>
         </section>
 
         <section>
@@ -292,11 +666,57 @@
         <section>
           <p class="kicker">B-Trees</p>
           <h2>Pages are the unit you keep paying for</h2>
-          <img
-            class="diagram-wide"
-            src="../../../assets/img/database-internals/wiredtiger-storage-engine/page-anatomy.png"
-            alt="Diagram of WiredTiger B-tree root, internal, and leaf pages with row-store keys, insert lists, update chains, disk image, and history store."
-          />
+          <div class="wt-visual wt-page" data-visual>
+            <div class="wt-card">
+              <h3>B-tree shape</h3>
+              <div class="wt-node root">root page<br />keys + refs</div>
+              <div class="wt-node internal">internal page<br />keys + refs</div>
+              <div class="wt-node leaf">leaf page<br />keys + values</div>
+              <p class="wt-note">Pages split as sorted key ranges grow.</p>
+            </div>
+            <div class="wt-card">
+              <h3>Leaf page</h3>
+              <div class="wt-rows">
+                <div class="wt-row">
+                  <div class="wt-key">recordId</div>
+                  <div class="wt-value">BSON document for collection table.</div>
+                </div>
+                <div class="wt-row">
+                  <div class="wt-key">index key</div>
+                  <div class="wt-value">Key pattern plus recordId for a secondary index table.</div>
+                </div>
+                <div class="wt-row">
+                  <div class="wt-key">insert</div>
+                  <div class="wt-value">New entries can sit in in-memory insert lists before reconciliation.</div>
+                </div>
+                <div class="wt-row">
+                  <div class="wt-key">update</div>
+                  <div class="wt-value">Existing entries accumulate update structures.</div>
+                </div>
+              </div>
+            </div>
+            <div class="wt-card">
+              <h3>Update chain</h3>
+              <div class="wt-chain">
+                <div class="wt-version">
+                  <strong>newest value</strong>
+                  <span>transaction id + timestamp decide visibility</span>
+                </div>
+                <div class="wt-version">
+                  <strong>older value</strong>
+                  <span>may still be needed by a snapshot reader</span>
+                </div>
+                <div class="wt-version">
+                  <strong>disk image</strong>
+                  <span>reconciled page version from the data file</span>
+                </div>
+                <div class="wt-version">
+                  <strong>history store</strong>
+                  <span>older durable versions when needed</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </section>
 
         <section>
@@ -381,32 +801,26 @@
         <section>
           <p class="kicker">Cache</p>
           <h2>There are two caches in the path, with different contents</h2>
-          <table class="table compare-table">
-            <thead>
-              <tr>
-                <th>Layer</th>
-                <th>What lives there</th>
-                <th>Why it matters</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>WiredTiger cache</td>
-                <td>In-memory pages, update chains, insert lists, dirty content.</td>
-                <td>Primary pressure point for reads, writes, eviction, and checkpoint preparation.</td>
-              </tr>
-              <tr>
-                <td>Filesystem cache</td>
-                <td>On-disk page images, usually compressed as stored in data files.</td>
-                <td>Cold reads may still avoid physical disk if the OS cache is warm.</td>
-              </tr>
-              <tr>
-                <td>Application memory</td>
-                <td>Query stages, aggregation buffers, connections, drivers, process overhead.</td>
-                <td>Too much non-cache memory reduces what the OS can use for storage caching.</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="wt-visual wt-storage" data-visual>
+            <div class="wt-card">
+              <h3>WiredTiger cache</h3>
+              <strong>Mutable engine pages</strong>
+              <span>In-memory pages, update chains, insert lists, and dirty content.</span>
+              <p class="wt-note">Primary pressure point for reads, writes, eviction, and checkpoint preparation.</p>
+            </div>
+            <div class="wt-card">
+              <h3>Filesystem cache</h3>
+              <strong>Durable page images</strong>
+              <span>On-disk page images, usually compressed as stored in data files.</span>
+              <p class="wt-note">Cold reads may still avoid physical disk if the OS cache is warm.</p>
+            </div>
+            <div class="wt-card">
+              <h3>Application memory</h3>
+              <strong>Execution overhead</strong>
+              <span>Query stages, aggregation buffers, connections, drivers, and process overhead.</span>
+              <p class="wt-note">Too much non-cache memory reduces what the OS can use for storage caching.</p>
+            </div>
+          </div>
         </section>
 
         <section>
@@ -503,11 +917,41 @@
         <section>
           <p class="kicker">Durability</p>
           <h2>Commit, journal, and checkpoint are different moments</h2>
-          <img
-            class="diagram-wide"
-            src="../../../assets/img/database-internals/wiredtiger-storage-engine/durability-timeline.png"
-            alt="Timeline showing a WiredTiger transaction commit, write-ahead log record, journal sync boundary, checkpoint, and crash recovery."
-          />
+          <div class="wt-visual" data-visual>
+            <div class="wt-timeline">
+              <div class="wt-card">
+                <span class="wt-time">T0</span>
+                <strong>WT transaction commits</strong>
+                <span>Collection and index updates become committed in memory and visible by transaction and timestamp rules.</span>
+              </div>
+              <div class="wt-card">
+                <span class="wt-time">T1</span>
+                <strong>Log record exists</strong>
+                <span>The write-ahead log records modifications between checkpoints so recovery can replay committed changes.</span>
+              </div>
+              <div class="wt-card">
+                <span class="wt-time">T2</span>
+                <strong>Journal sync boundary</strong>
+                <span>Client acknowledgement depends on write concern and journaling behavior, not only on cache mutation.</span>
+              </div>
+              <div class="wt-card">
+                <span class="wt-time">T3</span>
+                <strong>Checkpoint reconciles</strong>
+                <span>Dirty pages are written as a transactionally consistent view of each B-tree and history store.</span>
+              </div>
+              <div class="wt-card">
+                <span class="wt-time">Crash</span>
+                <strong>Recovery starts here</strong>
+                <span>WiredTiger opens from the last checkpoint, replays later logs, and rolls back unstable data.</span>
+              </div>
+            </div>
+            <div class="wt-rail"></div>
+            <div class="wt-callouts">
+              <div class="wt-callout"><strong>Journal:</strong> protects changes since the last checkpoint.</div>
+              <div class="wt-callout"><strong>Checkpoint:</strong> creates the durable base image.</div>
+              <div class="wt-callout"><strong>Recovery:</strong> combines both, then enforces timestamp stability.</div>
+            </div>
+          </div>
         </section>
 
         <section>
@@ -533,11 +977,51 @@
         <section>
           <p class="kicker">Insert Path</p>
           <h2>One batch turns into many engine-level changes</h2>
-          <img
-            class="diagram-wide"
-            src="../../../assets/img/database-internals/wiredtiger-storage-engine/insert-path.png"
-            alt="Six-step diagram showing parse batch, acquire locks, open WiredTiger transaction, mutate B-trees, commit and log, then acknowledge."
-          />
+          <div class="wt-visual" data-visual>
+            <div class="wt-flow">
+              <div class="wt-step">
+                <span class="wt-num">1</span>
+                <strong>Parse batch</strong>
+                <span>Validate BSON shape, namespace, ordered behavior, session, transaction, and write concern.</span>
+                <span class="wt-tag">Server layer</span>
+              </div>
+              <div class="wt-step">
+                <span class="wt-num">2</span>
+                <strong>Acquire intent locks</strong>
+                <span>Protect catalog and collection metadata while allowing document-level concurrency inside WiredTiger.</span>
+                <span class="wt-tag">Concurrency boundary</span>
+              </div>
+              <div class="wt-step">
+                <span class="wt-num">3</span>
+                <strong>Open WT transaction</strong>
+                <span>Attach operations to a snapshot-isolated WiredTiger transaction and a MongoDB write unit.</span>
+                <span class="wt-tag">Atomicity boundary</span>
+              </div>
+              <div class="wt-step">
+                <span class="wt-num">4</span>
+                <strong>Mutate B-trees</strong>
+                <span>Insert collection records and every required secondary index key into row-store trees.</span>
+                <span class="wt-tag">Write amplification</span>
+              </div>
+              <div class="wt-step">
+                <span class="wt-num">5</span>
+                <strong>Commit and log</strong>
+                <span>Commit update chains in memory and record durable changes in the write-ahead log when journaling applies.</span>
+                <span class="wt-tag">Durability boundary</span>
+              </div>
+              <div class="wt-step">
+                <span class="wt-num">6</span>
+                <strong>Acknowledge</strong>
+                <span>Return after configured write concern and journal or replication requirements are satisfied.</span>
+                <span class="wt-tag">Client contract</span>
+              </div>
+            </div>
+            <div class="wt-bottom">
+              <div class="wt-mini"><strong>Ordered insert:</strong> stops at the first error in the batch.</div>
+              <div class="wt-mini"><strong>Unordered insert:</strong> can continue independent documents after errors.</div>
+              <div class="wt-mini"><strong>Indexes:</strong> each extra index adds B-tree mutations and cache pressure.</div>
+            </div>
+          </div>
         </section>
 
         <section>
@@ -724,11 +1208,60 @@
         <section>
           <p class="kicker">Aggregation Path</p>
           <h2>The storage engine sees cursor work, not a pipeline</h2>
-          <img
-            class="diagram-wide"
-            src="../../../assets/img/database-internals/wiredtiger-storage-engine/aggregation-path.png"
-            alt="Diagram contrasting MongoDB aggregation parsing, optimization, planning, and execution with WiredTiger index, collection, cache, snapshot, eviction, and spill work."
-          />
+          <div class="wt-visual wt-lanes" data-visual>
+            <div class="wt-lane">
+              <h3>MongoDB execution layer</h3>
+              <div class="wt-agg">
+                <div class="wt-card">
+                  <strong>Parse pipeline</strong>
+                  <span>Validate stages and expressions.</span>
+                </div>
+                <div class="wt-card">
+                  <strong>Optimize</strong>
+                  <span>Move filters, coalesce stages, expose indexable predicates.</span>
+                </div>
+                <div class="wt-card">
+                  <strong>Plan</strong>
+                  <span>Select index scan, collection scan, sort, group, join shape.</span>
+                </div>
+                <div class="wt-card">
+                  <strong>Execute</strong>
+                  <span>SBE or classic stages pull batches from storage cursors.</span>
+                </div>
+              </div>
+              <div class="wt-lane-note"><strong>Goal:</strong> minimize keys examined, documents fetched, blocking memory, and spills.</div>
+            </div>
+            <div class="wt-lane">
+              <h3>WiredTiger retrieval layer</h3>
+              <div class="wt-storage">
+                <div class="wt-card">
+                  <strong>Index B-tree</strong>
+                  <span>Traverse sorted keys and return record identifiers.</span>
+                </div>
+                <div class="wt-card">
+                  <strong>Collection B-tree</strong>
+                  <span>Fetch BSON records when the plan is not covered.</span>
+                </div>
+                <div class="wt-card">
+                  <strong>Cache</strong>
+                  <span>Use resident pages or read compressed pages when cold.</span>
+                </div>
+                <div class="wt-card">
+                  <strong>Snapshot</strong>
+                  <span>Resolve visible updates from chains, disk image, or history store.</span>
+                </div>
+                <div class="wt-card">
+                  <strong>Eviction</strong>
+                  <span>Keep cache under target while scans and writes compete.</span>
+                </div>
+                <div class="wt-card">
+                  <strong>Spill files</strong>
+                  <span>Blocking stages may write temporary data outside WiredTiger data files.</span>
+                </div>
+              </div>
+              <div class="wt-lane-note"><strong>Storage cost:</strong> each missing index or wide fetch becomes page traffic.</div>
+            </div>
+          </div>
         </section>
 
         <section>
@@ -882,11 +1415,63 @@
         <section>
           <p class="kicker">Operations</p>
           <h2>Start by mapping the symptom to a mechanism</h2>
-          <img
-            class="diagram-wide"
-            src="../../../assets/img/database-internals/wiredtiger-storage-engine/ops-map.png"
-            alt="Matrix mapping write latency, scan regressions, disk growth, and replication lag to WiredTiger mechanisms and operational evidence."
-          />
+          <div class="wt-visual wt-ops" data-visual>
+            <div class="wt-head">Symptom</div>
+            <div class="wt-head">Likely engine mechanism</div>
+            <div class="wt-head">Evidence to inspect</div>
+
+            <div class="wt-cell">
+              <strong>Write latency spikes</strong>
+              <span>Inserts wait behind dirty cache pressure, journal sync, index maintenance, or checkpoint I/O.</span>
+            </div>
+            <div class="wt-cell">
+              <strong>Dirty eviction or checkpoint pressure</strong>
+              <span>Application threads may help evict when eviction cannot keep cache below trigger thresholds.</span>
+            </div>
+            <div class="wt-cell">
+              <strong>Metrics</strong>
+              <span class="wt-metric">wiredTiger.cache, wiredTiger.transaction, opcounters, disk latency, writeConcernError</span>
+            </div>
+
+            <div class="wt-cell">
+              <strong>Reads suddenly scan</strong>
+              <span>Planner lost an indexable shape, selectivity changed, or aggregation reordered into a blocking fetch.</span>
+            </div>
+            <div class="wt-cell">
+              <strong>Cold pages or wide fetches</strong>
+              <span>Index scan touches too many keys, collection fetch pulls many pages, or old snapshots need history.</span>
+            </div>
+            <div class="wt-cell">
+              <strong>Metrics</strong>
+              <span class="wt-metric">explain keys/docs examined, executionTimeMillis, page reads, cache misses</span>
+            </div>
+
+            <div class="wt-cell">
+              <strong>Disk grows after deletes</strong>
+              <span>Pages are reusable internally, but files may not shrink without compaction.</span>
+            </div>
+            <div class="wt-cell">
+              <strong>Checkpoint and extent reuse</strong>
+              <span>Deleted pages become reusable after older checkpoints no longer reference them.</span>
+            </div>
+            <div class="wt-cell">
+              <strong>Metrics</strong>
+              <span class="wt-metric">collStats, dbStats, compact outcomes, checkpoint progress, filesystem free space</span>
+            </div>
+
+            <div class="wt-cell">
+              <strong>Replication lag under load</strong>
+              <span>Primary write path plus oplog and journal pressure increases commit and apply latency.</span>
+            </div>
+            <div class="wt-cell">
+              <strong>Storage plus replication coupling</strong>
+              <span class="wt-risk">Do not tune cache alone if the bottleneck is durable write concern or secondary apply.</span>
+            </div>
+            <div class="wt-cell">
+              <strong>Metrics</strong>
+              <span class="wt-metric">rs.printSecondaryReplicationInfo(), repl lag, journal latency, iostat, Atlas metrics</span>
+            </div>
+          </div>
         </section>
 
         <section>
