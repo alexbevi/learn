@@ -23,10 +23,13 @@ Validate a Learn presentation for structural health, rendering readiness, and fa
    - Treat visual-aid warnings as presentation quality findings, especially for new or heavily updated decks.
 
 3. Extract the claims to verify.
-   - Read the deck HTML and catalog metadata.
+   - Read the deck HTML, catalog metadata, and repo-local artifacts when present:
+     `research.md`, `sources.json`, `claims.json`, and `visuals.md`.
    - Identify concrete claims: API names, framework capabilities, version-sensitive behavior, architectural comparisons, code examples, diagrams, operational guidance, performance claims, and security claims.
    - Identify visual gaps: concepts that would be clearer as taxonomy, flow, architecture, lifecycle, comparison, or data-plane visuals.
    - Note slide numbers or section labels for every claim cluster.
+   - If `claims.json` is missing, mention that the deck cannot be audited against a formal slide contract.
+   - If `sources.json` is missing or mostly secondary sources, mention source coverage risk.
 
 4. Check sources of truth on the web.
    - Browse for current primary sources whenever the claim involves modern tools, APIs, products, releases, or comparisons.
@@ -45,6 +48,7 @@ Validate a Learn presentation for structural health, rendering readiness, and fa
 6. Report before editing.
    - Lead with findings, ordered by severity, each with slide reference, issue, source-backed correction, and source links.
    - Include local validation status and source coverage.
+   - Include artifact coverage: whether `research.md`, `sources.json`, `claims.json`, and `visuals.md` exist and appear current.
    - If there are factual or structural issues, ask: "Do you want me to apply these fixes to the presentation?"
    - Do not update deck files until the user confirms.
 

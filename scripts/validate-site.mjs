@@ -1,6 +1,6 @@
 import http from "node:http";
-import { readFile } from "node:fs/promises";
-import { existsSync, statSync } from "node:fs";
+import { readFile, readdir } from "node:fs/promises";
+import { existsSync, readFileSync, statSync } from "node:fs";
 import { extname, join, resolve } from "node:path";
 import vm from "node:vm";
 
@@ -40,6 +40,12 @@ function targetExists(fromFile, value) {
   return existsSync(join(target, "index.html"));
 }
 
+function localTargetPath(fromFile, value) {
+  const clean = stripUrlSuffix(value);
+  if (isExternal(value) || clean === "") return "";
+  return resolve(join(fromFile, ".."), clean);
+}
+
 async function validateHtmlFile(file) {
   const source = await readFile(file, "utf8");
   const attrPattern = /\s(?:href|src)=["']([^"']+)["']/g;
@@ -77,6 +83,19 @@ function imageIssues(source, file) {
     if (/^https?:/i.test(src)) {
       issues.push(`${file.replace(`${root}/`, "")}: image ${src} is external; copy runtime assets locally`);
     }
+    const target = localTargetPath(file, src);
+    if (target && existsSync(target) && statSync(target).size === 0) {
+      issues.push(`${file.replace(`${root}/`, "")}: image ${src} is empty`);
+    }
+    if (target && target.startsWith(join(root, "assets/img")) && /\.png$/i.test(target)) {
+      const rel = target.replace(`${join(root, "assets/img")}/`, "").replace(/\.png$/i, ".html");
+      const visualSource = join(root, "visuals", rel);
+      if (!existsSync(visualSource)) {
+        issues.push(
+          `${file.replace(`${root}/`, "")}: generated PNG ${src} is missing matching visual source visuals/${rel}`,
+        );
+      }
+    }
   }
   return issues;
 }
@@ -102,6 +121,103 @@ function contentType(pathname) {
   if (ext === ".webp") return "image/webp";
   if (ext === ".html" || ext === "") return "text/html";
   return "application/octet-stream";
+}
+
+async function findFiles(dir) {
+  if (!existsSync(dir)) return [];
+  const entries = await readdir(dir, { withFileTypes: true });
+  const nested = await Promise.all(
+    entries.map((entry) => {
+      const path = join(dir, entry.name);
+      if (entry.isDirectory()) return findFiles(path);
+      if (entry.isFile()) return [path];
+      return [];
+    }),
+  );
+  return nested.flat();
+}
+
+async function validateImageAssets() {
+  const imageRoot = join(root, "assets/img");
+  const imageFiles = (await findFiles(imageRoot)).filter((file) => /\.(png|jpe?g|webp|gif|svg)$/i.test(file));
+  for (const file of imageFiles) {
+    if (statSync(file).size === 0) {
+      fail(`${file.replace(`${root}/`, "")}: image asset is empty`);
+    }
+  }
+}
+
+function validateResearchArtifacts(presentation) {
+  const deckDir = join(root, presentation.path);
+  const sourceFiles = ["research.md", "sources.json", "claims.json", "visuals.md"];
+  const existing = sourceFiles.filter((file) => existsSync(join(deckDir, file)));
+  if (existing.length === 0) {
+    warn(`${presentation.id}: no research artifacts found; expected research.md, sources.json, claims.json, or visuals.md`);
+  }
+  const sourcesPath = join(deckDir, "sources.json");
+  const sourceIds = new Set();
+  if (existsSync(sourcesPath)) {
+    try {
+      const sources = JSON.parse(statSync(sourcesPath).size ? readFileSync(sourcesPath, "utf8") : "[]");
+      if (!Array.isArray(sources)) {
+        fail(`${presentation.id}: sources.json must be an array`);
+      } else {
+        for (const [index, source] of sources.entries()) {
+          for (const field of ["id", "title", "url", "sourceType", "concepts"]) {
+            if (source?.[field] === undefined || source?.[field] === "") {
+              fail(`${presentation.id}: sources.json[${index}] missing ${field}`);
+            }
+          }
+          if (source.id) {
+            if (sourceIds.has(source.id)) fail(`${presentation.id}: duplicate source id ${source.id}`);
+            sourceIds.add(source.id);
+          }
+          if (source.url && !/^https?:\/\//i.test(source.url)) {
+            fail(`${presentation.id}: sources.json[${index}] url must be http(s)`);
+          }
+          if (source.sourceType && !["primary", "secondary", "context"].includes(source.sourceType)) {
+            fail(`${presentation.id}: sources.json[${index}] sourceType must be primary, secondary, or context`);
+          }
+          if (source.concepts && !Array.isArray(source.concepts)) {
+            fail(`${presentation.id}: sources.json[${index}] concepts must be an array`);
+          }
+        }
+        const primary = sources.filter((source) => source.sourceType === "primary" || source.tier === "primary").length;
+        if (sources.length && primary / sources.length < 0.7) {
+          warn(`${presentation.id}: sources.json has ${primary}/${sources.length} primary sources; target at least 70%`);
+        }
+      }
+    } catch (error) {
+      fail(`${presentation.id}: sources.json is not valid JSON (${error.message})`);
+    }
+  }
+  const claimsPath = join(deckDir, "claims.json");
+  if (existsSync(claimsPath)) {
+    try {
+      const claims = JSON.parse(statSync(claimsPath).size ? readFileSync(claimsPath, "utf8") : "[]");
+      if (!Array.isArray(claims)) {
+        fail(`${presentation.id}: claims.json must be an array`);
+      } else {
+        for (const [index, claim] of claims.entries()) {
+          for (const field of ["slide", "title", "objective", "coreClaim", "sourceIds", "visual", "practicalTakeaway"]) {
+            if (claim?.[field] === undefined || claim?.[field] === "") {
+              fail(`${presentation.id}: claims.json[${index}] missing ${field}`);
+            }
+          }
+          if (claim.sourceIds && !Array.isArray(claim.sourceIds)) {
+            fail(`${presentation.id}: claims.json[${index}] sourceIds must be an array`);
+          }
+          for (const sourceId of claim.sourceIds || []) {
+            if (sourceIds.size && !sourceIds.has(sourceId)) {
+              fail(`${presentation.id}: claims.json[${index}] references unknown source id ${sourceId}`);
+            }
+          }
+        }
+      }
+    } catch (error) {
+      fail(`${presentation.id}: claims.json is not valid JSON (${error.message})`);
+    }
+  }
 }
 
 function localFileForPath(pathname) {
@@ -147,6 +263,7 @@ if (!catalog?.topics?.length) fail("catalog has no topics");
 if (!catalog?.presentations?.length) fail("catalog has no presentations");
 
 await validateHtmlFile(join(root, "index.html"));
+await validateImageAssets();
 
 const smokePaths = ["/"];
 
@@ -181,6 +298,7 @@ for (const presentation of catalog.presentations) {
   for (const issue of imageIssues(source, deckPath)) {
     fail(issue);
   }
+  validateResearchArtifacts(presentation);
   const visuals = visualAidCount(source);
   const targetVisuals = Math.max(1, Math.ceil(actualSlides / 8));
   if (visuals < targetVisuals) {

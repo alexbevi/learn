@@ -12,9 +12,14 @@ the source of truth.
   `$CODEX_HOME/skills/`.
 - Use the `presentation-create` Codex skill when creating or materially
   updating a learning presentation.
+- Use `presentation-research`, `presentation-outline`, and
+  `presentation-visual-plan` as the staged workflow before authoring substantial
+  new decks.
 - Use the `presentation-validate` Codex skill when auditing a presentation
   for structural health, rendering readiness, source coverage, or factual
   accuracy.
+- Use `presentation-claim-check` for claim-by-claim factual review, and
+  `presentation-refresh` when revisiting older decks for drift.
 - Validation audits must check current web sources of truth for technical claims
   and summarize issues before applying fixes. Ask the user before changing a deck
   in response to validation findings.
@@ -37,6 +42,9 @@ the source of truth.
   practical guidance, recap, and a final references slide.
 - Technical decks should be precise and can go deep. Prefer concrete mechanisms,
   interfaces, state flow, failure modes, and tradeoffs over vague summaries.
+- Substantial decks should include repo-local research artifacts beside
+  `index.html`: `research.md`, `sources.json`, `claims.json`, and `visuals.md`.
+  Treat these as the deck's source ledger, slide contract, and visual plan.
 - Use real HTML for formatting. Inline code must use `<code>...</code>` rather
   than markdown-style backticks.
 - Plan visual aids before authoring. Aim for one visual aid every 4-6 slides
@@ -77,6 +85,8 @@ the source of truth.
 
 - Run `node scripts/validate-site.mjs` before committing presentation or catalog
   changes.
+- Run `node scripts/check-source-links.mjs <deck-id>` for source-link validation
+  when creating, validating, or refreshing a deck with external references.
 - Treat the local checkout, local static files, and local HTTP smoke test as the
   validation source of truth.
 - Treat visual-aid warnings as authoring feedback. Existing decks may pass with
