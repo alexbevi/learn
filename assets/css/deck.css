@@ -1,0 +1,233 @@
+:root {
+  --deck-bg: #0f1115;
+  --deck-panel: #171b22;
+  --deck-panel-2: #202633;
+  --deck-text: #f5f7fa;
+  --deck-muted: #b1bbc9;
+  --deck-line: #303846;
+  --deck-accent: #21c7a8;
+  --deck-amber: #ffb84d;
+  --deck-red: #f26d6d;
+  --deck-blue: #7aa8ff;
+}
+
+.reveal {
+  color: var(--deck-text);
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.reveal-viewport {
+  background:
+    radial-gradient(circle at 82% 12%, rgb(33 199 168 / 15%), transparent 300px),
+    linear-gradient(180deg, rgb(255 255 255 / 5%), transparent 340px),
+    var(--deck-bg);
+}
+
+.reveal .slides {
+  text-align: left;
+}
+
+.reveal .slides section {
+  box-sizing: border-box;
+  min-height: 100%;
+  padding: 36px 44px;
+}
+
+.reveal h1,
+.reveal h2,
+.reveal h3 {
+  margin: 0;
+  color: var(--deck-text);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.reveal h1 {
+  max-width: 1000px;
+  font-size: 3.1em;
+  line-height: 0.96;
+}
+
+.reveal h2 {
+  font-size: 2.15em;
+  line-height: 1.04;
+}
+
+.reveal h3 {
+  font-size: 1.08em;
+}
+
+.reveal p,
+.reveal li {
+  color: var(--deck-muted);
+  font-size: 0.72em;
+  line-height: 1.35;
+}
+
+.reveal strong {
+  color: var(--deck-text);
+}
+
+.reveal a {
+  color: var(--deck-accent);
+}
+
+.kicker {
+  margin: 0 0 16px;
+  color: var(--deck-accent);
+  font-size: 0.36em;
+  font-weight: 780;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.lead {
+  max-width: 880px;
+  margin-top: 22px;
+  font-size: 0.88em;
+}
+
+.grid-2,
+.grid-3,
+.grid-4 {
+  display: grid;
+  gap: 18px;
+  margin-top: 28px;
+}
+
+.grid-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.grid-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.panel,
+.callout {
+  border: 1px solid var(--deck-line);
+  border-radius: 8px;
+  background: linear-gradient(180deg, var(--deck-panel-2), var(--deck-panel));
+  padding: 18px;
+}
+
+.panel h3,
+.callout h3 {
+  margin-bottom: 10px;
+}
+
+.panel p,
+.callout p,
+.panel li {
+  margin: 0;
+  font-size: 0.58em;
+}
+
+.panel ul {
+  margin: 10px 0 0;
+  padding-left: 1.1em;
+}
+
+.callout {
+  border-color: rgb(33 199 168 / 45%);
+}
+
+.metric {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--deck-amber);
+  font-size: 1.35em;
+  font-weight: 800;
+}
+
+.diagram {
+  display: block;
+  width: min(100%, 980px);
+  max-height: 520px;
+  margin: 28px auto 0;
+}
+
+.code-small {
+  font-size: 0.44em;
+  line-height: 1.28;
+}
+
+.reveal pre {
+  width: 100%;
+  margin: 26px 0 0;
+  border: 1px solid var(--deck-line);
+  border-radius: 8px;
+  background: #11151c;
+  box-shadow: none;
+}
+
+.reveal pre code {
+  max-height: 460px;
+  padding: 18px;
+}
+
+.table {
+  width: 100%;
+  margin-top: 24px;
+  border-collapse: collapse;
+  font-size: 0.52em;
+}
+
+.table th,
+.table td {
+  border-bottom: 1px solid var(--deck-line);
+  padding: 12px;
+  color: var(--deck-muted);
+  vertical-align: top;
+}
+
+.table th {
+  color: var(--deck-text);
+  text-align: left;
+}
+
+.footnote {
+  margin-top: 22px;
+  color: #8994a5;
+  font-size: 0.48em;
+}
+
+.reference-list {
+  columns: 2;
+  column-gap: 42px;
+  margin-top: 22px;
+}
+
+.reference-list h3 {
+  break-after: avoid;
+  margin-top: 0;
+  color: var(--deck-amber);
+  font-size: 0.68em;
+}
+
+.reference-list ul {
+  break-inside: avoid;
+  margin: 0 0 18px;
+  padding-left: 1em;
+}
+
+.reference-list li {
+  font-size: 0.44em;
+}
+
+@media (max-width: 900px) {
+  .grid-2,
+  .grid-3,
+  .grid-4 {
+    grid-template-columns: 1fr;
+  }
+
+  .reference-list {
+    columns: 1;
+  }
+}

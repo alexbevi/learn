@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 540" role="img" aria-labelledby="title desc">
+  <title id="title">LangGraph state flow</title>
+  <desc id="desc">Nodes read state, produce partial updates, route execution, and checkpoints persist snapshots.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#7aa8ff"/>
+    </marker>
+  </defs>
+  <rect width="1100" height="540" rx="22" fill="#11151c"/>
+  <g font-family="Inter, Arial, sans-serif">
+    <rect x="70" y="94" width="220" height="92" rx="12" fill="#202633" stroke="#303846" stroke-width="3"/>
+    <rect x="390" y="94" width="220" height="92" rx="12" fill="#202633" stroke="#303846" stroke-width="3"/>
+    <rect x="710" y="94" width="220" height="92" rx="12" fill="#202633" stroke="#303846" stroke-width="3"/>
+    <rect x="390" y="284" width="220" height="112" rx="12" fill="#172332" stroke="#21c7a8" stroke-width="3"/>
+    <rect x="770" y="284" width="220" height="112" rx="12" fill="#202633" stroke="#ffb84d" stroke-width="3"/>
+    <text x="180" y="148" fill="#f5f7fa" font-size="28" text-anchor="middle" font-weight="800">Node A</text>
+    <text x="500" y="148" fill="#f5f7fa" font-size="28" text-anchor="middle" font-weight="800">Node B</text>
+    <text x="820" y="148" fill="#f5f7fa" font-size="28" text-anchor="middle" font-weight="800">Node C</text>
+    <text x="500" y="330" fill="#f5f7fa" font-size="28" text-anchor="middle" font-weight="800">Shared State</text>
+    <text x="500" y="365" fill="#b1bbc9" font-size="19" text-anchor="middle">typed keys + reducers</text>
+    <text x="880" y="330" fill="#f5f7fa" font-size="28" text-anchor="middle" font-weight="800">Checkpointer</text>
+    <text x="880" y="365" fill="#b1bbc9" font-size="19" text-anchor="middle">thread snapshots</text>
+    <path d="M290 140 L390 140" stroke="#7aa8ff" stroke-width="5" marker-end="url(#arrow)"/>
+    <path d="M610 140 L710 140" stroke="#7aa8ff" stroke-width="5" marker-end="url(#arrow)"/>
+    <path d="M500 186 L500 284" stroke="#21c7a8" stroke-width="5" marker-end="url(#arrow)"/>
+    <path d="M610 340 L770 340" stroke="#ffb84d" stroke-width="5" marker-end="url(#arrow)"/>
+    <path d="M390 340 C230 340 180 260 180 186" stroke="#7aa8ff" stroke-width="5" fill="none" marker-end="url(#arrow)"/>
+  </g>
+  <text x="550" y="470" fill="#b1bbc9" font-family="Inter, Arial, sans-serif" font-size="24" text-anchor="middle">A graph is not just a flowchart: it is a state machine with resumable execution boundaries.</text>
+</svg>

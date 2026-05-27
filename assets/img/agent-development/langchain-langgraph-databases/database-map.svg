@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 560" role="img" aria-labelledby="title desc">
+  <title id="title">Database responsibilities in agent systems</title>
+  <desc id="desc">Different database responsibilities surround the agent runtime.</desc>
+  <rect width="1100" height="560" rx="22" fill="#11151c"/>
+  <g font-family="Inter, Arial, sans-serif">
+    <circle cx="550" cy="280" r="112" fill="#172332" stroke="#21c7a8" stroke-width="4"/>
+    <text x="550" y="266" fill="#f5f7fa" font-size="30" text-anchor="middle" font-weight="800">Agent</text>
+    <text x="550" y="305" fill="#b1bbc9" font-size="20" text-anchor="middle">runtime + tools</text>
+    <g fill="#202633" stroke="#303846" stroke-width="3">
+      <rect x="70" y="78" width="245" height="92" rx="12"/>
+      <rect x="428" y="48" width="245" height="92" rx="12"/>
+      <rect x="785" y="78" width="245" height="92" rx="12"/>
+      <rect x="70" y="390" width="245" height="92" rx="12"/>
+      <rect x="428" y="420" width="245" height="92" rx="12"/>
+      <rect x="785" y="390" width="245" height="92" rx="12"/>
+    </g>
+    <g fill="#f5f7fa" font-size="24" text-anchor="middle" font-weight="800">
+      <text x="192" y="116">Application DB</text>
+      <text x="550" y="86">Checkpoints</text>
+      <text x="908" y="116">Memory Store</text>
+      <text x="192" y="428">Vector Index</text>
+      <text x="550" y="458">Queue / Outbox</text>
+      <text x="908" y="428">Observability</text>
+    </g>
+    <g fill="#b1bbc9" font-size="17" text-anchor="middle">
+      <text x="192" y="146">domain records</text>
+      <text x="550" y="116">thread state</text>
+      <text x="908" y="146">cross-thread facts</text>
+      <text x="192" y="458">semantic recall</text>
+      <text x="550" y="488">side-effect reliability</text>
+      <text x="908" y="458">traces + feedback</text>
+    </g>
+    <g stroke="#7aa8ff" stroke-width="4" opacity="0.9">
+      <line x1="315" y1="170" x2="464" y2="225"/>
+      <line x1="550" y1="140" x2="550" y2="168"/>
+      <line x1="785" y1="170" x2="636" y2="225"/>
+      <line x1="315" y1="390" x2="464" y2="335"/>
+      <line x1="550" y1="420" x2="550" y2="392"/>
+      <line x1="785" y1="390" x2="636" y2="335"/>
+    </g>
+  </g>
+</svg>

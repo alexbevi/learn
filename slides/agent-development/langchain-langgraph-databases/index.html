@@ -1,0 +1,704 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Agent Development with LangChain and LangGraph</title>
+    <link rel="stylesheet" href="../../../assets/vendor/reveal/dist/reveal.css" />
+    <link
+      rel="stylesheet"
+      href="../../../assets/vendor/reveal/dist/plugin/highlight/monokai.css"
+    />
+    <link rel="stylesheet" href="../../../assets/css/deck.css" />
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <p class="kicker">Agent Development</p>
+          <h1>Agent Development with LangChain and LangGraph</h1>
+          <p class="lead">
+            Runtime, state, and databases for developers building production
+            agent systems.
+          </p>
+          <p class="footnote">40 minutes / 28 slides</p>
+        </section>
+
+        <section>
+          <p class="kicker">Why this matters</p>
+          <h2>Agents are software systems, not just prompts</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>They reason</h3>
+              <p>Models interpret goals, choose next actions, and synthesize outcomes.</p>
+            </div>
+            <div class="panel">
+              <h3>They act</h3>
+              <p>Tools connect the model loop to APIs, code, search, databases, and side effects.</p>
+            </div>
+            <div class="panel">
+              <h3>They persist</h3>
+              <p>State, memory, and traces make behavior resumable, debuggable, and improvable.</p>
+            </div>
+          </div>
+          <p class="lead">
+            The hard part is not calling a model. It is controlling the loop
+            around the model.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Learning goals</p>
+          <h2>What you should be able to do after this</h2>
+          <div class="grid-2">
+            <div class="callout">
+              <h3>Framework judgment</h3>
+              <p>
+                Explain what LangChain gives you at the agent-harness layer and
+                what LangGraph gives you at the orchestration-runtime layer.
+              </p>
+            </div>
+            <div class="callout">
+              <h3>Runtime judgment</h3>
+              <p>
+                Model agent work as state, nodes, tools, routing decisions,
+                checkpoints, interrupts, and observable runs.
+              </p>
+            </div>
+            <div class="callout">
+              <h3>Data judgment</h3>
+              <p>
+                Decide which data belongs in an app database, checkpoint store,
+                memory store, vector index, queue, audit log, or trace system.
+              </p>
+            </div>
+            <div class="callout">
+              <h3>Design judgment</h3>
+              <p>
+                Choose when to start with a high-level agent and when to drop
+                into explicit graph design.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Mental model</p>
+          <h2>The agent loop</h2>
+          <img
+            class="diagram"
+            src="../../../assets/img/agent-development/langchain-langgraph-databases/agent-loop.svg"
+            alt="Agent loop architecture"
+          />
+        </section>
+
+        <section>
+          <p class="kicker">Stack</p>
+          <h2>LangChain and LangGraph solve different levels</h2>
+          <img
+            class="diagram"
+            src="../../../assets/img/agent-development/langchain-langgraph-databases/stack.svg"
+            alt="LangChain, LangGraph, and database stack"
+          />
+        </section>
+
+        <section>
+          <p class="kicker">LangChain</p>
+          <h2>LangChain is the agent harness</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Standard interfaces</h3>
+              <p>Common model, message, tool, output, middleware, and invocation patterns.</p>
+            </div>
+            <div class="panel">
+              <h3>Fast composition</h3>
+              <p>Bind tools, prompts, structured output, context, and middleware without building a runtime from scratch.</p>
+            </div>
+            <div class="panel">
+              <h3>Ecosystem leverage</h3>
+              <p>Integrations with models, retrievers, tooling, observability, and deployment paths.</p>
+            </div>
+          </div>
+          <p class="footnote">
+            In current docs, LangChain agents are recommended as a higher-level
+            starting point for common model and tool-calling loops.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">LangChain example</p>
+          <h2>A small agent has a lot around the model</h2>
+          <pre><code class="language-python code-small">from langchain.agents import create_agent
+from langgraph.checkpoint.memory import InMemorySaver
+
+def lookup_order(order_id: str) -> dict:
+    """Return order status from the application system."""
+    return {"order_id": order_id, "status": "waiting_on_carrier"}
+
+agent = create_agent(
+    model="provider:model-name",
+    tools=[lookup_order],
+    system_prompt="Help support staff answer order questions accurately.",
+    checkpointer=InMemorySaver(),
+)
+
+result = agent.invoke(
+    {"messages": [{"role": "user", "content": "Why is order A-123 delayed?"}]},
+    config={"configurable": {"thread_id": "support-ticket-42"}},
+)</code></pre>
+          <p class="footnote">
+            The model string is provider-specific. The durable behavior comes
+            from the checkpointer and thread id, not from the prompt.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Harness responsibilities</p>
+          <h2>What LangChain hides until you need to care</h2>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Concern</th>
+                <th>Why it matters</th>
+                <th>Common failure if ignored</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Tool schema</td>
+                <td>Turns code capabilities into model-callable affordances.</td>
+                <td>The model calls the wrong thing with plausible arguments.</td>
+              </tr>
+              <tr>
+                <td>Context</td>
+                <td>Separates per-run facts from durable conversation state.</td>
+                <td>Credentials, tenant ids, or feature flags leak into messages.</td>
+              </tr>
+              <tr>
+                <td>Middleware</td>
+                <td>Adds retries, guardrails, summarization, human approval, or custom routing.</td>
+                <td>Every tool and model call gets bespoke infrastructure code.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Use LangChain when</p>
+          <h2>The workflow is mostly an agent loop</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Good fit</h3>
+              <ul>
+                <li>Question answering with tools or retrieval.</li>
+                <li>Support, research, coding, analysis, and workflow assistants.</li>
+                <li>You need fast iteration on models, prompts, tools, and output shape.</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>Pressure signs</h3>
+              <ul>
+                <li>Many explicit phases with different retry and approval rules.</li>
+                <li>Complex human-in-the-loop checkpoints.</li>
+                <li>You need to inspect, resume, fork, or replay exact intermediate state.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">LangGraph</p>
+          <h2>LangGraph is the orchestration runtime</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <span class="metric">State</span>
+              <p>Typed data carried through the workflow and updated by nodes.</p>
+            </div>
+            <div class="panel">
+              <span class="metric">Control</span>
+              <p>Edges and commands make routing explicit instead of buried in prose.</p>
+            </div>
+            <div class="panel">
+              <span class="metric">Durability</span>
+              <p>Checkpoints allow resume, human review, time travel, and recovery.</p>
+            </div>
+          </div>
+          <p class="lead">
+            LangGraph is valuable when the control plane is part of the product.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">State flow</p>
+          <h2>A graph is a state machine with execution boundaries</h2>
+          <img
+            class="diagram"
+            src="../../../assets/img/agent-development/langchain-langgraph-databases/state-flow.svg"
+            alt="LangGraph state flow"
+          />
+        </section>
+
+        <section>
+          <p class="kicker">LangGraph example</p>
+          <h2>Make phases explicit when phases matter</h2>
+          <pre><code class="language-python code-small">from typing import Literal, TypedDict
+from langgraph.graph import END, START, StateGraph
+
+class TicketState(TypedDict):
+    ticket_id: str
+    category: str | None
+    risk: Literal["low", "high"] | None
+    draft: str | None
+
+def classify(state: TicketState) -> dict:
+    return {"category": "billing", "risk": "high"}
+
+def draft_reply(state: TicketState) -> dict:
+    return {"draft": "I found the billing issue and need approval to proceed."}
+
+builder = StateGraph(TicketState)
+builder.add_node("classify", classify)
+builder.add_node("draft_reply", draft_reply)
+builder.add_edge(START, "classify")
+builder.add_edge("classify", "draft_reply")
+builder.add_edge("draft_reply", END)
+
+graph = builder.compile()</code></pre>
+        </section>
+
+        <section>
+          <p class="kicker">Node design</p>
+          <h2>Granularity is an operations decision</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Too coarse</h3>
+              <p>Hard to resume, inspect, retry, or explain. Failures force repeated work.</p>
+            </div>
+            <div class="panel">
+              <h3>Useful boundary</h3>
+              <p>A node owns one meaningful unit of state change or side-effect preparation.</p>
+            </div>
+            <div class="panel">
+              <h3>Too fine</h3>
+              <p>Excess checkpoints, noisy traces, and control flow that obscures intent.</p>
+            </div>
+          </div>
+          <p class="footnote">
+            Node boundaries become natural places for checkpoints, traces, retries,
+            and human review.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Durable execution</p>
+          <h2>Durability changes failure semantics</h2>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Mode</th>
+                <th>Tradeoff</th>
+                <th>Use when</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>exit</code></td>
+                <td>Lowest write overhead, weakest mid-run crash recovery.</td>
+                <td>The workflow is long-running but intermediate loss is acceptable.</td>
+              </tr>
+              <tr>
+                <td><code>async</code></td>
+                <td>Good throughput with a small crash window.</td>
+                <td>Most production agent flows where latency matters.</td>
+              </tr>
+              <tr>
+                <td><code>sync</code></td>
+                <td>Strongest checkpoint guarantee, highest overhead.</td>
+                <td>Critical steps where redoing work or losing state is expensive.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Human in the loop</p>
+          <h2>Interrupts turn review into a runtime primitive</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Without interrupts</h3>
+              <p>
+                Approval becomes an external queue, a custom pause table, and
+                brittle glue to reconstruct what the agent was doing.
+              </p>
+            </div>
+            <div class="panel">
+              <h3>With graph persistence</h3>
+              <p>
+                The workflow can pause with state saved, wait for approval or
+                edits, then resume from the same logical point.
+              </p>
+            </div>
+          </div>
+          <pre><code class="language-python code-small">from langgraph.types import interrupt
+
+def request_approval(state: TicketState) -> dict:
+    decision = interrupt({"draft": state["draft"], "risk": state["risk"]})
+    return {"approved": decision["approved"]}</code></pre>
+        </section>
+
+        <section>
+          <p class="kicker">Database map</p>
+          <h2>Databases are not one thing in an agent system</h2>
+          <img
+            class="diagram"
+            src="../../../assets/img/agent-development/langchain-langgraph-databases/database-map.svg"
+            alt="Database responsibilities in agent systems"
+          />
+        </section>
+
+        <section>
+          <p class="kicker">Application data</p>
+          <h2>The app database remains the source of business truth</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Belongs here</h3>
+              <ul>
+                <li>Orders, users, accounts, cases, invoices, permissions.</li>
+                <li>Transactional constraints and domain invariants.</li>
+                <li>Records other services already depend on.</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>Agent access pattern</h3>
+              <ul>
+                <li>Expose narrow tools instead of raw unrestricted SQL.</li>
+                <li>Keep authorization outside the model.</li>
+                <li>Log side-effect intent before performing irreversible writes.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Checkpoints</p>
+          <h2>Checkpoint databases store execution state, not domain truth</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Scope</h3>
+              <p>Thread id, checkpoint id, state snapshot, metadata, and pending writes.</p>
+            </div>
+            <div class="panel">
+              <h3>Value</h3>
+              <p>Resume failed runs, inspect state history, pause for humans, and replay decisions.</p>
+            </div>
+            <div class="panel">
+              <h3>Backend</h3>
+              <p>Start in memory or SQLite locally. Move to a durable database for production.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Memory</p>
+          <h2>Short-term memory and long-term memory are different stores</h2>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Primary key</th>
+                <th>Purpose</th>
+                <th>Risk</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Short-term</td>
+                <td>Thread</td>
+                <td>Conversation continuity and current task state.</td>
+                <td>Context growth, stale assumptions, privacy retention.</td>
+              </tr>
+              <tr>
+                <td>Long-term</td>
+                <td>User, org, app namespace</td>
+                <td>Reusable preferences, facts, summaries, and learned constraints.</td>
+                <td>Incorrect memories become product behavior.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Retrieval</p>
+          <h2>Vector search is a context source, not memory by itself</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Index</h3>
+              <p>Embeddings make unstructured content searchable by semantic similarity.</p>
+            </div>
+            <div class="panel">
+              <h3>Retriever</h3>
+              <p>Ranking, filters, recency, permissions, and chunk strategy decide usefulness.</p>
+            </div>
+            <div class="panel">
+              <h3>Agent</h3>
+              <p>The model receives selected context and must still reason about applicability.</p>
+            </div>
+          </div>
+          <p class="lead">
+            Treat retrieval as evidence injection. Treat memory as state the
+            product is willing to carry forward.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Side effects</p>
+          <h2>Use queues and outboxes for reliable action</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Problem</h3>
+              <p>
+                Model loops can retry. Tools can timeout. Users can approve hours
+                later. External APIs can partially succeed.
+              </p>
+            </div>
+            <div class="panel">
+              <h3>Pattern</h3>
+              <p>
+                Record intended side effects transactionally, process them
+                idempotently, and report the durable outcome back into graph state.
+              </p>
+            </div>
+          </div>
+          <p class="footnote">
+            This is normal distributed-systems hygiene. Agents make it more visible.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Observability</p>
+          <h2>Traces explain behavior better than logs alone</h2>
+          <div class="grid-4">
+            <div class="panel">
+              <h3>Trace</h3>
+              <p>One user operation or agent turn.</p>
+            </div>
+            <div class="panel">
+              <h3>Run</h3>
+              <p>One model call, tool call, parser, retriever, or node.</p>
+            </div>
+            <div class="panel">
+              <h3>Metadata</h3>
+              <p>Version, tenant, experiment, feature flag, or route.</p>
+            </div>
+            <div class="panel">
+              <h3>Feedback</h3>
+              <p>Human or automated signal for improvement.</p>
+            </div>
+          </div>
+          <p class="lead">
+            For agents, observability is product telemetry and debugging surface.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Production shape</p>
+          <h2>A pragmatic architecture</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Runtime path</h3>
+              <ul>
+                <li>API receives a user goal and creates a thread.</li>
+                <li>LangChain agent or LangGraph graph invokes model and tools.</li>
+                <li>Checkpointer stores execution state at chosen durability level.</li>
+                <li>Tools read/write app systems through constrained interfaces.</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>Data path</h3>
+              <ul>
+                <li>App DB owns domain truth.</li>
+                <li>Vector index supplies evidence.</li>
+                <li>Memory store carries approved cross-thread facts.</li>
+                <li>Trace store captures runs, metadata, outputs, and feedback.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Design playbook</p>
+          <h2>Start from product promises</h2>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>If the product promises...</th>
+                <th>You need...</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>"Come back later and continue."</td>
+                <td>Thread ids, checkpointer, retention policy, state inspection.</td>
+              </tr>
+              <tr>
+                <td>"Ask for approval before changing data."</td>
+                <td>Interrupts, human review UI, durable pause, auditable decision.</td>
+              </tr>
+              <tr>
+                <td>"Learn my preferences."</td>
+                <td>Memory write policy, namespace design, correction and deletion paths.</td>
+              </tr>
+              <tr>
+                <td>"Use our knowledge base."</td>
+                <td>Retriever, permissions, chunking, freshness, citations, evaluation.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Failure modes</p>
+          <h2>Where agent systems usually break</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Implicit state</h3>
+              <p>The only record of progress is a growing message list.</p>
+            </div>
+            <div class="panel">
+              <h3>Unbounded tools</h3>
+              <p>The model can reach capabilities wider than the product contract.</p>
+            </div>
+            <div class="panel">
+              <h3>Memory pollution</h3>
+              <p>Bad summaries or inferred preferences become durable behavior.</p>
+            </div>
+            <div class="panel">
+              <h3>Retry side effects</h3>
+              <p>A timeout causes duplicate emails, tickets, payments, or writes.</p>
+            </div>
+            <div class="panel">
+              <h3>Opaque traces</h3>
+              <p>You cannot answer why the agent selected a tool or changed state.</p>
+            </div>
+            <div class="panel">
+              <h3>No evaluation loop</h3>
+              <p>Failures are anecdotes instead of labeled data for improvement.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Decision framework</p>
+          <h2>LangChain first, LangGraph when control becomes product logic</h2>
+          <div class="grid-2">
+            <div class="callout">
+              <h3>Start with LangChain agents</h3>
+              <p>
+                Use this when you need a fast, configurable harness for model
+                calls, tools, structured output, middleware, context, and common
+                agent loops.
+              </p>
+            </div>
+            <div class="callout">
+              <h3>Drop into LangGraph</h3>
+              <p>
+                Use this when state transitions, human review, durability,
+                branching, replay, or operational boundaries must be explicit.
+              </p>
+            </div>
+          </div>
+          <p class="lead">
+            The split is not beginner versus advanced. It is harness versus runtime.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Recap</p>
+          <h2>The useful mental model</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Frameworks</h3>
+              <ul>
+                <li>LangChain accelerates the agent harness.</li>
+                <li>LangGraph makes runtime state and control explicit.</li>
+                <li>LangSmith-style traces make behavior inspectable.</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>Databases</h3>
+              <ul>
+                <li>App DB owns domain truth.</li>
+                <li>Checkpoint DB owns resumable execution.</li>
+                <li>Memory and retrieval stores have different contracts.</li>
+                <li>Queues and traces close the production loop.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">References</p>
+          <h2>Follow-up reading by concept</h2>
+          <div class="reference-list">
+            <h3>Agent harness</h3>
+            <ul>
+              <li>
+                <a href="https://docs.langchain.com/oss/python/langchain/agents">LangChain agents</a>
+              </li>
+              <li>
+                <a href="https://docs.langchain.com/oss/python/langchain/human-in-the-loop">LangChain human-in-the-loop</a>
+              </li>
+            </ul>
+            <h3>Graph runtime</h3>
+            <ul>
+              <li>
+                <a href="https://docs.langchain.com/oss/python/langgraph/overview">LangGraph overview</a>
+              </li>
+              <li>
+                <a href="https://docs.langchain.com/oss/python/langgraph/thinking-in-langgraph">Thinking in LangGraph</a>
+              </li>
+              <li>
+                <a href="https://docs.langchain.com/oss/python/langgraph/durable-execution">LangGraph durable execution</a>
+              </li>
+            </ul>
+            <h3>Persistence and memory</h3>
+            <ul>
+              <li>
+                <a href="https://docs.langchain.com/oss/python/langgraph/persistence">LangGraph persistence</a>
+              </li>
+              <li>
+                <a href="https://docs.langchain.com/oss/python/langgraph/add-memory">LangGraph memory</a>
+              </li>
+            </ul>
+            <h3>Observability and slide runtime</h3>
+            <ul>
+              <li>
+                <a href="https://docs.langchain.com/langsmith/observability-concepts">LangSmith observability concepts</a>
+              </li>
+              <li>
+                <a href="https://revealjs.com/markup/">reveal.js markup</a>
+              </li>
+              <li>
+                <a href="https://revealjs.com/config/">reveal.js configuration</a>
+              </li>
+            </ul>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script src="../../../assets/vendor/reveal/dist/reveal.js"></script>
+    <script src="../../../assets/vendor/reveal/dist/plugin/highlight.js"></script>
+    <script>
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        hash: true,
+        slideNumber: true,
+        transition: "slide",
+        backgroundTransition: "fade",
+        plugins: [RevealHighlight],
+      });
+    </script>
+  </body>
+</html>
