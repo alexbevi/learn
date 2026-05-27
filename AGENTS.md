@@ -5,6 +5,20 @@
 This repository contains static HTML learning decks. Treat the local checkout as
 the source of truth.
 
+## Agent Skills
+
+- Project skill definitions live under `.codex/skills/`.
+- Keep these skills repo-local. Do not install or maintain global copies under
+  `$CODEX_HOME/skills/`.
+- Use the `learn-presentation-create` Codex skill when creating or materially
+  updating a learning presentation.
+- Use the `learn-presentation-validate` Codex skill when auditing a presentation
+  for structural health, rendering readiness, source coverage, or factual
+  accuracy.
+- Validation audits must check current web sources of truth for technical claims
+  and summarize issues before applying fixes. Ask the user before changing a deck
+  in response to validation findings.
+
 ## Project Constraints
 
 - Keep the site deployable as static files on GitHub Pages.

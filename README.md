@@ -42,6 +42,12 @@ the publishing target.
 
 ## Content Workflow
 
+Presentation creation is handled through the Codex
+`learn-presentation-create` skill so intake, research, authoring, metadata,
+validation, commit, and push stay consistent. Project skill definitions live
+under `.codex/skills/` and should remain repo-local rather than being installed
+under `$CODEX_HOME/skills/`.
+
 When creating a new learning plan:
 
 1. Prompt the user conversationally, one focused question at a time, to shape
@@ -54,6 +60,10 @@ When creating a new learning plan:
    duration estimate, slide count, and tags.
 7. Validate local links, assets, slide count, references, tags, and local HTTP
    smoke URLs with `node scripts/validate-site.mjs`.
+
+For factual review, use the `learn-presentation-validate` skill. It runs local
+structural validation, checks deck claims against current web sources of truth,
+summarizes issues by severity, and asks before applying presentation fixes.
 
 ## Tagging
 
