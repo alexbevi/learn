@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Learn</title>
+    <meta
+      name="description"
+      content="A catalog of technical and product learning presentations."
+    />
+    <link rel="stylesheet" href="assets/css/site.css" />
+  </head>
+  <body data-page="home" data-root="./">
+    <header class="site-header">
+      <a class="brand" href="./" aria-label="Learn home">
+        <span class="brand-mark">L</span>
+        <span>Learn</span>
+      </a>
+      <nav aria-label="Primary">
+        <a class="nav-link" href="#presentations">Presentations</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="section-inner">
+          <h1>Technical learning, packaged as focused slide decks.</h1>
+          <p>
+            Product and engineering concepts presented as deep, reusable HTML
+            slideshows with consistent structure, local assets, and follow-up
+            references.
+          </p>
+        </div>
+      </section>
+
+      <section class="band" aria-labelledby="topics-heading">
+        <div class="section-inner">
+          <div class="section-heading">
+            <h2 id="topics-heading">Topics</h2>
+            <p>Browse by learning area.</p>
+          </div>
+          <div class="topic-grid" data-topic-list></div>
+        </div>
+      </section>
+
+      <section class="band" id="presentations" aria-labelledby="presentations-heading">
+        <div class="section-inner">
+          <div class="section-heading">
+            <h2 id="presentations-heading">Presentations</h2>
+            <p class="filter-label" data-filter-label>Showing all presentations</p>
+          </div>
+          <div class="tag-filter" data-tag-filter aria-label="Filter presentations by tag"></div>
+          <div class="presentation-grid" data-presentation-list></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Built as static HTML for GitHub Pages.</p>
+    </footer>
+
+    <script src="assets/js/catalog.js"></script>
+    <script src="assets/js/site.js"></script>
+  </body>
+</html>
