@@ -17,6 +17,77 @@
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
+body.has-deck-topbar {
+  overflow: hidden;
+}
+
+body.has-deck-topbar .reveal {
+  height: calc(100vh - 58px);
+  margin-top: 58px;
+}
+
+.deck-topbar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 50;
+  display: grid;
+  grid-template-columns: minmax(90px, 150px) minmax(0, 1fr) minmax(70px, 120px);
+  align-items: center;
+  gap: 14px;
+  height: 58px;
+  padding: 0 24px;
+  border-bottom: 1px solid rgb(255 255 255 / 9%);
+  background: rgb(15 17 21 / 92%);
+  backdrop-filter: blur(18px);
+  color: var(--deck-text);
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.deck-title {
+  min-width: 0;
+  text-align: center;
+}
+
+.deck-title span,
+.deck-title small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.deck-title span {
+  font-size: 0.96rem;
+  font-weight: 760;
+}
+
+.deck-title small {
+  margin-top: 2px;
+  color: var(--deck-muted);
+  font-size: 0.72rem;
+}
+
+.deck-nav-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  border: 1px solid var(--deck-line);
+  border-radius: 8px;
+  color: var(--deck-muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.deck-nav-link:hover {
+  border-color: var(--deck-accent);
+  color: var(--deck-text);
+}
+
 .reveal-viewport {
   background:
     radial-gradient(circle at 82% 12%, rgb(33 199 168 / 15%), transparent 300px),
@@ -229,5 +300,32 @@
 
   .reference-list {
     columns: 1;
+  }
+}
+
+@media (max-width: 680px) {
+  .deck-topbar {
+    grid-template-columns: 74px minmax(0, 1fr) 58px;
+    gap: 8px;
+    height: 54px;
+    padding: 0 10px;
+  }
+
+  body.has-deck-topbar .reveal {
+    height: calc(100vh - 54px);
+    margin-top: 54px;
+  }
+
+  .deck-title span {
+    font-size: 0.78rem;
+  }
+
+  .deck-title small {
+    font-size: 0.66rem;
+  }
+
+  .deck-nav-link {
+    min-height: 32px;
+    font-size: 0.72rem;
   }
 }

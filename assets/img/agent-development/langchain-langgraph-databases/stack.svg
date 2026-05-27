@@ -3,25 +3,30 @@
   <desc id="desc">LangChain sits above LangGraph, while databases support state, memory, retrieval, and operations.</desc>
   <rect width="1100" height="560" rx="22" fill="#11151c"/>
   <g font-family="Inter, Arial, sans-serif">
-    <rect x="130" y="60" width="840" height="96" rx="12" fill="#202633" stroke="#303846" stroke-width="3"/>
-    <text x="168" y="118" fill="#f5f7fa" font-size="34" font-weight="800">LangChain agent harness</text>
-    <text x="600" y="119" fill="#b1bbc9" font-size="22">models, tools, prompts, middleware, invocation</text>
-    <rect x="130" y="198" width="840" height="106" rx="12" fill="#172332" stroke="#21c7a8" stroke-width="3"/>
-    <text x="168" y="263" fill="#f5f7fa" font-size="34" font-weight="800">LangGraph runtime</text>
-    <text x="563" y="264" fill="#b1bbc9" font-size="22">state graph, durable execution, interrupts, streaming</text>
-    <rect x="130" y="350" width="170" height="96" rx="12" fill="#202633" stroke="#303846" stroke-width="3"/>
-    <rect x="325" y="350" width="170" height="96" rx="12" fill="#202633" stroke="#303846" stroke-width="3"/>
-    <rect x="520" y="350" width="170" height="96" rx="12" fill="#202633" stroke="#303846" stroke-width="3"/>
-    <rect x="715" y="350" width="255" height="96" rx="12" fill="#202633" stroke="#303846" stroke-width="3"/>
-    <text x="215" y="392" fill="#ffb84d" font-size="24" text-anchor="middle" font-weight="700">Checkpoints</text>
-    <text x="215" y="422" fill="#b1bbc9" font-size="18" text-anchor="middle">resume state</text>
-    <text x="410" y="392" fill="#ffb84d" font-size="24" text-anchor="middle" font-weight="700">Memory</text>
-    <text x="410" y="422" fill="#b1bbc9" font-size="18" text-anchor="middle">cross-thread facts</text>
-    <text x="605" y="392" fill="#ffb84d" font-size="24" text-anchor="middle" font-weight="700">Retrieval</text>
-    <text x="605" y="422" fill="#b1bbc9" font-size="18" text-anchor="middle">semantic context</text>
-    <text x="842" y="392" fill="#ffb84d" font-size="24" text-anchor="middle" font-weight="700">App + Ops Data</text>
-    <text x="842" y="422" fill="#b1bbc9" font-size="18" text-anchor="middle">domain records, audit, traces</text>
-    <path d="M550 156 L550 198" stroke="#21c7a8" stroke-width="5"/>
-    <path d="M550 304 L550 350" stroke="#21c7a8" stroke-width="5"/>
+    <rect x="128" y="54" width="844" height="112" rx="12" fill="#202633" stroke="#303846" stroke-width="3"/>
+    <text x="168" y="102" fill="#f5f7fa" font-size="31" font-weight="800">LangChain agent harness</text>
+    <text x="168" y="136" fill="#b1bbc9" font-size="20">model and tool interfaces, prompts, middleware, invocation</text>
+
+    <rect x="128" y="210" width="844" height="118" rx="12" fill="#172332" stroke="#21c7a8" stroke-width="3"/>
+    <text x="168" y="262" fill="#f5f7fa" font-size="31" font-weight="800">LangGraph runtime</text>
+    <text x="168" y="296" fill="#b1bbc9" font-size="20">explicit state graphs, durable execution, interrupts, streaming</text>
+
+    <rect x="128" y="386" width="188" height="104" rx="12" fill="#202633" stroke="#303846" stroke-width="3"/>
+    <rect x="346" y="386" width="188" height="104" rx="12" fill="#202633" stroke="#303846" stroke-width="3"/>
+    <rect x="564" y="386" width="188" height="104" rx="12" fill="#202633" stroke="#303846" stroke-width="3"/>
+    <rect x="782" y="386" width="190" height="104" rx="12" fill="#202633" stroke="#303846" stroke-width="3"/>
+
+    <text x="222" y="427" fill="#ffb84d" font-size="23" text-anchor="middle" font-weight="700">Checkpoints</text>
+    <text x="222" y="459" fill="#b1bbc9" font-size="17" text-anchor="middle">resume state</text>
+    <text x="440" y="427" fill="#ffb84d" font-size="23" text-anchor="middle" font-weight="700">Memory</text>
+    <text x="440" y="459" fill="#b1bbc9" font-size="17" text-anchor="middle">cross-thread facts</text>
+    <text x="658" y="427" fill="#ffb84d" font-size="23" text-anchor="middle" font-weight="700">Retrieval</text>
+    <text x="658" y="459" fill="#b1bbc9" font-size="17" text-anchor="middle">semantic context</text>
+    <text x="877" y="421" fill="#ffb84d" font-size="22" text-anchor="middle" font-weight="700">App + Ops</text>
+    <text x="877" y="450" fill="#ffb84d" font-size="22" text-anchor="middle" font-weight="700">Data</text>
+    <text x="877" y="477" fill="#b1bbc9" font-size="16" text-anchor="middle">records, audit, traces</text>
+
+    <path d="M550 166 L550 210" stroke="#21c7a8" stroke-width="5"/>
+    <path d="M550 328 L550 386" stroke="#21c7a8" stroke-width="5"/>
   </g>
 </svg>
