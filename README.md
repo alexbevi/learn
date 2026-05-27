@@ -17,6 +17,19 @@ python3 -m http.server 8080
 
 Then visit `http://localhost:8080/`.
 
+## Validation
+
+Validate the committed local site before pushing:
+
+```bash
+node scripts/validate-site.mjs
+```
+
+The validator checks local files, catalog metadata, deck slide counts, required
+references slides, tags, internal links/assets, and local HTTP smoke URLs. Do not
+wait for GitHub Pages deployment as the primary validation signal; Pages is only
+the publishing target.
+
 ## Structure
 
 - `index.html` lists topics, presentations, and filterable tags.
@@ -39,7 +52,8 @@ When creating a new learning plan:
 5. Generate tags after the deck is drafted, based on actual concepts covered.
 6. Update `assets/js/catalog.js` with the final summary, learning goals,
    duration estimate, slide count, and tags.
-7. Validate links, assets, slide count, references, and tag filtering.
+7. Validate local links, assets, slide count, references, tags, and local HTTP
+   smoke URLs with `node scripts/validate-site.mjs`.
 
 ## Tagging
 

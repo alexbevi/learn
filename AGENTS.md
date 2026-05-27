@@ -12,6 +12,8 @@ the source of truth.
 - Keep runtime assets local. Avoid CDN dependencies for deck rendering.
 - Use `reveal.js` from `assets/vendor/reveal/` for slideshows.
 - Use `assets/js/catalog.js` as the presentation metadata source of truth.
+- Use local validation as the acceptance signal. Do not wait for the public
+  GitHub Pages deployment to validate content changes.
 
 ## Deck Authoring
 
@@ -43,6 +45,15 @@ the source of truth.
 - Prefer 6-12 tags for substantial decks.
 - Use canonical lowercase slugs and stable human-readable labels.
 - Avoid near-duplicates such as `database`, `databases`, and `db`.
+
+## Validation
+
+- Run `node scripts/validate-site.mjs` before committing presentation or catalog
+  changes.
+- Treat the local checkout, local static files, and local HTTP smoke test as the
+  validation source of truth.
+- After pushing, GitHub Pages deployment may be checked for CI health, but do not
+  block content validation on the public Pages URL or CDN cache.
 
 ## Learning Intake
 
