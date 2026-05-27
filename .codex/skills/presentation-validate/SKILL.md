@@ -20,10 +20,12 @@ Validate a Learn presentation for structural health, rendering readiness, and fa
    - Record failures before deeper content review.
    - Use local files or a local static server for any browser/rendering checks.
    - Do not wait for GitHub Pages deployment.
+   - Treat visual-aid warnings as presentation quality findings, especially for new or heavily updated decks.
 
 3. Extract the claims to verify.
    - Read the deck HTML and catalog metadata.
    - Identify concrete claims: API names, framework capabilities, version-sensitive behavior, architectural comparisons, code examples, diagrams, operational guidance, performance claims, and security claims.
+   - Identify visual gaps: concepts that would be clearer as taxonomy, flow, architecture, lifecycle, comparison, or data-plane visuals.
    - Note slide numbers or section labels for every claim cluster.
 
 4. Check sources of truth on the web.
@@ -52,10 +54,11 @@ When the user confirms fixes:
 
 1. Update the deck, catalog metadata, references slide, last updated date, and tags as needed.
 2. Preserve the existing visual system and use `<code>...</code>` for inline code.
-3. Add or adjust references so every corrected concept has a source.
-4. Run `node scripts/validate-site.mjs`.
-5. Perform local browser or screenshot checks when layout risk is non-trivial.
-6. Commit and push a self-contained Conventional Commit if this repository workflow calls for commits.
+3. Add or adjust visual aids when the validation issue is conceptual clarity or visual density.
+4. Add or adjust references so every corrected concept has a source.
+5. Run `node scripts/validate-site.mjs`.
+6. Perform local browser or screenshot checks when layout risk is non-trivial.
+7. Commit and push a self-contained Conventional Commit if this repository workflow calls for commits.
 
 ## No-Issue Response
 

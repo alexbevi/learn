@@ -39,9 +39,20 @@ the source of truth.
   interfaces, state flow, failure modes, and tradeoffs over vague summaries.
 - Use real HTML for formatting. Inline code must use `<code>...</code>` rather
   than markdown-style backticks.
-- Use generated or local diagrams when they communicate the concept better than
-  prose. If an external image is embedded, copy it into the repo and cite its
-  source page in the deck.
+- Plan visual aids before authoring. Aim for one visual aid every 4-6 slides
+  and at least one visual for each major taxonomy, lifecycle, architecture,
+  runtime flow, data flow, or decision framework.
+- Prefer deterministic HTML/CSS visuals for technical diagrams. If a bitmap
+  asset is useful, author the source under `visuals/<topic>/<deck>/` and render
+  it to a PNG under `assets/img/<topic>/<deck>/` with
+  `node scripts/render-visuals.mjs`.
+- Mark custom in-slide visual aids with `data-visual` when they are not images
+  or one of the shared diagram classes, so local validation can count them.
+- Use generated bitmap images only for conceptual, non-text visuals. Do not rely
+  on image generation for labels, code, tables, or small text; overlay those in
+  HTML instead.
+- If an external image is embedded, copy it into the repo, add useful `alt`
+  text, and cite its source page in the deck.
 
 ## References
 
@@ -68,6 +79,8 @@ the source of truth.
   changes.
 - Treat the local checkout, local static files, and local HTTP smoke test as the
   validation source of truth.
+- Treat visual-aid warnings as authoring feedback. Existing decks may pass with
+  warnings, but new substantial decks should meet or exceed the visual target.
 - After pushing, GitHub Pages deployment may be checked for CI health, but do not
   block content validation on the public Pages URL or CDN cache.
 

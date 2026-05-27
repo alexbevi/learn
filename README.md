@@ -26,9 +26,13 @@ node scripts/validate-site.mjs
 ```
 
 The validator checks local files, catalog metadata, deck slide counts, required
-references slides, tags, internal links/assets, and local HTTP smoke URLs. Do not
-wait for GitHub Pages deployment as the primary validation signal; Pages is only
-the publishing target.
+references slides, tags, internal links/assets, image accessibility, visual-aid
+cadence, and local HTTP smoke URLs. Do not wait for GitHub Pages deployment as
+the primary validation signal; Pages is only the publishing target.
+
+Visual-aid cadence currently reports warnings rather than failures so older decks
+remain valid. Treat those warnings as authoring feedback for new or materially
+updated presentations.
 
 ## Structure
 
@@ -39,6 +43,9 @@ the publishing target.
   summaries, learning goals, duration, slide count, last updated dates, and tags.
 - `assets/vendor/reveal/` contains the vendored reveal.js runtime.
 - `assets/img/` stores local visual assets used by decks.
+- `visuals/` stores reproducible HTML/CSS sources for rendered PNG visual aids.
+- `scripts/render-visuals.mjs` renders `visuals/**/*.html` to matching PNGs
+  under `assets/img/`.
 
 ## Content Workflow
 
@@ -53,12 +60,28 @@ When creating a new learning plan:
 1. Prompt the user conversationally, one focused question at a time, to shape
    scope, audience, technical depth, and desired examples.
 2. Research from primary sources where possible.
-3. Build the deck as static HTML using the shared slide layout and local assets.
-4. Add a final references slide grouped by concept.
-5. Generate tags after the deck is drafted, based on actual concepts covered.
-6. Update `assets/js/catalog.js` with the final summary, learning goals,
+3. Create a visual inventory for the deck. Aim for one visual aid every 4-6
+   slides and at least one visual for each major taxonomy, lifecycle,
+   architecture, runtime flow, data flow, or decision framework.
+4. Build the deck as static HTML using the shared slide layout and local assets.
+5. Prefer deterministic HTML/CSS visuals for technical diagrams. Render
+   reproducible PNG assets with:
+
+   ```bash
+   node scripts/render-visuals.mjs
+   ```
+
+   The convention is `visuals/<topic>/<deck>/<name>.html` to
+   `assets/img/<topic>/<deck>/<name>.png`.
+   Mark custom in-slide visual aids with `data-visual` when they are not images
+   or one of the shared diagram classes.
+6. Use generated PNGs for conceptual non-text imagery only. Keep labels, code,
+   arrows, and small text in HTML/CSS or rendered deterministic visuals.
+7. Add a final references slide grouped by concept.
+8. Generate tags after the deck is drafted, based on actual concepts covered.
+9. Update `assets/js/catalog.js` with the final summary, learning goals,
    duration estimate, slide count, last updated date, and tags.
-7. Validate local links, assets, slide count, references, tags, and local HTTP
+10. Validate local links, assets, slide count, references, tags, and local HTTP
    smoke URLs with `node scripts/validate-site.mjs`.
 
 For factual review, use the `presentation-validate` skill. It runs local

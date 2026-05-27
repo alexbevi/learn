@@ -6,9 +6,14 @@ import vm from "node:vm";
 
 const root = resolve(new URL("..", import.meta.url).pathname);
 const errors = [];
+const warnings = [];
 
 function fail(message) {
   errors.push(message);
+}
+
+function warn(message) {
+  warnings.push(message);
 }
 
 async function loadCatalog() {
@@ -59,11 +64,42 @@ function hasMarkdownBackticksOutsideCode(source) {
   return /`[^`]+`/.test(withoutCodeBlocks);
 }
 
+function imageIssues(source, file) {
+  const issues = [];
+  const imgPattern = /<img\b([^>]*)>/gi;
+  for (const match of source.matchAll(imgPattern)) {
+    const attrs = match[1];
+    const src = attrs.match(/\ssrc=["']([^"']+)["']/i)?.[1] || "";
+    const alt = attrs.match(/\salt=["']([^"']*)["']/i)?.[1] || "";
+    if (!alt.trim()) {
+      issues.push(`${file.replace(`${root}/`, "")}: image ${src || "(missing src)"} is missing useful alt text`);
+    }
+    if (/^https?:/i.test(src)) {
+      issues.push(`${file.replace(`${root}/`, "")}: image ${src} is external; copy runtime assets locally`);
+    }
+  }
+  return issues;
+}
+
+function visualAidCount(source) {
+  const patterns = [
+    /<img\b/gi,
+    /<figure\b/gi,
+    /\sdata-visual(?:=["'][^"']*["'])?/gi,
+    /class=["'][^"']*\bdiagram\b[^"']*["']/gi,
+    /class=["'][^"']*\b(?:stack-map|flow-map|lane-map|memory-strip|pipeline|swimlane|axis-row)\b[^"']*["']/gi,
+  ];
+  return patterns.reduce((count, pattern) => count + (source.match(pattern) || []).length, 0);
+}
+
 function contentType(pathname) {
   const ext = extname(pathname);
   if (ext === ".css") return "text/css";
   if (ext === ".js") return "text/javascript";
   if (ext === ".svg") return "image/svg+xml";
+  if (ext === ".png") return "image/png";
+  if (ext === ".jpg" || ext === ".jpeg") return "image/jpeg";
+  if (ext === ".webp") return "image/webp";
   if (ext === ".html" || ext === "") return "text/html";
   return "application/octet-stream";
 }
@@ -142,6 +178,16 @@ for (const presentation of catalog.presentations) {
   if (hasMarkdownBackticksOutsideCode(source)) {
     fail(`${presentation.id}: markdown-style backticks found outside code blocks; use <code> elements`);
   }
+  for (const issue of imageIssues(source, deckPath)) {
+    fail(issue);
+  }
+  const visuals = visualAidCount(source);
+  const targetVisuals = Math.max(1, Math.ceil(actualSlides / 8));
+  if (visuals < targetVisuals) {
+    warn(
+      `${presentation.id}: ${visuals} visual aid(s) found; target at least ${targetVisuals} for ${actualSlides} slides`,
+    );
+  }
   if (!presentation.tags?.length) {
     fail(`${presentation.id}: missing tags`);
   }
@@ -165,6 +211,11 @@ if (errors.length) {
   console.error("Validation failed:");
   for (const error of errors) console.error(`- ${error}`);
   process.exit(1);
+}
+
+if (warnings.length) {
+  console.warn("Validation warnings:");
+  for (const warning of warnings) console.warn(`- ${warning}`);
 }
 
 console.log(`Validated ${catalog.topics.length} topic(s), ${catalog.presentations.length} deck(s), and ${smokePaths.length} local URL(s).`);
