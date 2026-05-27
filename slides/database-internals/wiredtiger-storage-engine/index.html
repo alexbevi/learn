@@ -1,0 +1,1213 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MongoDB WiredTiger Storage Engine</title>
+    <link rel="stylesheet" href="../../../assets/vendor/reveal/dist/reveal.css" />
+    <link
+      rel="stylesheet"
+      href="../../../assets/vendor/reveal/dist/plugin/highlight/monokai.css"
+    />
+    <link rel="stylesheet" href="../../../assets/css/deck.css" />
+    <style>
+      .diagram-wide {
+        display: block;
+        width: min(100%, 1040px);
+        max-height: 510px;
+        margin: 24px auto 0;
+      }
+
+      .tight-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 22px;
+      }
+
+      .wide-grid {
+        display: grid;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 18px;
+        margin-top: 24px;
+      }
+
+      .mini-card,
+      .trace-row,
+      .metric-card {
+        border: 1px solid var(--deck-line);
+        border-radius: 8px;
+        background: linear-gradient(180deg, var(--deck-panel-2), var(--deck-panel));
+        padding: 14px;
+      }
+
+      .mini-card strong,
+      .trace-row strong,
+      .metric-card strong {
+        display: block;
+        color: var(--deck-text);
+        font-size: 0.52em;
+      }
+
+      .mini-card span,
+      .trace-row span,
+      .metric-card span {
+        display: block;
+        margin-top: 7px;
+        color: var(--deck-muted);
+        font-size: 0.44em;
+        line-height: 1.32;
+      }
+
+      .path-list {
+        display: grid;
+        gap: 10px;
+        margin-top: 22px;
+      }
+
+      .trace-row {
+        display: grid;
+        grid-template-columns: 190px minmax(0, 1fr) 260px;
+        gap: 14px;
+        align-items: start;
+      }
+
+      .trace-row em {
+        color: var(--deck-amber);
+        font-size: 0.42em;
+        font-style: normal;
+        line-height: 1.28;
+      }
+
+      .metric-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 22px;
+      }
+
+      .compare-table {
+        font-size: 0.43em;
+      }
+
+      .compare-table th,
+      .compare-table td {
+        padding: 8px;
+      }
+
+      .code-tight {
+        font-size: 1em;
+        line-height: 1.24;
+      }
+
+      .two-col-code {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+        margin-top: 22px;
+      }
+
+      .badge-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 20px;
+      }
+
+      .badge {
+        display: inline-flex;
+        padding: 6px 9px;
+        border: 1px solid rgb(255 255 255 / 12%);
+        border-radius: 999px;
+        color: var(--deck-muted);
+        font-size: 0.41em;
+        font-weight: 780;
+      }
+
+      @media (max-width: 900px) {
+        .tight-grid,
+        .wide-grid,
+        .trace-row,
+        .metric-grid,
+        .two-col-code {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body class="has-deck-topbar">
+    <header class="deck-topbar" aria-label="Presentation navigation">
+      <a class="deck-nav-link" href="../../../">Main menu</a>
+      <div class="deck-title">
+        <span>MongoDB WiredTiger Storage Engine</span>
+        <small>Internals, operations, and application impact</small>
+      </div>
+      <a class="deck-nav-link" href="../../../topics/database-internals/">Topic</a>
+    </header>
+
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <p class="kicker">Database Internals</p>
+          <h1>MongoDB's WiredTiger Storage Engine</h1>
+          <p class="lead">
+            A deep dive into how MongoDB operations move through the server
+            layer into WiredTiger B-trees, transactions, cache, eviction,
+            journaling, checkpoints, and recovery.
+          </p>
+          <p class="footnote">85 minutes / 50 slides</p>
+        </section>
+
+        <section>
+          <p class="kicker">Learning Goals</p>
+          <h2>What you should be able to reason about</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Internals</h3>
+              <p>Explain B-trees, pages, update chains, timestamps, cache, eviction, reconciliation, journal, and checkpoint roles.</p>
+            </div>
+            <div class="panel">
+              <h3>Operations</h3>
+              <p>Map latency, cache pressure, disk growth, checkpoint stalls, and scan regressions back to engine mechanisms.</p>
+            </div>
+            <div class="panel">
+              <h3>Application impact</h3>
+              <p>Predict how schema shape, index count, batching, transactions, and aggregation design change storage-engine work.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Through-Line</p>
+          <h2>We will trace two concrete operations</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Persistence path</h3>
+              <p>A multi-document insert into an orders collection with secondary indexes, durable write concern, and crash recovery implications.</p>
+            </div>
+            <div class="panel">
+              <h3>Retrieval path</h3>
+              <p>An aggregation pipeline that filters, sorts, groups, and fetches documents through query planning and storage cursors.</p>
+            </div>
+          </div>
+          <p class="lead">The point is not memorizing every internal struct. It is seeing which layer owns which responsibility.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Stack Map</p>
+          <h2>MongoDB operations cross server, engine, and OS boundaries</h2>
+          <img
+            class="diagram-wide"
+            src="../../../assets/img/database-internals/wiredtiger-storage-engine/storage-stack.png"
+            alt="Layered diagram showing a MongoDB command moving through server execution, WiredTiger, and operating system storage layers."
+          />
+        </section>
+
+        <section>
+          <p class="kicker">Mental Model</p>
+          <h2>WiredTiger is not just the file format</h2>
+          <div class="tight-grid">
+            <div class="mini-card">
+              <strong>Access method</strong>
+              <span>B-tree tables expose sorted key/value access for collection records and secondary indexes.</span>
+            </div>
+            <div class="mini-card">
+              <strong>Concurrency engine</strong>
+              <span>Transactions, snapshots, timestamps, and update visibility let readers and writers overlap.</span>
+            </div>
+            <div class="mini-card">
+              <strong>Memory manager</strong>
+              <span>Internal cache, eviction workers, dirty-page thresholds, reconciliation, and history store movement.</span>
+            </div>
+            <div class="mini-card">
+              <strong>Durability engine</strong>
+              <span>Write-ahead logging, checkpoints, metadata, turtle file, and restart recovery.</span>
+            </div>
+            <div class="mini-card">
+              <strong>Compression boundary</strong>
+              <span>On-disk blocks can be compressed while in-cache collection data is manipulated uncompressed.</span>
+            </div>
+            <div class="mini-card">
+              <strong>Operational surface</strong>
+              <span>Metrics expose cache behavior, checkpoint work, transaction pressure, cursors, locks, and I/O symptoms.</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Boundary</p>
+          <h2>MongoDB owns semantics; WiredTiger owns storage mechanics</h2>
+          <table class="table compare-table">
+            <thead>
+              <tr>
+                <th>Concern</th>
+                <th>MongoDB server</th>
+                <th>WiredTiger</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Command shape</td>
+                <td>CRUD, aggregation, transactions, sessions, read/write concern.</td>
+                <td>Storage cursors, transactions, timestamps, table handles.</td>
+              </tr>
+              <tr>
+                <td>Data model</td>
+                <td>Database, collection, document, index, catalog metadata.</td>
+                <td>Tables, row-store keys, pages, update chains, data files.</td>
+              </tr>
+              <tr>
+                <td>Query execution</td>
+                <td>Planner, SBE/classic execution, pipeline stages, document materialization.</td>
+                <td>Cursor traversal, page reads, visible-version resolution.</td>
+              </tr>
+              <tr>
+                <td>Durability contract</td>
+                <td>Write concern, journaling policy, replication acknowledgement.</td>
+                <td>Commit records, log flush, checkpoint, recovery.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Tables</p>
+          <h2>A MongoDB collection maps to several WiredTiger tables</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Collection table</h3>
+              <p>Keys are internal record identifiers. Values are BSON document bodies. Inserts add sorted keys to the collection's B-tree.</p>
+            </div>
+            <div class="panel">
+              <h3>Index tables</h3>
+              <p>Each secondary index has its own sorted key space. Compound, multikey, unique, and partial rules affect key generation.</p>
+            </div>
+            <div class="panel">
+              <h3>Catalog and metadata</h3>
+              <p>MongoDB tracks collection/index metadata above WiredTiger; WiredTiger metadata tracks files, checkpoints, and handles.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">B-Trees</p>
+          <h2>Pages are the unit you keep paying for</h2>
+          <img
+            class="diagram-wide"
+            src="../../../assets/img/database-internals/wiredtiger-storage-engine/page-anatomy.png"
+            alt="Diagram of WiredTiger B-tree root, internal, and leaf pages with row-store keys, insert lists, update chains, disk image, and history store."
+          />
+        </section>
+
+        <section>
+          <p class="kicker">Row Store</p>
+          <h2>Why B-trees fit MongoDB's access patterns</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Sorted navigation</h3>
+              <p>Index range scans are natural B-tree walks. Equality scans narrow to a key range; range queries walk adjacent keys.</p>
+            </div>
+            <div class="panel">
+              <h3>Localized mutation</h3>
+              <p>Inserts and updates target leaf pages. If pages exceed configured boundaries, the tree splits and grows.</p>
+            </div>
+            <div class="panel">
+              <h3>Separate access paths</h3>
+              <p>Collection and index B-trees let query planning choose between direct record fetch, index traversal, or collection scan.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">MVCC</p>
+          <h2>An update chain is the engine's local version history</h2>
+          <div class="path-list">
+            <div class="trace-row">
+              <strong>New write</strong>
+              <span>The newest update structure is linked at the head for a key.</span>
+              <em>Fast for current readers</em>
+            </div>
+            <div class="trace-row">
+              <strong>Snapshot reader</strong>
+              <span>Visibility checks compare transaction ids and timestamps against the reader's snapshot.</span>
+              <em>Older readers can still see older versions</em>
+            </div>
+            <div class="trace-row">
+              <strong>Reconciliation</strong>
+              <span>When a dirty page is written, current values can go to the data store and required old versions to the history store.</span>
+              <em>Version retention has a cost</em>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Timestamps</p>
+          <h2>MongoDB uses logical time to coordinate visibility and stability</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Read timestamp</h3>
+              <p>Controls which timestamped updates a transaction can see. Snapshot reads need repeatable visibility.</p>
+            </div>
+            <div class="panel">
+              <h3>Oldest timestamp</h3>
+              <p>Marks the point before which versions should be globally visible and no longer needed by readers.</p>
+            </div>
+            <div class="panel">
+              <h3>Stable timestamp</h3>
+              <p>Defines what can be checkpoint-durable; recovery rolls back updates newer than the stable boundary when required.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">History Store</p>
+          <h2>The history store is not a query feature; it is MVCC infrastructure</h2>
+          <div class="wide-grid">
+            <div class="callout">
+              <h3>Purpose</h3>
+              <p>
+                When an older version must survive beyond the in-memory update
+                chain, reconciliation can write that version to the history
+                store so snapshot readers still have a consistent view.
+              </p>
+            </div>
+            <div class="panel">
+              <h3>Operational implication</h3>
+              <p>Long-running reads, pinned timestamps, and heavy updates can increase history retention, cache pressure, and recovery work.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Cache</p>
+          <h2>There are two caches in the path, with different contents</h2>
+          <table class="table compare-table">
+            <thead>
+              <tr>
+                <th>Layer</th>
+                <th>What lives there</th>
+                <th>Why it matters</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>WiredTiger cache</td>
+                <td>In-memory pages, update chains, insert lists, dirty content.</td>
+                <td>Primary pressure point for reads, writes, eviction, and checkpoint preparation.</td>
+              </tr>
+              <tr>
+                <td>Filesystem cache</td>
+                <td>On-disk page images, usually compressed as stored in data files.</td>
+                <td>Cold reads may still avoid physical disk if the OS cache is warm.</td>
+              </tr>
+              <tr>
+                <td>Application memory</td>
+                <td>Query stages, aggregation buffers, connections, drivers, process overhead.</td>
+                <td>Too much non-cache memory reduces what the OS can use for storage caching.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Eviction</p>
+          <h2>Eviction is the engine's backpressure system</h2>
+          <div class="tight-grid">
+            <div class="mini-card">
+              <strong>Target</strong>
+              <span>Keep cache content below configured targets for total content, dirty content, and update-heavy content.</span>
+            </div>
+            <div class="mini-card">
+              <strong>Workers</strong>
+              <span>Eviction server and worker threads find and evict candidate pages across trees.</span>
+            </div>
+            <div class="mini-card">
+              <strong>Application threads</strong>
+              <span>When triggers are crossed, user threads can be forced to help evict before they continue work.</span>
+            </div>
+            <div class="mini-card">
+              <strong>Clean page</strong>
+              <span>Can be removed from memory because the disk version already matches.</span>
+            </div>
+            <div class="mini-card">
+              <strong>Dirty page</strong>
+              <span>Must be reconciled so new data, old data, and tombstones land in the right durable places.</span>
+            </div>
+            <div class="mini-card">
+              <strong>Operational signal</strong>
+              <span>Latency spikes often appear when foreground work is pulled into eviction and reconciliation.</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Reconciliation</p>
+          <h2>Dirty eviction is where logical versions become page images</h2>
+          <div class="path-list">
+            <div class="trace-row">
+              <strong>Gather page state</strong>
+              <span>Merge disk image, insert lists, update chains, tombstones, and visibility rules.</span>
+              <em>Engine state becomes a serializable page</em>
+            </div>
+            <div class="trace-row">
+              <strong>Choose durable content</strong>
+              <span>Write visible data to the data store and preserve older versions that active snapshots can still require.</span>
+              <em>History store may grow</em>
+            </div>
+            <div class="trace-row">
+              <strong>Release memory pressure</strong>
+              <span>Once the page has a valid durable representation, cache can drop or reduce the in-memory version.</span>
+              <em>Eviction succeeds only after this work</em>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Checkpoints</p>
+          <h2>A checkpoint is a consistent durable base image</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Transactionally consistent</h3>
+              <p>Checkpoint runs with a consistent view, coordinates B-tree traversal, block allocation, metadata, and history store checkpointing.</p>
+            </div>
+            <div class="panel">
+              <h3>Dirty work reduction</h3>
+              <p>Before the critical checkpoint work, eviction is used to reduce dirty cache content and avoid writing everything in one burst.</p>
+            </div>
+            <div class="panel">
+              <h3>Recovery anchor</h3>
+              <p>On restart, WiredTiger begins from the most recent checkpoint and replays the log for committed changes after it.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Journal</p>
+          <h2>The write-ahead log protects changes between checkpoints</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Commit log record</h3>
+              <p>Transaction modifications are collected and written as log records that recovery can replay.</p>
+            </div>
+            <div class="panel">
+              <h3>Log sequence numbers</h3>
+              <p>WiredTiger uses LSNs to identify log record positions and checkpoint relationships.</p>
+            </div>
+            <div class="panel">
+              <h3>Flush and sync</h3>
+              <p>Journal behavior intersects with MongoDB write concern, latency, filesystem semantics, and storage device behavior.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Durability</p>
+          <h2>Commit, journal, and checkpoint are different moments</h2>
+          <img
+            class="diagram-wide"
+            src="../../../assets/img/database-internals/wiredtiger-storage-engine/durability-timeline.png"
+            alt="Timeline showing a WiredTiger transaction commit, write-ahead log record, journal sync boundary, checkpoint, and crash recovery."
+          />
+        </section>
+
+        <section>
+          <p class="kicker">Persistence Example</p>
+          <h2>The workload: inserting order events</h2>
+          <pre><code class="language-js code-tight">db.orders.insertMany(
+  [
+    {
+      _id: ObjectId(),
+      customerId: "C-1842",
+      status: "created",
+      region: "ca-east",
+      totalCents: 4215,
+      createdAt: ISODate("2026-05-27T12:00:00Z"),
+      items: [{ sku: "A-42", qty: 2 }]
+    },
+    { customerId: "C-1842", status: "paid", region: "ca-east", totalCents: 4215 }
+  ],
+  { ordered: true, writeConcern: { w: "majority", j: true } }
+)</code></pre>
+        </section>
+
+        <section>
+          <p class="kicker">Insert Path</p>
+          <h2>One batch turns into many engine-level changes</h2>
+          <img
+            class="diagram-wide"
+            src="../../../assets/img/database-internals/wiredtiger-storage-engine/insert-path.png"
+            alt="Six-step diagram showing parse batch, acquire locks, open WiredTiger transaction, mutate B-trees, commit and log, then acknowledge."
+          />
+        </section>
+
+        <section>
+          <p class="kicker">Batch Semantics</p>
+          <h2><code>ordered</code> changes failure behavior, not storage fundamentals</h2>
+          <table class="table compare-table">
+            <thead>
+              <tr>
+                <th>Mode</th>
+                <th>Server behavior</th>
+                <th>Storage impact</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Ordered</td>
+                <td>Stop processing after the first write error in the batch.</td>
+                <td>Successfully inserted earlier documents still performed collection and index mutations.</td>
+              </tr>
+              <tr>
+                <td>Unordered</td>
+                <td>Continue independent inserts after errors where possible.</td>
+                <td>Can improve throughput by avoiding strict sequence dependency, but still creates the same per-document storage work.</td>
+              </tr>
+              <tr>
+                <td>Transaction</td>
+                <td>All-or-nothing semantics across the transaction boundary.</td>
+                <td>More versions, locks, history retention, and commit coordination may accumulate before completion.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Write Unit</p>
+          <h2>MongoDB's write unit has to keep collection and indexes consistent</h2>
+          <div class="path-list">
+            <div class="trace-row">
+              <strong>Generate record</strong>
+              <span>Assign or validate <code>_id</code>, validate document constraints, and choose the collection record id.</span>
+              <em>Collection table mutation</em>
+            </div>
+            <div class="trace-row">
+              <strong>Generate index keys</strong>
+              <span>For every index, derive keys from the document, including multikey expansion and uniqueness checks where applicable.</span>
+              <em>Index table mutations</em>
+            </div>
+            <div class="trace-row">
+              <strong>Commit or roll back</strong>
+              <span>Either every participating B-tree mutation commits under the unit, or none of the failed unit becomes visible.</span>
+              <em>Atomic storage boundary</em>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Index Amplification</p>
+          <h2>Each secondary index adds a second write workload</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>CPU</h3>
+              <p>Build key strings, apply collations, expand array fields, check uniqueness, and compare keys in sorted order.</p>
+            </div>
+            <div class="panel">
+              <h3>Cache</h3>
+              <p>Each index B-tree has its own hot pages, splits, dirty content, and eviction candidates.</p>
+            </div>
+            <div class="panel">
+              <h3>I/O</h3>
+              <p>More dirty pages means more reconciliation, more checkpoint work, and more log volume.</p>
+            </div>
+          </div>
+          <p class="lead">Read-optimized indexing is also write amplification. That tradeoff is storage-engine real, not just planner-level.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Unique Indexes</p>
+          <h2>Uniqueness turns inserts into reads plus writes</h2>
+          <div class="wide-grid">
+            <div class="panel">
+              <h3>Before insert</h3>
+              <p>MongoDB has to determine whether the generated unique key already exists or conflicts with another uncommitted operation.</p>
+            </div>
+            <div class="panel">
+              <h3>After insert</h3>
+              <p>The index B-tree must contain the key mapping to the inserted record id, and the transaction must preserve consistency with the collection table.</p>
+            </div>
+          </div>
+          <p class="lead">A unique secondary index is often the difference between append-like writes and contention-prone writes.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Multi-Document Transaction</p>
+          <h2>Transactions widen the lifetime of versions and resources</h2>
+          <div class="tight-grid">
+            <div class="mini-card">
+              <strong>More work before commit</strong>
+              <span>Updates accumulate under one logical transaction and must fit within memory and server limits.</span>
+            </div>
+            <div class="mini-card">
+              <strong>Longer visibility window</strong>
+              <span>Other readers may need older values while the transaction is active or while timestamps are pinned.</span>
+            </div>
+            <div class="mini-card">
+              <strong>Prepared state</strong>
+              <span>Distributed transactions can use prepared transactions, which create special conflict and timestamp behavior.</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Write Concern</p>
+          <h2>Client acknowledgement layers above engine commit</h2>
+          <table class="table compare-table">
+            <thead>
+              <tr>
+                <th>Layer</th>
+                <th>Question</th>
+                <th>Why latency changes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>WiredTiger commit</td>
+                <td>Did the transaction commit inside the engine?</td>
+                <td>CPU, cache, page mutation, and logging work.</td>
+              </tr>
+              <tr>
+                <td>Journal</td>
+                <td>Does the configured acknowledgement require journal durability?</td>
+                <td>Log flush and filesystem/device sync path.</td>
+              </tr>
+              <tr>
+                <td>Replication</td>
+                <td>Does <code>w</code> require majority or named replica set acknowledgement?</td>
+                <td>Network, secondary apply, oplog, and durable majority commit point.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Crash Recovery</p>
+          <h2>Recovery reconstructs the boundary between stable and unstable work</h2>
+          <div class="path-list">
+            <div class="trace-row">
+              <strong>Open last checkpoint</strong>
+              <span>Load the metadata and data-file state from the last complete checkpoint.</span>
+              <em>Known durable base</em>
+            </div>
+            <div class="trace-row">
+              <strong>Replay log</strong>
+              <span>Apply committed log records after the checkpoint so changes since the checkpoint are not lost.</span>
+              <em>Journal durability</em>
+            </div>
+            <div class="trace-row">
+              <strong>Rollback to stable</strong>
+              <span>Discard timestamped updates newer than the stable point where required by MongoDB replication semantics.</span>
+              <em>Consistency boundary</em>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Retrieval Example</p>
+          <h2>The workload: operational revenue aggregation</h2>
+          <pre><code class="language-js code-tight">db.orders.aggregate([
+  { $match: {
+      region: "ca-east",
+      status: { $in: ["paid", "shipped"] },
+      createdAt: { $gte: ISODate("2026-05-01") }
+  }},
+  { $sort: { customerId: 1, createdAt: -1 } },
+  { $group: {
+      _id: "$customerId",
+      revenue: { $sum: "$totalCents" },
+      lastOrderAt: { $first: "$createdAt" }
+  }},
+  { $sort: { revenue: -1 } },
+  { $limit: 50 }
+], { allowDiskUse: true })</code></pre>
+        </section>
+
+        <section>
+          <p class="kicker">Aggregation Path</p>
+          <h2>The storage engine sees cursor work, not a pipeline</h2>
+          <img
+            class="diagram-wide"
+            src="../../../assets/img/database-internals/wiredtiger-storage-engine/aggregation-path.png"
+            alt="Diagram contrasting MongoDB aggregation parsing, optimization, planning, and execution with WiredTiger index, collection, cache, snapshot, eviction, and spill work."
+          />
+        </section>
+
+        <section>
+          <p class="kicker">Optimizer</p>
+          <h2>Aggregation optimization decides what can reach indexes early</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Predicate movement</h3>
+              <p>Filters can be split and moved before projections when dependencies allow, exposing earlier index use.</p>
+            </div>
+            <div class="panel">
+              <h3>Stage coalescence</h3>
+              <p>Adjacent stages such as sort and limit can combine, reducing intermediate work and memory.</p>
+            </div>
+            <div class="panel">
+              <h3>SBE eligibility</h3>
+              <p>Some stages can run in the slot-based engine when preceding stages are also compatible.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Planner</p>
+          <h2>The planner turns predicates into B-tree traversal choices</h2>
+          <table class="table compare-table">
+            <thead>
+              <tr>
+                <th>Plan shape</th>
+                <th>Storage path</th>
+                <th>Common smell</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>IXSCAN</code> covered</td>
+                <td>Index B-tree scan returns all required fields from keys.</td>
+                <td>Usually efficient; watch key count and sort direction.</td>
+              </tr>
+              <tr>
+                <td><code>IXSCAN</code> + fetch</td>
+                <td>Index scan returns record ids, then collection B-tree fetches full BSON.</td>
+                <td>Many documents fetched means page traffic and cache churn.</td>
+              </tr>
+              <tr>
+                <td><code>COLLSCAN</code></td>
+                <td>Collection B-tree scan walks record ranges without selective index narrowing.</td>
+                <td>Often catastrophic when working set exceeds cache.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Covered Query</p>
+          <h2>A covered plan can avoid collection page fetches</h2>
+          <div class="two-col-code">
+            <pre><code class="language-js code-tight">db.orders.createIndex({
+  region: 1,
+  status: 1,
+  createdAt: -1,
+  customerId: 1,
+  totalCents: 1
+})</code></pre>
+            <div class="callout">
+              <h3>Storage effect</h3>
+              <p>
+                If the pipeline can be satisfied from index keys until a
+                blocking stage, WiredTiger touches fewer collection pages.
+                The tradeoff is a wider and more expensive index to maintain.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Blocking Stages</p>
+          <h2><code>$sort</code> and <code>$group</code> are memory-shaping stages</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Streaming sort</h3>
+              <p>If index order matches the requested sort after predicates, the engine can stream results in order.</p>
+            </div>
+            <div class="panel">
+              <h3>Blocking sort</h3>
+              <p>If order is not available from an index, MongoDB must buffer and sort, with possible disk spill.</p>
+            </div>
+            <div class="panel">
+              <h3>Grouping</h3>
+              <p><code>$group</code> aggregates state by key; cardinality drives memory, spill, and downstream latency.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Spills</p>
+          <h2>Aggregation spill is not the same as WiredTiger eviction</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Aggregation spill</h3>
+              <p>Execution stages write temporary data when blocking memory requirements exceed limits and disk use is allowed.</p>
+            </div>
+            <div class="panel">
+              <h3>WiredTiger eviction</h3>
+              <p>Storage-engine pages are reconciled or discarded to keep the internal cache within limits.</p>
+            </div>
+          </div>
+          <p class="lead">Both can show up as disk I/O, but the remediation is different: plan shape versus cache/write pressure.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Snapshot Reads</p>
+          <h2>Reads pay for old versions when old snapshots are still valid</h2>
+          <div class="path-list">
+            <div class="trace-row">
+              <strong>Current read</strong>
+              <span>Usually sees the newest committed visible update and can avoid deep version-chain traversal.</span>
+              <em>Low MVCC cost</em>
+            </div>
+            <div class="trace-row">
+              <strong>Snapshot read</strong>
+              <span>May need to walk update chains and history store records to find the version visible to that timestamp.</span>
+              <em>Version-resolution cost</em>
+            </div>
+            <div class="trace-row">
+              <strong>Long operation</strong>
+              <span>Can pin timestamps and prevent cleanup of versions that newer work no longer needs.</span>
+              <em>Retention cost</em>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Concurrency</p>
+          <h2>Document-level concurrency lives below intent locks</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Intent locks</h3>
+              <p>MongoDB uses collection/database lock modes to protect metadata and coordinate operations.</p>
+            </div>
+            <div class="panel">
+              <h3>Engine conflicts</h3>
+              <p>WiredTiger detects write conflicts and visibility conflicts at the storage level; callers retry where appropriate.</p>
+            </div>
+            <div class="panel">
+              <h3>Prepared conflicts</h3>
+              <p>Prepared transactions can make readers wait or retry because updates are neither normally visible nor rolled back.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Operations</p>
+          <h2>Start by mapping the symptom to a mechanism</h2>
+          <img
+            class="diagram-wide"
+            src="../../../assets/img/database-internals/wiredtiger-storage-engine/ops-map.png"
+            alt="Matrix mapping write latency, scan regressions, disk growth, and replication lag to WiredTiger mechanisms and operational evidence."
+          />
+        </section>
+
+        <section>
+          <p class="kicker">Metrics</p>
+          <h2><code>serverStatus().wiredTiger</code> is the first engine readout</h2>
+          <div class="metric-grid">
+            <div class="metric-card">
+              <strong>Cache bytes</strong>
+              <span>Used, dirty, bytes read into cache, bytes written from cache.</span>
+            </div>
+            <div class="metric-card">
+              <strong>Eviction</strong>
+              <span>Pages selected, pages evicted, application-thread eviction, unable-to-evict signals.</span>
+            </div>
+            <div class="metric-card">
+              <strong>Transactions</strong>
+              <span>Checkpoint generation, pinned ranges, update conflicts, snapshot pressure.</span>
+            </div>
+            <div class="metric-card">
+              <strong>Block manager</strong>
+              <span>Bytes read/written, file allocation behavior, checkpoint I/O shape.</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Explain</p>
+          <h2><code>explain()</code> tells you how much storage work the plan requested</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Keys examined</h3>
+              <p>How much index B-tree work the plan performed.</p>
+            </div>
+            <div class="panel">
+              <h3>Docs examined</h3>
+              <p>How many collection records were fetched after index traversal or scan.</p>
+            </div>
+            <div class="panel">
+              <h3>Spill metrics</h3>
+              <p>For supported stages, execution stats expose whether data spilled and how much temporary data was written.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Profiler</p>
+          <h2>Use multiple instruments because no single one owns the whole path</h2>
+          <table class="table compare-table">
+            <thead>
+              <tr>
+                <th>Instrument</th>
+                <th>Best for</th>
+                <th>Blind spot</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Profiler / slow query log</td>
+                <td>Operation shape, keys/docs examined, locks, yields, plan summaries.</td>
+                <td>Does not fully explain storage-device latency.</td>
+              </tr>
+              <tr>
+                <td><code>serverStatus</code></td>
+                <td>Cache, eviction, checkpoint, transaction, lock counters.</td>
+                <td>Counters require rates and correlation with workload windows.</td>
+              </tr>
+              <tr>
+                <td>OS / Atlas metrics</td>
+                <td>Disk latency, queue depth, memory pressure, CPU, filesystem behavior.</td>
+                <td>Cannot distinguish bad query shape from storage pressure without MongoDB metrics.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Application Impact</p>
+          <h2>Schema design changes page and index locality</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Document growth</h3>
+              <p>Growing documents can rewrite larger values and create page churn; bounded document shapes are easier for cache locality.</p>
+            </div>
+            <div class="panel">
+              <h3>Arrays</h3>
+              <p>Multikey indexes can multiply index keys per document, increasing insert cost and index B-tree size.</p>
+            </div>
+            <div class="panel">
+              <h3>Hot keys</h3>
+              <p>Monotonic or low-cardinality patterns can concentrate writes or scans in narrow regions of a tree.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Application Impact</p>
+          <h2>Index design is a storage budget, not only a query feature</h2>
+          <div class="path-list">
+            <div class="trace-row">
+              <strong>Read budget</strong>
+              <span>Does the index reduce keys examined, avoid fetches, preserve sort order, and keep hot pages resident?</span>
+              <em>Query latency</em>
+            </div>
+            <div class="trace-row">
+              <strong>Write budget</strong>
+              <span>How many extra B-tree mutations, uniqueness probes, page splits, and checkpoint bytes does the index add?</span>
+              <em>Insert/update latency</em>
+            </div>
+            <div class="trace-row">
+              <strong>Cache budget</strong>
+              <span>Does the working set of all collection and index pages fit within useful memory?</span>
+              <em>Operational stability</em>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Application Impact</p>
+          <h2>Batching changes overhead shape, but not atomic work per document</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Better batching</h3>
+              <p>Fewer network round trips and fewer command-level overheads. More chance for throughput-oriented scheduling.</p>
+            </div>
+            <div class="panel">
+              <h3>Worse batching</h3>
+              <p>Large batches can concentrate dirty cache growth, transaction memory, index hot spots, and journal bursts.</p>
+            </div>
+            <div class="panel">
+              <h3>Practical rule</h3>
+              <p>Batch for throughput, but observe p95 latency, eviction pressure, journal latency, and secondary apply lag.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Application Impact</p>
+          <h2>Aggregation design either narrows early or pays late</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Early <code>$match</code></h3>
+              <p>Expose selective predicates before expensive transformations so indexes can narrow B-tree traversal.</p>
+            </div>
+            <div class="panel">
+              <h3>Sort alignment</h3>
+              <p>Design compound indexes to support the filter and sort prefix where the pipeline needs ordered streams.</p>
+            </div>
+            <div class="panel">
+              <h3>Projection discipline</h3>
+              <p>Carry only fields needed by later stages; covered or narrow fetches reduce collection page traffic.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Tuning</p>
+          <h2>Be cautious with knobs that hide design problems</h2>
+          <table class="table compare-table">
+            <thead>
+              <tr>
+                <th>Knob</th>
+                <th>When it helps</th>
+                <th>Risk</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>WiredTiger cache size</td>
+                <td>Workload truly needs a different split between engine cache and OS/application memory.</td>
+                <td>Too large can starve filesystem cache and other processes; too small increases eviction pressure.</td>
+              </tr>
+              <tr>
+                <td>Compression</td>
+                <td>Storage and I/O savings matter more than extra CPU.</td>
+                <td>Can add CPU cost and does not reduce in-cache collection data the same way it reduces disk bytes.</td>
+              </tr>
+              <tr>
+                <td>Compaction</td>
+                <td>You need to return reusable internal space to the filesystem after major deletes.</td>
+                <td>Operationally expensive; not a replacement for data lifecycle design.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Failure Modes</p>
+          <h2>Common symptoms and first questions</h2>
+          <div class="tight-grid">
+            <div class="mini-card">
+              <strong>Cache dirty bytes rising</strong>
+              <span>Are writes outpacing eviction/checkpoint? Did index count or batch size change?</span>
+            </div>
+            <div class="mini-card">
+              <strong>Application threads evicting</strong>
+              <span>Is foreground latency tied to cache triggers and dirty-page reconciliation?</span>
+            </div>
+            <div class="mini-card">
+              <strong>Disk full after deletes</strong>
+              <span>Is the space reusable internally, pinned by checkpoints, or actually needing compaction?</span>
+            </div>
+            <div class="mini-card">
+              <strong>Aggregation spills</strong>
+              <span>Can index order, predicate movement, or cardinality reduction remove blocking memory?</span>
+            </div>
+            <div class="mini-card">
+              <strong>Write conflicts</strong>
+              <span>Are transactions or hot documents creating contention at the storage visibility boundary?</span>
+            </div>
+            <div class="mini-card">
+              <strong>Slow restart</strong>
+              <span>How much log replay or rollback-to-stable work is needed after the last checkpoint?</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Checklist</p>
+          <h2>A practical diagnostic order</h2>
+          <div class="path-list">
+            <div class="trace-row">
+              <strong>1. Confirm operation shape</strong>
+              <span>Look at command, namespace, plan summary, keys/docs examined, spills, locks, write concern, and duration.</span>
+              <em>Profiler / explain</em>
+            </div>
+            <div class="trace-row">
+              <strong>2. Check storage pressure</strong>
+              <span>Correlate wiredTiger cache, eviction, checkpoint, transaction, and block-manager counters over the same interval.</span>
+              <em>serverStatus rates</em>
+            </div>
+            <div class="trace-row">
+              <strong>3. Check platform pressure</strong>
+              <span>Measure disk latency, queueing, CPU, filesystem cache availability, and replication apply behavior.</span>
+              <em>OS / Atlas / cloud metrics</em>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Recap</p>
+          <h2>The engine mental model</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Writes</h3>
+              <p>Insert work is collection B-tree mutation plus index B-tree mutation plus transaction visibility plus durability contract.</p>
+            </div>
+            <div class="panel">
+              <h3>Reads</h3>
+              <p>Aggregation work is optimizer/planner shape plus storage cursor traversal plus cache/version resolution plus possible stage spill.</p>
+            </div>
+            <div class="panel">
+              <h3>Operations</h3>
+              <p>Most symptoms are one of three pressures: too many pages touched, too many pages dirty, or too many versions retained.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Takeaways</p>
+          <h2>How to think in WiredTiger terms</h2>
+          <ul>
+            <li>Every index is a real B-tree with write, cache, checkpoint, and recovery cost.</li>
+            <li>Every long-running snapshot can preserve old versions and slow cleanup.</li>
+            <li>Every missing or misordered index turns query semantics into extra page traffic.</li>
+            <li>Every durability setting is a contract across server, engine, journal, replication, and storage media.</li>
+            <li>Every tuning change should be checked against operation shape before changing cache or compression settings.</li>
+          </ul>
+        </section>
+
+        <section>
+          <p class="kicker">References</p>
+          <h2>Follow-up reading</h2>
+          <div class="reference-list">
+            <h3>MongoDB WiredTiger and storage behavior</h3>
+            <ul>
+              <li><a href="https://www.mongodb.com/docs/manual/core/wiredtiger/">MongoDB Manual: WiredTiger Storage Engine</a></li>
+              <li><a href="https://www.mongodb.com/docs/manual/core/journaling/">MongoDB Manual: Journaling</a></li>
+              <li><a href="https://www.mongodb.com/docs/manual/faq/concurrency/">MongoDB Manual: FAQ - Concurrency</a></li>
+              <li><a href="https://www.mongodb.com/docs/manual/reference/command/serverStatus/">MongoDB Manual: <code>serverStatus</code></a></li>
+            </ul>
+            <h3>WiredTiger architecture</h3>
+            <ul>
+              <li><a href="https://source.wiredtiger.com/develop/arch-btree.html">WiredTiger Architecture Guide: B-Trees</a></li>
+              <li><a href="https://source.wiredtiger.com/develop/arch-transaction.html">WiredTiger Architecture Guide: Transactions</a></li>
+              <li><a href="https://source.wiredtiger.com/develop/arch-eviction.html">WiredTiger Architecture Guide: Eviction</a></li>
+              <li><a href="https://source.wiredtiger.com/develop/arch-checkpoint.html">WiredTiger Architecture Guide: Checkpoint</a></li>
+              <li><a href="https://source.wiredtiger.com/develop/arch-logging.html">WiredTiger Architecture Guide: Logging</a></li>
+            </ul>
+            <h3>Writes, transactions, and durability</h3>
+            <ul>
+              <li><a href="https://www.mongodb.com/docs/manual/reference/method/db.collection.insertMany/">MongoDB Manual: <code>db.collection.insertMany()</code></a></li>
+              <li><a href="https://www.mongodb.com/docs/manual/reference/write-concern/">MongoDB Manual: Write Concern</a></li>
+              <li><a href="https://www.mongodb.com/docs/manual/core/transactions/">MongoDB Manual: Transactions</a></li>
+              <li><a href="https://www.mongodb.com/docs/manual/core/write-operations-atomicity/">MongoDB Manual: Atomicity and Transactions</a></li>
+            </ul>
+            <h3>Aggregation and query execution</h3>
+            <ul>
+              <li><a href="https://www.mongodb.com/docs/manual/core/aggregation-pipeline-optimization/">MongoDB Manual: Aggregation Pipeline Optimization</a></li>
+              <li><a href="https://www.mongodb.com/docs/manual/reference/explain-results/">MongoDB Manual: Explain Results</a></li>
+              <li><a href="https://www.mongodb.com/docs/manual/reference/sbe/">MongoDB Manual: Slot-Based Query Execution Engine</a></li>
+              <li><a href="https://www.mongodb.com/docs/manual/reference/operator/aggregation/sort/">MongoDB Manual: <code>$sort</code></a></li>
+              <li><a href="https://www.mongodb.com/docs/manual/reference/operator/aggregation/group/">MongoDB Manual: <code>$group</code></a></li>
+            </ul>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script src="../../../assets/vendor/reveal/dist/reveal.js"></script>
+    <script src="../../../assets/vendor/reveal/dist/plugin/highlight.js"></script>
+    <script>
+      Reveal.initialize({
+        hash: true,
+        controls: true,
+        progress: true,
+        center: false,
+        width: 1280,
+        height: 720,
+        margin: 0.04,
+        plugins: [RevealHighlight],
+      });
+    </script>
+  </body>
+</html>

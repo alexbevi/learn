@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>WiredTiger Storage Stack</title>
+    <style>
+      :root {
+        --bg: #0f1115;
+        --panel: #202633;
+        --panel2: #171b22;
+        --line: #334155;
+        --text: #f5f7fa;
+        --muted: #b1bbc9;
+        --green: #21c7a8;
+        --amber: #ffb84d;
+        --blue: #7aa8ff;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        width: 1600px;
+        height: 900px;
+        margin: 0;
+        overflow: hidden;
+        background:
+          radial-gradient(circle at 84% 16%, rgb(33 199 168 / 18%), transparent 360px),
+          linear-gradient(180deg, #141922, var(--bg));
+        color: var(--text);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      main {
+        padding: 72px 88px;
+      }
+
+      h1 {
+        max-width: 1100px;
+        margin: 0 0 42px;
+        font-size: 54px;
+        line-height: 1.02;
+        letter-spacing: 0;
+      }
+
+      .stack {
+        display: grid;
+        grid-template-columns: 1.25fr 0.95fr 0.95fr;
+        gap: 22px;
+        align-items: stretch;
+      }
+
+      .column {
+        display: grid;
+        gap: 16px;
+      }
+
+      .layer,
+      .side {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: linear-gradient(180deg, var(--panel), var(--panel2));
+        padding: 24px;
+        min-height: 104px;
+      }
+
+      .layer strong,
+      .side strong {
+        display: block;
+        color: var(--text);
+        font-size: 27px;
+      }
+
+      .layer span,
+      .side span {
+        display: block;
+        margin-top: 9px;
+        color: var(--muted);
+        font-size: 20px;
+        line-height: 1.28;
+      }
+
+      .layer.accent {
+        border-color: rgb(33 199 168 / 70%);
+        box-shadow: inset 0 0 0 1px rgb(33 199 168 / 22%);
+      }
+
+      .side {
+        min-height: 100%;
+      }
+
+      .side h2 {
+        margin: 0 0 20px;
+        color: var(--green);
+        font-size: 28px;
+      }
+
+      .pill {
+        display: inline-flex;
+        margin: 0 8px 10px 0;
+        padding: 8px 11px;
+        border-radius: 999px;
+        background: rgb(255 255 255 / 7%);
+        color: var(--muted);
+        font-size: 18px;
+        font-weight: 760;
+      }
+
+      .note {
+        margin-top: 24px;
+        color: var(--amber);
+        font-size: 21px;
+        font-weight: 760;
+        line-height: 1.25;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>MongoDB operations cross three boundaries before bytes persist or return</h1>
+      <div class="stack">
+        <div class="column">
+          <div class="layer">
+            <strong>Client command</strong>
+            <span><code>insertMany()</code>, <code>aggregate()</code>, read/write concern, sessions, transactions</span>
+          </div>
+          <div class="layer">
+            <strong>MongoDB server execution</strong>
+            <span>parsing, validation, authorization, locks, planner, SBE/classic execution, storage cursor API</span>
+          </div>
+          <div class="layer accent">
+            <strong>WiredTiger engine</strong>
+            <span>transactions, row-store B-trees, cache, eviction, reconciliation, history store, checkpoints, log</span>
+          </div>
+          <div class="layer">
+            <strong>Operating system and media</strong>
+            <span>filesystem cache, compressed pages, data files, journal files, fsync latency, block device behavior</span>
+          </div>
+        </div>
+        <div class="side">
+          <h2>Write surface</h2>
+          <span class="pill">collection table</span>
+          <span class="pill">index tables</span>
+          <span class="pill">WT transaction</span>
+          <span class="pill">journal</span>
+          <span class="pill">checkpoint</span>
+          <p class="note">A write is a coordinated set of collection and index mutations, not one append.</p>
+        </div>
+        <div class="side">
+          <h2>Read surface</h2>
+          <span class="pill">optimizer</span>
+          <span class="pill">planner</span>
+          <span class="pill">cursor</span>
+          <span class="pill">index scan</span>
+          <span class="pill">page read</span>
+          <p class="note">A read shape decides how much of the storage engine must be touched.</p>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

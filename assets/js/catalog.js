@@ -6,8 +6,51 @@ window.LEARN_CATALOG = {
       summary:
         "Practical technical presentations about building, operating, and reasoning about agentic software systems.",
     },
+    {
+      id: "database-internals",
+      title: "Database Internals",
+      summary:
+        "Deep technical presentations about database storage engines, execution paths, durability, performance, and operational behavior.",
+    },
   ],
   presentations: [
+    {
+      id: "wiredtiger-storage-engine",
+      topicId: "database-internals",
+      title: "MongoDB WiredTiger Storage Engine",
+      subtitle: "Internals, Operations, and Application Impact",
+      path: "slides/database-internals/wiredtiger-storage-engine/",
+      summary:
+        "A deep dive into MongoDB's WiredTiger storage engine using a multi-document insert and an aggregation pipeline to explain how server execution, B-trees, transactions, cache, eviction, journaling, checkpoints, and recovery interoperate.",
+      covers: [
+        "WiredTiger internals: row-store B-trees, pages, update chains, timestamps, cache, eviction, reconciliation, history store, journaling, checkpoints, and recovery.",
+        "A multi-document insert path that connects MongoDB batch semantics, indexes, transactions, write concern, journaling, and crash recovery.",
+        "An aggregation retrieval path that connects pipeline optimization, query planning, SBE/classic execution, index scans, collection fetches, cache behavior, and spill diagnostics.",
+      ],
+      learningGoals: [
+        "Explain how MongoDB operations cross the server, WiredTiger, filesystem cache, journal, and data-file layers.",
+        "Diagnose storage-engine symptoms such as cache pressure, dirty eviction, checkpoint work, scan regressions, disk growth, and write latency.",
+        "Predict how schema shape, indexes, batching, transactions, write concern, and aggregation design affect WiredTiger work.",
+      ],
+      durationMinutes: 85,
+      slideCount: 50,
+      lastUpdated: "2026-05-27",
+      tags: [
+        { slug: "database-internals", label: "Database Internals" },
+        { slug: "mongodb", label: "MongoDB" },
+        { slug: "wiredtiger", label: "WiredTiger" },
+        { slug: "storage-engine", label: "Storage Engine" },
+        { slug: "btrees", label: "B-Trees" },
+        { slug: "transactions", label: "Transactions" },
+        { slug: "durability", label: "Durability" },
+        { slug: "journaling", label: "Journaling" },
+        { slug: "checkpoints", label: "Checkpoints" },
+        { slug: "cache", label: "Cache" },
+        { slug: "query-execution", label: "Query Execution" },
+        { slug: "aggregation", label: "Aggregation" },
+        { slug: "operations", label: "Operations" },
+      ],
+    },
     {
       id: "langchain-langgraph-databases",
       topicId: "agent-development",
