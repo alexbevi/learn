@@ -46,8 +46,15 @@ the source of truth.
 
 ## Learning Intake
 
-When the user says they are ready to learn about something, ask focused
-questions before creating the deck. The questions should establish:
+When the user says they are ready to learn about something, prompt them
+conversationally before creating the deck.
+
+- Ask one focused question at a time.
+- Do not list all intake questions up front.
+- Let each answer shape the next prompt.
+- Use reasonable defaults once the direction is clear.
+
+The intake should establish:
 
 - audience and current familiarity
 - desired depth
@@ -65,4 +72,3 @@ Proceed with reasonable defaults when the answers are clear from context.
 - Stage only task-local files.
 - Leave unrelated dirty changes alone.
 - Validate before committing when practical.
-

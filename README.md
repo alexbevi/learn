@@ -31,8 +31,8 @@ Then visit `http://localhost:8080/`.
 
 When creating a new learning plan:
 
-1. Ask intake questions that shape scope, audience, technical depth, and
-   desired examples.
+1. Prompt the user conversationally, one focused question at a time, to shape
+   scope, audience, technical depth, and desired examples.
 2. Research from primary sources where possible.
 3. Build the deck as static HTML using the shared slide layout and local assets.
 4. Add a final references slide grouped by concept.
@@ -61,4 +61,3 @@ Most substantial decks should have 6-12 tags across useful dimensions:
 
 The repository deploys via GitHub Actions from the repository root. If Pages is
 not already enabled, set the repository's Pages source to GitHub Actions.
-
