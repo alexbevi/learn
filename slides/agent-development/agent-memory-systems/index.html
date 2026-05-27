@@ -96,10 +96,157 @@
         overflow-wrap: anywhere;
       }
 
+      .inline-flow,
+      .inline-layers,
+      .inline-roles,
+      .inline-bands,
+      .inline-loop,
+      .inline-matrix {
+        display: grid;
+        gap: 10px;
+        margin-top: 22px;
+      }
+
+      .inline-layers .layer-row {
+        display: grid;
+        grid-template-columns: 180px minmax(0, 1fr) 220px;
+        gap: 14px;
+        align-items: center;
+        border: 1px solid var(--deck-line);
+        border-radius: 8px;
+        background: linear-gradient(180deg, var(--deck-panel-2), var(--deck-panel));
+        padding: 11px 14px;
+      }
+
+      .layer-row strong,
+      .flow-step strong,
+      .role-box strong,
+      .band-row strong,
+      .loop-step strong,
+      .matrix-row strong {
+        display: block;
+        color: var(--deck-text);
+        font-size: 0.58em;
+        line-height: 1.15;
+      }
+
+      .layer-row span,
+      .flow-step span,
+      .role-box span,
+      .band-row span,
+      .loop-step span,
+      .matrix-row span {
+        color: var(--deck-muted);
+        font-size: 0.46em;
+        line-height: 1.25;
+      }
+
+      .layer-row em {
+        color: var(--deck-amber);
+        font-size: 0.42em;
+        font-style: normal;
+        font-weight: 750;
+        line-height: 1.2;
+      }
+
+      .inline-flow {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+
+      .flow-step {
+        position: relative;
+        min-height: 150px;
+        border: 1px solid var(--deck-line);
+        border-radius: 8px;
+        background: linear-gradient(180deg, var(--deck-panel-2), var(--deck-panel));
+        padding: 14px;
+      }
+
+      .flow-step:not(:last-child)::after {
+        content: ">";
+        position: absolute;
+        top: 50%;
+        right: -13px;
+        z-index: 2;
+        color: var(--deck-accent);
+        font-size: 0.64em;
+        font-weight: 900;
+        transform: translateY(-50%);
+      }
+
+      .role-box {
+        border: 1px solid var(--deck-line);
+        border-radius: 8px;
+        background: linear-gradient(180deg, var(--deck-panel-2), var(--deck-panel));
+        padding: 13px 14px;
+      }
+
+      .inline-roles {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .band-row {
+        display: grid;
+        grid-template-columns: 185px minmax(0, 1fr);
+        gap: 16px;
+        align-items: center;
+        border: 1px solid var(--deck-line);
+        border-radius: 8px;
+        background: linear-gradient(180deg, var(--deck-panel-2), var(--deck-panel));
+        padding: 13px 15px;
+      }
+
+      .chip-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin-bottom: 6px;
+      }
+
+      .chip-row span {
+        border: 1px solid rgb(255 255 255 / 12%);
+        border-radius: 999px;
+        background: rgb(255 255 255 / 5%);
+        padding: 5px 8px;
+        color: var(--deck-text);
+        font-size: 0.4em;
+        font-weight: 750;
+      }
+
+      .inline-loop {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+      }
+
+      .loop-step {
+        min-height: 132px;
+        border: 1px solid var(--deck-line);
+        border-radius: 8px;
+        background: linear-gradient(180deg, var(--deck-panel-2), var(--deck-panel));
+        padding: 12px;
+      }
+
+      .inline-matrix {
+        grid-template-columns: 1.1fr 1fr 1fr 1fr;
+      }
+
+      .matrix-row {
+        border: 1px solid var(--deck-line);
+        border-radius: 8px;
+        background: linear-gradient(180deg, var(--deck-panel-2), var(--deck-panel));
+        padding: 14px;
+      }
+
       @media (max-width: 900px) {
         .memory-grid,
         .compact-grid,
-        .decision-grid {
+        .decision-grid,
+        .inline-flow,
+        .inline-roles,
+        .inline-bands,
+        .inline-loop,
+        .inline-matrix,
+        .inline-layers .layer-row,
+        .band-row {
           grid-template-columns: 1fr;
         }
 
@@ -207,11 +354,14 @@
         <section>
           <p class="kicker">Architecture</p>
           <h2>Memory has layers with different owners</h2>
-          <img
-            class="diagram"
-            src="../../../assets/img/agent-development/agent-memory-systems/memory-layer-map.png"
-            alt="Layered architecture showing model runtime, session state, long-term memory, product records, retrieval indexes, and governance."
-          />
+          <div class="inline-layers" data-visual="architecture map">
+            <div class="layer-row"><strong>Runtime</strong><span>Prompt, tool calls, reasoning budget, scratch state.</span><em>harness/runtime</em></div>
+            <div class="layer-row"><strong>Session state</strong><span>Thread history, checkpoints, resumable workflow state.</span><em>runtime</em></div>
+            <div class="layer-row"><strong>Long-term memory</strong><span>Distilled facts, episodes, preferences, procedures.</span><em>memory contract</em></div>
+            <div class="layer-row"><strong>Product truth</strong><span>Customers, contracts, tickets, orders, policy, permissions.</span><em>application</em></div>
+            <div class="layer-row"><strong>Retrieval indexes</strong><span>Text, vector, graph, recency, exact lookup.</span><em>data platform</em></div>
+            <div class="layer-row"><strong>Governance</strong><span>Consent, access, retention, deletion, correction, audit.</span><em>product/security</em></div>
+          </div>
           <p class="caption">The database layer is not just vector search. It is where product truth, memory records, indexes, and auditability become enforceable.</p>
         </section>
 
@@ -233,11 +383,17 @@
         <section>
           <p class="kicker">Taxonomy</p>
           <h2>Memory types solve different jobs</h2>
-          <img
-            class="diagram"
-            src="../../../assets/img/agent-development/agent-memory-systems/memory-taxonomy.png"
-            alt="Taxonomy matrix of agent memory types, stored content, scope, and retention."
-          />
+          <table class="table signal-table" data-visual="taxonomy matrix">
+            <thead><tr><th>Type</th><th>What it stores</th><th>Scope</th><th>Retention</th></tr></thead>
+            <tbody>
+              <tr><td>Working</td><td>Current task state, goals, constraints.</td><td>Run/thread</td><td>Minutes to hours</td></tr>
+              <tr><td>Session</td><td>Recent messages, tools, checkpoints.</td><td>Thread</td><td>Conversation lifetime</td></tr>
+              <tr><td>Episodic</td><td>Incidents, commitments, decisions.</td><td>User/account/agent</td><td>Weeks to years</td></tr>
+              <tr><td>Semantic</td><td>Facts, preferences, entities, concepts.</td><td>User/account/org</td><td>Until changed</td></tr>
+              <tr><td>Procedural</td><td>Playbooks, rules, learned approaches.</td><td>Agent/team/org</td><td>Versioned</td></tr>
+              <tr><td>Shared</td><td>Knowledge reused across agents.</td><td>Fleet with policy</td><td>Governed lifecycle</td></tr>
+            </tbody>
+          </table>
         </section>
 
         <section>
@@ -309,11 +465,14 @@
         <section>
           <p class="kicker">Write path</p>
           <h2>Memory creation is a pipeline</h2>
-          <img
-            class="diagram"
-            src="../../../assets/img/agent-development/agent-memory-systems/write-path.png"
-            alt="Memory write path from interaction through extraction, policy, consolidation, storage, indexing, and traces."
-          />
+          <div class="inline-flow" data-visual="write path flow">
+            <div class="flow-step"><strong>Observe</strong><span>Messages, tools, artifacts, product events.</span></div>
+            <div class="flow-step"><strong>Extract</strong><span>Candidate facts, episodes, procedures, commitments.</span></div>
+            <div class="flow-step"><strong>Gate</strong><span>Scope, consent, sensitivity, evidence quality.</span></div>
+            <div class="flow-step"><strong>Consolidate</strong><span>Merge, supersede, summarize, expire, link.</span></div>
+            <div class="flow-step"><strong>Persist + index</strong><span>Record, provenance, text, vector, graph, audit.</span></div>
+          </div>
+          <p class="caption">This diagram adds value because it exposes where bad memory enters: extraction, policy gates, and consolidation.</p>
         </section>
 
         <section>
@@ -375,11 +534,14 @@
         <section>
           <p class="kicker">Read path</p>
           <h2>Retrieval should be planned, not accidental</h2>
-          <img
-            class="diagram"
-            src="../../../assets/img/agent-development/agent-memory-systems/read-path.png"
-            alt="Memory read path showing query planning, retrieval, ranking, policy filtering, and context assembly."
-          />
+          <div class="inline-flow" data-visual="read path flow">
+            <div class="flow-step"><strong>Plan</strong><span>Choose memory types, scopes, and product records.</span></div>
+            <div class="flow-step"><strong>Retrieve</strong><span>Exact ids, semantic search, graph traversal, recency.</span></div>
+            <div class="flow-step"><strong>Rank</strong><span>Relevance, freshness, confidence, risk, token cost.</span></div>
+            <div class="flow-step"><strong>Filter</strong><span>Policy, tenant, deletion, sensitivity, authority.</span></div>
+            <div class="flow-step"><strong>Assemble</strong><span>Bounded prompt context with source ids and trace ids.</span></div>
+          </div>
+          <p class="caption">The read path is where memory becomes behavior; every selected record should be explainable.</p>
         </section>
 
         <section>
@@ -433,11 +595,14 @@
         <section>
           <p class="kicker">Databases</p>
           <h2>Databases provide distinct memory roles</h2>
-          <img
-            class="diagram"
-            src="../../../assets/img/agent-development/agent-memory-systems/storage-role-map.png"
-            alt="Storage role map showing document, vector, graph, relational, cache, and audit storage responsibilities."
-          />
+          <div class="inline-roles" data-visual="storage role map">
+            <div class="role-box"><strong>Product truth</strong><span>Authoritative customers, contracts, tickets, entitlements.</span></div>
+            <div class="role-box"><strong>Memory records</strong><span>Typed observations, facts, episodes, procedures, provenance.</span></div>
+            <div class="role-box"><strong>Vector index</strong><span>Semantic recall over memories, summaries, docs, transcripts.</span></div>
+            <div class="role-box"><strong>Graph index</strong><span>Entities, relationships, temporal edges, ownership, dependencies.</span></div>
+            <div class="role-box"><strong>Cache</strong><span>Semantic cache, prompt fragments, recent retrievals, expiry.</span></div>
+            <div class="role-box"><strong>Audit and evals</strong><span>Writes, reads, corrections, deletions, selected context, datasets.</span></div>
+          </div>
         </section>
 
         <section>
@@ -589,11 +754,24 @@ result = await Runner.run(
         <section>
           <p class="kicker">Comparison</p>
           <h2>Memory tooling differs by ownership model</h2>
-          <img
-            class="diagram"
-            src="../../../assets/img/agent-development/agent-memory-systems/framework-service-map.png"
-            alt="Comparison map positioning frameworks, memory services, and emerging memory layers by ownership and scope."
-          />
+          <div class="inline-bands" data-visual="tooling ownership comparison">
+            <div class="band-row">
+              <strong>Framework-native</strong>
+              <div><div class="chip-row"><span>LangChain</span><span>LangGraph</span><span>Mastra</span><span>LlamaIndex</span><span>OpenAI Sessions</span></div><span>Best when memory is close to agent execution.</span></div>
+            </div>
+            <div class="band-row">
+              <strong>Dedicated memory</strong>
+              <div><div class="chip-row"><span>Mem0</span><span>Zep</span><span>Letta</span><span>Cognee</span><span>Memori</span></div><span>Best when extraction, recall quality, graphing, and operations are product-critical.</span></div>
+            </div>
+            <div class="band-row">
+              <strong>App-owned stores</strong>
+              <div><div class="chip-row"><span>MongoDB</span><span>Postgres</span><span>pgvector</span><span>Graph DB</span><span>Search</span></div><span>Best when memory must align with product truth and tenancy.</span></div>
+            </div>
+            <div class="band-row">
+              <strong>Emerging layers</strong>
+              <div><div class="chip-row"><span>Caura</span><span>Rippletide</span><span>Semvec</span><span>MemClaw</span></div><span>Signals: governed shared memory, decision state, compression, fleet visibility.</span></div>
+            </div>
+          </div>
         </section>
 
         <section>
@@ -668,11 +846,14 @@ result = await Runner.run(
         <section>
           <p class="kicker">Governance</p>
           <h2>Governed memory has a lifecycle</h2>
-          <img
-            class="diagram"
-            src="../../../assets/img/agent-development/agent-memory-systems/governance-loop.png"
-            alt="Governance loop for memory approval, retrieval, correction, expiry, deletion, and auditing."
-          />
+          <div class="inline-loop" data-visual="governance lifecycle">
+            <div class="loop-step"><strong>Approve</strong><span>Consent, source, sensitivity, scope.</span></div>
+            <div class="loop-step"><strong>Retrieve</strong><span>Identity, policy, relevance, freshness.</span></div>
+            <div class="loop-step"><strong>Use</strong><span>Bounded context with provenance.</span></div>
+            <div class="loop-step"><strong>Correct</strong><span>User edits and contradictions.</span></div>
+            <div class="loop-step"><strong>Expire</strong><span>Supersede, archive, or delete.</span></div>
+            <div class="loop-step"><strong>Audit</strong><span>Writes, reads, omissions, policy decisions.</span></div>
+          </div>
         </section>
 
         <section>
@@ -729,11 +910,13 @@ result = await Runner.run(
         <section>
           <p class="kicker">Decision framework</p>
           <h2>Choose the smallest strategy that satisfies correctness</h2>
-          <img
-            class="diagram"
-            src="../../../assets/img/agent-development/agent-memory-systems/decision-matrix.png"
-            alt="Decision matrix comparing framework-native memory, app-owned memory, dedicated services, and governed shared memory."
-          />
+          <div class="inline-matrix" data-visual="strategy decision matrix">
+            <div class="matrix-row"><strong>Framework-native</strong><span>Fastest path for one runtime. Ask: can we export, audit, correct, and delete?</span></div>
+            <div class="matrix-row"><strong>App-owned database</strong><span>Best when memory must align with product truth. Ask: who owns schemas and evals?</span></div>
+            <div class="matrix-row"><strong>Dedicated service</strong><span>Best when memory quality is a product differentiator. Ask: can we verify writes?</span></div>
+            <div class="matrix-row"><strong>Governed shared</strong><span>Best for fleets, tenants, and teams. Ask: can every memory be scoped and revoked?</span></div>
+          </div>
+          <p class="caption">Default: start with sessions plus product truth, then add scoped long-term memory where failures prove the need.</p>
         </section>
 
         <section>

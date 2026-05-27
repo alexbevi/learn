@@ -1,97 +1,105 @@
 # Agent Memory Systems Visual Plan
 
+Updated: 2026-05-27
+
+This deck intentionally uses native HTML/CSS diagrams instead of generated PNGs.
+The previous raster assets were not additive: they duplicated slide content and
+existed mostly to satisfy visual cadence. The revised rule for this deck is:
+use a visual only when it teaches a relationship, flow, lifecycle, or decision
+boundary that prose alone would make harder to follow.
+
 ## Visual: Memory Layer Map
 
 - slide: 5
 - concept: Memory is a layered data system
 - visualType: architecture
-- purpose: Show runtime state, product truth, long-term memory, retrieval indexes, and governance as separate layers.
-- sourcePath: `visuals/agent-development/agent-memory-systems/memory-layer-map.html`
-- assetPath: `assets/img/agent-development/agent-memory-systems/memory-layer-map.png`
-- altText: Layered architecture showing model runtime, session state, long-term memory, product records, retrieval indexes, and governance.
-- layoutRisks: Dense labels must remain large enough for a 16:9 slide.
-- validationNotes: Render as PNG and spot check at 1280x720.
+- purpose: Show the ownership boundaries between runtime, session state, long-term memory, product truth, retrieval indexes, and governance.
+- sourcePath: `slides/agent-development/agent-memory-systems/index.html`
+- assetPath: inline HTML/CSS, no PNG asset
+- altText: Not applicable; semantic HTML diagram marked with `data-visual`.
+- layoutRisks: Grid should remain compact enough to fit without hiding the teaching caption.
+- validationNotes: Counted via `data-visual="architecture map"`.
 
 ## Visual: Memory Taxonomy
 
 - slide: 7
 - concept: Memory types and scopes
 - visualType: taxonomy
-- purpose: Compare working, session, episodic, semantic, procedural, and shared memory by owner and retention.
-- sourcePath: `visuals/agent-development/agent-memory-systems/memory-taxonomy.html`
-- assetPath: `assets/img/agent-development/agent-memory-systems/memory-taxonomy.png`
-- altText: Taxonomy matrix of agent memory types, stored content, scope, and retention.
-- layoutRisks: Matrix text must be concise to avoid overflow.
-- validationNotes: Use deterministic HTML table.
+- purpose: Compare memory type, stored content, scope, and retention in one compact matrix.
+- sourcePath: `slides/agent-development/agent-memory-systems/index.html`
+- assetPath: inline HTML table, no PNG asset
+- altText: Not applicable; semantic HTML table marked with `data-visual`.
+- layoutRisks: Text must stay concise enough for a 16:9 slide.
+- validationNotes: Counted via `data-visual="taxonomy matrix"`.
 
 ## Visual: Write Path
 
 - slide: 12
 - concept: Memory write pipeline
 - visualType: flow
-- purpose: Explain extraction, classification, policy, consolidation, persistence, indexing, and trace emission.
-- sourcePath: `visuals/agent-development/agent-memory-systems/write-path.html`
-- assetPath: `assets/img/agent-development/agent-memory-systems/write-path.png`
-- altText: Memory write path from interaction through extraction, policy, consolidation, storage, indexing, and traces.
-- layoutRisks: Keep as seven compact stages.
-- validationNotes: Verify labels render in PNG.
+- purpose: Reveal where memory quality is won or lost: extraction, policy gates, consolidation, persistence, and indexing.
+- sourcePath: `slides/agent-development/agent-memory-systems/index.html`
+- assetPath: inline HTML/CSS, no PNG asset
+- altText: Not applicable; semantic HTML flow marked with `data-visual`.
+- layoutRisks: Five-step flow should not wrap labels on desktop.
+- validationNotes: Counted via `data-visual="write path flow"`.
 
 ## Visual: Read Path
 
 - slide: 17
 - concept: Memory read and context assembly
 - visualType: flow
-- purpose: Show how agent input becomes scoped queries, ranked memories, product truth, and bounded prompt context.
-- sourcePath: `visuals/agent-development/agent-memory-systems/read-path.html`
-- assetPath: `assets/img/agent-development/agent-memory-systems/read-path.png`
-- altText: Memory read path showing query planning, retrieval, ranking, policy filtering, and context assembly.
-- layoutRisks: Avoid making the final prompt box too text-heavy.
-- validationNotes: Verify on local screenshot.
+- purpose: Show how input becomes scoped queries, ranked candidates, policy-filtered memories, and bounded prompt context.
+- sourcePath: `slides/agent-development/agent-memory-systems/index.html`
+- assetPath: inline HTML/CSS, no PNG asset
+- altText: Not applicable; semantic HTML flow marked with `data-visual`.
+- layoutRisks: The diagram should remain explanatory without competing with the next ranking slide.
+- validationNotes: Counted via `data-visual="read path flow"`.
 
 ## Visual: Storage Role Map
 
 - slide: 21
 - concept: Databases in memory architecture
 - visualType: architecture
-- purpose: Separate document store, vector index, graph, relational truth, cache, and audit/event log.
-- sourcePath: `visuals/agent-development/agent-memory-systems/storage-role-map.html`
-- assetPath: `assets/img/agent-development/agent-memory-systems/storage-role-map.png`
-- altText: Storage role map showing document, vector, graph, relational, cache, and audit storage responsibilities.
-- layoutRisks: Do not imply one database must do all roles.
-- validationNotes: Use neutral labels and source-backed claims.
+- purpose: Separate product truth, memory records, vector index, graph index, cache, audit, and eval responsibilities.
+- sourcePath: `slides/agent-development/agent-memory-systems/index.html`
+- assetPath: inline HTML/CSS, no PNG asset
+- altText: Not applicable; semantic HTML diagram marked with `data-visual`.
+- layoutRisks: Avoid implying all roles must be handled by a single database.
+- validationNotes: Counted via `data-visual="storage role map"`.
 
 ## Visual: Framework And Service Map
 
 - slide: 32
 - concept: Framework-native memory versus dedicated memory services
 - visualType: comparison
-- purpose: Position LangChain/LangGraph, Mastra, LlamaIndex, OpenAI sessions, Mem0, Zep, Letta, Cognee, Memori, and emerging services by memory ownership.
-- sourcePath: `visuals/agent-development/agent-memory-systems/framework-service-map.html`
-- assetPath: `assets/img/agent-development/agent-memory-systems/framework-service-map.png`
-- altText: Comparison map positioning frameworks, memory services, and emerging memory layers by ownership and scope.
-- layoutRisks: Many names; use grouped bands.
-- validationNotes: Check text does not overflow.
+- purpose: Position tools by memory ownership model: framework-native, dedicated memory, app-owned stores, and emerging layers.
+- sourcePath: `slides/agent-development/agent-memory-systems/index.html`
+- assetPath: inline HTML/CSS, no PNG asset
+- altText: Not applicable; semantic HTML comparison marked with `data-visual`.
+- layoutRisks: Tool chips must stay compact.
+- validationNotes: Counted via `data-visual="tooling ownership comparison"`.
 
-## Visual: Governance Loop
+## Visual: Governance Lifecycle
 
 - slide: 38
 - concept: Memory governance and lifecycle
-- visualType: state-machine
-- purpose: Show approval, use, correction, supersession, expiry, deletion, and audit.
-- sourcePath: `visuals/agent-development/agent-memory-systems/governance-loop.html`
-- assetPath: `assets/img/agent-development/agent-memory-systems/governance-loop.png`
-- altText: Governance loop for memory approval, retrieval, correction, expiry, deletion, and auditing.
-- layoutRisks: Circular flow must be legible.
-- validationNotes: Rendered asset should be clear on a slide.
+- visualType: lifecycle
+- purpose: Show approval, retrieval, use, correction, expiry, and audit as an operational loop.
+- sourcePath: `slides/agent-development/agent-memory-systems/index.html`
+- assetPath: inline HTML/CSS, no PNG asset
+- altText: Not applicable; semantic HTML lifecycle marked with `data-visual`.
+- layoutRisks: Lifecycle should support the slide thesis without becoming ornamental.
+- validationNotes: Counted via `data-visual="governance lifecycle"`.
 
 ## Visual: Decision Matrix
 
 - slide: 43
 - concept: Choosing a memory strategy
 - visualType: comparison
-- purpose: Provide a practical framework for choosing framework-native, app-owned, dedicated, or governed shared memory.
-- sourcePath: `visuals/agent-development/agent-memory-systems/decision-matrix.html`
-- assetPath: `assets/img/agent-development/agent-memory-systems/decision-matrix.png`
-- altText: Decision matrix comparing framework-native memory, app-owned memory, dedicated services, and governed shared memory.
-- layoutRisks: Matrix should be compact enough for slide use.
-- validationNotes: Include concise recommendation row.
+- purpose: Help choose between framework-native, app-owned database, dedicated service, and governed shared memory strategies.
+- sourcePath: `slides/agent-development/agent-memory-systems/index.html`
+- assetPath: inline HTML/CSS, no PNG asset
+- altText: Not applicable; semantic HTML comparison marked with `data-visual`.
+- layoutRisks: Keep decision criteria short enough to scan.
+- validationNotes: Counted via `data-visual="strategy decision matrix"`.
