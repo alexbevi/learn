@@ -1,0 +1,416 @@
+[
+  {
+    "slide": 1,
+    "title": "Agent Memory Systems",
+    "objective": "Frame memory as an engineering discipline for long-running agents.",
+    "coreClaim": "Agent memory is a data system around the model, not a larger prompt.",
+    "sourceIds": ["mongodb-agent-memory", "langchain-memory-overview"],
+    "visual": "none",
+    "practicalTakeaway": "Design memory with storage, retrieval, policy, and observability."
+  },
+  {
+    "slide": 2,
+    "title": "Learning Goals",
+    "objective": "Set expectations for taxonomy, mechanisms, tooling, and operations.",
+    "coreClaim": "A useful memory deck must separate concepts, implementation paths, and production tradeoffs.",
+    "sourceIds": ["memory-survey"],
+    "visual": "none",
+    "practicalTakeaway": "Judge every memory option by the workload it supports."
+  },
+  {
+    "slide": 3,
+    "title": "Running Example",
+    "objective": "Introduce the customer account agent used across the deck.",
+    "coreClaim": "A customer account agent exposes the hard parts: identity, history, commitments, product facts, policy, and handoffs.",
+    "sourceIds": ["mongodb-agent-memory"],
+    "visual": "none",
+    "practicalTakeaway": "Use a concrete workflow when evaluating memory abstractions."
+  },
+  {
+    "slide": 4,
+    "title": "Memory Is Not Chat History",
+    "objective": "Separate transcript retention from agent memory.",
+    "coreClaim": "Chat history is one input; memory is selected, structured, scoped, and governed context.",
+    "sourceIds": ["langchain-memory-overview", "mongodb-agent-memory"],
+    "visual": "comparison",
+    "practicalTakeaway": "Avoid calling every retained message memory."
+  },
+  {
+    "slide": 5,
+    "title": "Layer Map",
+    "objective": "Map memory to system layers.",
+    "coreClaim": "Production memory combines runtime state, product truth, long-term memory, retrieval indexes, and governance.",
+    "sourceIds": ["mongodb-agent-memory", "langchain-memory-overview", "mastra-storage"],
+    "visual": "architecture",
+    "practicalTakeaway": "Assign one owner and one data contract to each layer."
+  },
+  {
+    "slide": 6,
+    "title": "Scopes Before Types",
+    "objective": "Show that ownership boundaries determine correctness.",
+    "coreClaim": "The same memory fact can be safe in a user scope and dangerous in a fleet scope.",
+    "sourceIds": ["mastra-memory", "letta-stateful-agents", "caura-site"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "Model thread, user, account, organization, agent, and fleet scopes explicitly."
+  },
+  {
+    "slide": 7,
+    "title": "Memory Taxonomy",
+    "objective": "Define the major memory types.",
+    "coreClaim": "Working, session, episodic, semantic, procedural, and shared memory solve different jobs.",
+    "sourceIds": ["mongodb-agent-memory", "langchain-memory-overview"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "Choose memory type from the decision the agent needs to make."
+  },
+  {
+    "slide": 8,
+    "title": "Working Memory",
+    "objective": "Explain active task context.",
+    "coreClaim": "Working memory keeps task-relevant state close to the model without pretending it is permanent truth.",
+    "sourceIds": ["mongodb-agent-memory", "mastra-memory"],
+    "visual": "none",
+    "practicalTakeaway": "Expire working memory aggressively."
+  },
+  {
+    "slide": 9,
+    "title": "Session Memory",
+    "objective": "Explain thread continuity.",
+    "coreClaim": "Session memory preserves a single conversation or run, usually through message history and checkpointed state.",
+    "sourceIds": ["langchain-short-term-memory", "openai-agents-sessions"],
+    "visual": "none",
+    "practicalTakeaway": "Use sessions for continuity, not for durable knowledge."
+  },
+  {
+    "slide": 10,
+    "title": "Long-Term Memory",
+    "objective": "Explain durable recall across sessions.",
+    "coreClaim": "Long-term memory persists facts, episodes, and procedures across threads and must be scoped outside a single run.",
+    "sourceIds": ["langchain-memory-overview", "mongodb-agent-memory"],
+    "visual": "none",
+    "practicalTakeaway": "Give long-term memory lifecycle and correction semantics."
+  },
+  {
+    "slide": 11,
+    "title": "Memory Unit",
+    "objective": "Define a practical memory record.",
+    "coreClaim": "A memory unit needs type, subject, scope, content, provenance, confidence, validity, policy, and indexes.",
+    "sourceIds": ["mongodb-agent-memory", "memory-survey"],
+    "visual": "code",
+    "practicalTakeaway": "Persist metadata with the remembered content."
+  },
+  {
+    "slide": 12,
+    "title": "Write Path",
+    "objective": "Trace memory creation.",
+    "coreClaim": "The write path transforms raw interaction into governed records through extraction, classification, policy, consolidation, and indexing.",
+    "sourceIds": ["mongodb-agent-memory", "mastra-memory", "cognee-remember"],
+    "visual": "flow",
+    "practicalTakeaway": "Evaluate writes separately from reads."
+  },
+  {
+    "slide": 13,
+    "title": "Hot Path Or Background",
+    "objective": "Compare memory write timing.",
+    "coreClaim": "Hot-path writes improve immediate personalization but add latency; background consolidation reduces latency but can lag.",
+    "sourceIds": ["langchain-memory-overview", "mastra-memory"],
+    "visual": "comparison",
+    "practicalTakeaway": "Use hot-path writes only for memories needed on the next turn."
+  },
+  {
+    "slide": 14,
+    "title": "Extraction Rules",
+    "objective": "Explain memory admission.",
+    "coreClaim": "The hardest write-path decision is what not to remember.",
+    "sourceIds": ["memory-survey", "openai-agents-js-memory"],
+    "visual": "none",
+    "practicalTakeaway": "Reject transient, unverified, sensitive, and low-value candidates by default."
+  },
+  {
+    "slide": 15,
+    "title": "Consolidation",
+    "objective": "Explain merging and supersession.",
+    "coreClaim": "Consolidation turns a pile of memories into an evolving model of the user, account, and domain.",
+    "sourceIds": ["mastra-memory", "langchain-deepagents-memory"],
+    "visual": "state-machine",
+    "practicalTakeaway": "Track superseded records instead of overwriting history blindly."
+  },
+  {
+    "slide": 16,
+    "title": "Indexing",
+    "objective": "Explain memory retrieval surfaces.",
+    "coreClaim": "One memory can need exact lookup, semantic search, graph traversal, recency ordering, and audit lookup.",
+    "sourceIds": ["mongodb-agent-memory", "zep-memory"],
+    "visual": "none",
+    "practicalTakeaway": "Persist records once, index them several ways."
+  },
+  {
+    "slide": 17,
+    "title": "Read Path",
+    "objective": "Trace memory retrieval and prompt assembly.",
+    "coreClaim": "The read path is query planning plus retrieval, ranking, policy filtering, and bounded context assembly.",
+    "sourceIds": ["zep-memory", "llamaindex-memory", "langchain-memory-overview"],
+    "visual": "flow",
+    "practicalTakeaway": "Log selected and rejected memory ids for debugging."
+  },
+  {
+    "slide": 18,
+    "title": "Retrieval Signals",
+    "objective": "Compare ranking signals.",
+    "coreClaim": "Useful memory ranking blends relevance, recency, confidence, scope, source quality, and policy.",
+    "sourceIds": ["zep-memory", "mem0-overview", "memory-survey"],
+    "visual": "none",
+    "practicalTakeaway": "Do not let vector score be the only arbiter."
+  },
+  {
+    "slide": 19,
+    "title": "Prompt Budget",
+    "objective": "Explain context limits.",
+    "coreClaim": "A memory system earns value by deciding what to omit from the prompt.",
+    "sourceIds": ["langchain-memory-overview", "mastra-memory", "openai-agents-js-memory"],
+    "visual": "none",
+    "practicalTakeaway": "Budget context by memory type and decision risk."
+  },
+  {
+    "slide": 20,
+    "title": "Freshness And Contradictions",
+    "objective": "Explain stale and conflicting memory.",
+    "coreClaim": "Memory should be revisable because user facts, accounts, policies, and preferences change.",
+    "sourceIds": ["memory-survey", "openai-agents-js-memory"],
+    "visual": "state-machine",
+    "practicalTakeaway": "Model validity windows and correction workflows."
+  },
+  {
+    "slide": 21,
+    "title": "Storage Role Map",
+    "objective": "Place databases in the architecture.",
+    "coreClaim": "Databases add value by separating product truth, memory records, retrieval indexes, graph relations, caches, and audit logs.",
+    "sourceIds": ["mongodb-agent-memory", "mastra-storage"],
+    "visual": "architecture",
+    "practicalTakeaway": "Do not collapse product truth and remembered context into one vague store."
+  },
+  {
+    "slide": 22,
+    "title": "MongoDB Framing",
+    "objective": "Explain MongoDB's agent-memory model.",
+    "coreClaim": "MongoDB frames agent memory around memory types, memory units, application modes, and unified storage/retrieval.",
+    "sourceIds": ["mongodb-agent-memory"],
+    "visual": "none",
+    "practicalTakeaway": "Use document flexibility when memory shape evolves quickly."
+  },
+  {
+    "slide": 23,
+    "title": "Postgres And pgvector",
+    "objective": "Explain relational/vector role.",
+    "coreClaim": "Postgres with pgvector is attractive when memory belongs near relational identity, constraints, and transactional application data.",
+    "sourceIds": ["memory-survey"],
+    "visual": "none",
+    "practicalTakeaway": "Use relational constraints for identity and access boundaries."
+  },
+  {
+    "slide": 24,
+    "title": "Graph Memory",
+    "objective": "Explain relationship-centric recall.",
+    "coreClaim": "Graph memory becomes valuable when the question depends on relationships, time, entities, and multi-hop context.",
+    "sourceIds": ["zep-memory", "cognee-agent-memory", "memory-survey"],
+    "visual": "none",
+    "practicalTakeaway": "Use graph edges for relationships that must be inspectable."
+  },
+  {
+    "slide": 25,
+    "title": "LangChain And LangGraph",
+    "objective": "Explain LangChain ecosystem memory boundaries.",
+    "coreClaim": "LangGraph handles thread state with checkpoints and long-term memory through stores and namespaces.",
+    "sourceIds": ["langchain-memory-overview", "langchain-short-term-memory"],
+    "visual": "none",
+    "practicalTakeaway": "Separate checkpoint resume from cross-thread memory."
+  },
+  {
+    "slide": 26,
+    "title": "Deep Agents And LangMem",
+    "objective": "Explain file and tool-based memory in LangChain's newer stack.",
+    "coreClaim": "Deep Agents and LangMem move memory toward scoped files, tools, and DB-backed stores rather than opaque transcript buffers.",
+    "sourceIds": ["langchain-deepagents-memory", "langmem-github"],
+    "visual": "none",
+    "practicalTakeaway": "Plan production persistence even when demos use in-process stores."
+  },
+  {
+    "slide": 27,
+    "title": "Mastra Memory",
+    "objective": "Explain Mastra's memory primitives.",
+    "coreClaim": "Mastra combines message history, observational memory, working memory, semantic recall, processors, tracing, and storage providers.",
+    "sourceIds": ["mastra-memory", "mastra-storage"],
+    "visual": "none",
+    "practicalTakeaway": "Use resource and thread identifiers as deliberate memory boundaries."
+  },
+  {
+    "slide": 28,
+    "title": "LlamaIndex Memory",
+    "objective": "Explain LlamaIndex memory control points.",
+    "coreClaim": "LlamaIndex exposes memory as a configurable component with `put` and `get` behavior around agent execution.",
+    "sourceIds": ["llamaindex-memory"],
+    "visual": "code",
+    "practicalTakeaway": "Use custom memory when retrieval policy matters more than default chat history."
+  },
+  {
+    "slide": 29,
+    "title": "OpenAI Agents SDK Sessions",
+    "objective": "Explain session memory.",
+    "coreClaim": "OpenAI Agents SDK sessions maintain conversation history across runs and can be backed by custom storage.",
+    "sourceIds": ["openai-agents-sessions"],
+    "visual": "code",
+    "practicalTakeaway": "Treat sessions as conversation continuity, not full long-term memory."
+  },
+  {
+    "slide": 30,
+    "title": "Managed Memory Services",
+    "objective": "Introduce dedicated memory systems.",
+    "coreClaim": "Dedicated services move extraction, retrieval, graphing, and management out of application code.",
+    "sourceIds": ["mem0-overview", "zep-memory", "letta-stateful-agents"],
+    "visual": "comparison",
+    "practicalTakeaway": "Adopt services when memory quality and operations are central product requirements."
+  },
+  {
+    "slide": 31,
+    "title": "Mem0",
+    "objective": "Explain Mem0 positioning.",
+    "coreClaim": "Mem0 positions itself as a managed memory engine with user, agent, session, graph, and core operation workflows.",
+    "sourceIds": ["mem0-overview"],
+    "visual": "none",
+    "practicalTakeaway": "Evaluate Mem0 on write quality, retrieval precision, deletion, and cost."
+  },
+  {
+    "slide": 32,
+    "title": "Framework And Service Map",
+    "objective": "Compare ownership models.",
+    "coreClaim": "Framework memory, app-owned memory, dedicated memory services, and governed shared memory optimize for different owners.",
+    "sourceIds": ["mastra-memory", "langchain-memory-overview", "mem0-overview", "zep-memory", "caura-site"],
+    "visual": "comparison",
+    "practicalTakeaway": "Choose based on who owns the memory contract and operational risk."
+  },
+  {
+    "slide": 33,
+    "title": "Zep",
+    "objective": "Explain Zep temporal graph memory.",
+    "coreClaim": "Zep emphasizes adding and retrieving agent memory through a high-level API backed by graph search and custom context construction.",
+    "sourceIds": ["zep-memory"],
+    "visual": "none",
+    "practicalTakeaway": "Pair graph-derived long-term context with recent raw messages."
+  },
+  {
+    "slide": 34,
+    "title": "Letta",
+    "objective": "Explain Letta's stateful agent model.",
+    "coreClaim": "Letta treats state, memory blocks, messages, reasoning, tool calls, and tools as persisted agent state.",
+    "sourceIds": ["letta-stateful-agents"],
+    "visual": "none",
+    "practicalTakeaway": "Use Letta when transparent editable agent state is central."
+  },
+  {
+    "slide": 35,
+    "title": "Cognee And Memori",
+    "objective": "Explain additional memory frameworks.",
+    "coreClaim": "Cognee and Memori push memory toward graph/session recall and multi-agent memory processing.",
+    "sourceIds": ["cognee-agent-memory", "cognee-remember", "memori-agents"],
+    "visual": "none",
+    "practicalTakeaway": "Validate their fit with your graph, MCP, and multi-agent requirements."
+  },
+  {
+    "slide": 36,
+    "title": "Emerging Layers",
+    "objective": "Place Rippletide, Semvec, and Caura carefully.",
+    "coreClaim": "Emerging layers are useful signals for direction, but their maturity and source depth vary.",
+    "sourceIds": ["rippletide-agent-docs", "semvec-pypi", "caura-site"],
+    "visual": "comparison",
+    "practicalTakeaway": "Borrow concepts before betting on a young runtime."
+  },
+  {
+    "slide": 37,
+    "title": "Privacy And Deletion",
+    "objective": "Explain governance requirements.",
+    "coreClaim": "Memory creates retained data; retained data needs consent, access control, deletion, audit, and sensitivity handling.",
+    "sourceIds": ["openai-agents-js-memory", "caura-site", "memory-survey"],
+    "visual": "none",
+    "practicalTakeaway": "Design deletion before storing user memories."
+  },
+  {
+    "slide": 38,
+    "title": "Governance Loop",
+    "objective": "Show memory lifecycle control.",
+    "coreClaim": "Governed memory moves through approval, retrieval, use, correction, expiry, deletion, and audit.",
+    "sourceIds": ["caura-site", "openai-agents-js-memory", "memory-survey"],
+    "visual": "state-machine",
+    "practicalTakeaway": "Make every memory state explicit and inspectable."
+  },
+  {
+    "slide": 39,
+    "title": "Memory Evals",
+    "objective": "Explain evaluation strategy.",
+    "coreClaim": "Memory evaluation must test both write quality and read usefulness under realistic tasks.",
+    "sourceIds": ["memory-survey", "mastra-memory"],
+    "visual": "metric-map",
+    "practicalTakeaway": "Build evals around correction, contradiction, deletion, and tenant isolation."
+  },
+  {
+    "slide": 40,
+    "title": "Observability",
+    "objective": "Explain trace requirements.",
+    "coreClaim": "A memory trace should show candidate extraction, write decisions, retrieved memories, omitted memories, and prompt assembly.",
+    "sourceIds": ["mastra-memory", "zep-memory"],
+    "visual": "none",
+    "practicalTakeaway": "Debug memory by inspecting dataflow, not only final answers."
+  },
+  {
+    "slide": 41,
+    "title": "Failure Modes",
+    "objective": "List common memory failures.",
+    "coreClaim": "Memory failures include over-remembering, stale facts, poisoned memory, cross-tenant leakage, vector false positives, and unbounded cost.",
+    "sourceIds": ["memory-survey", "openai-agents-js-memory"],
+    "visual": "none",
+    "practicalTakeaway": "Turn each failure mode into a test."
+  },
+  {
+    "slide": 42,
+    "title": "Implementation Recipe",
+    "objective": "Provide a practical build sequence.",
+    "coreClaim": "Start with product truth and session memory, then add scoped long-term memory, then managed or graph layers when evidence demands it.",
+    "sourceIds": ["mongodb-agent-memory", "langchain-memory-overview", "mastra-memory"],
+    "visual": "none",
+    "practicalTakeaway": "Avoid adopting a memory service before defining what counts as a memory."
+  },
+  {
+    "slide": 43,
+    "title": "Decision Matrix",
+    "objective": "Guide architectural choice.",
+    "coreClaim": "The best memory strategy depends on ownership, retention, graph needs, governance needs, and framework coupling.",
+    "sourceIds": ["mem0-overview", "zep-memory", "letta-stateful-agents", "caura-site"],
+    "visual": "comparison",
+    "practicalTakeaway": "Pick the smallest strategy that satisfies correctness and operations."
+  },
+  {
+    "slide": 44,
+    "title": "Code-Level Shape",
+    "objective": "Show an implementation interface.",
+    "coreClaim": "A memory port should hide storage details but expose scope, provenance, policy, and trace ids.",
+    "sourceIds": ["llamaindex-memory", "openai-agents-sessions", "langmem-github"],
+    "visual": "code",
+    "practicalTakeaway": "Own the interface even when a framework owns the implementation."
+  },
+  {
+    "slide": 45,
+    "title": "Recap",
+    "objective": "Summarize the mental model.",
+    "coreClaim": "Good memory is typed, scoped, governed, evaluated, observable, and tied to product truth.",
+    "sourceIds": ["mongodb-agent-memory", "memory-survey"],
+    "visual": "none",
+    "practicalTakeaway": "Ask what the agent should remember, who can see it, and how it can be corrected."
+  },
+  {
+    "slide": 46,
+    "title": "References",
+    "objective": "Provide grouped follow-up sources.",
+    "coreClaim": "The deck is grounded in official docs and a small number of contextual research sources.",
+    "sourceIds": ["mongodb-agent-memory", "langchain-memory-overview", "mastra-memory", "mem0-overview", "zep-memory", "letta-stateful-agents", "memory-survey"],
+    "visual": "none",
+    "practicalTakeaway": "Use grouped references to continue researching by concept."
+  }
+]

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Memory Governance Loop</title>
+    <style>
+      :root { --bg:#101319; --panel:#1b2130; --line:#3b4658; --text:#f5f7fb; --muted:#b8c2d0; --accent:#2dd4bf; --amber:#ffbd5a; --red:#f26d6d; }
+      * { box-sizing:border-box; }
+      body { margin:0; width:1600px; height:900px; background:radial-gradient(circle at 50% 50%,rgb(45 212 191 / 11%),transparent 420px),var(--bg); color:var(--text); font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      main { padding:70px 86px; }
+      h1 { margin:0 0 30px; font-size:56px; }
+      .loop { position:relative; height:650px; }
+      .node { position:absolute; width:270px; min-height:120px; border:1px solid var(--line); border-radius:18px; background:linear-gradient(180deg,#252d3d,var(--panel)); padding:22px; }
+      h2 { margin:0 0 10px; font-size:28px; color:var(--accent); }
+      p { margin:0; color:var(--muted); font-size:21px; line-height:1.22; }
+      .n1 { left:640px; top:0; } .n2 { left:1030px; top:140px; } .n3 { left:1030px; top:400px; } .n4 { left:640px; top:520px; } .n5 { left:250px; top:400px; } .n6 { left:250px; top:140px; }
+      .center { position:absolute; left:625px; top:235px; width:300px; height:170px; border:2px solid rgb(255 189 90 / 70%); border-radius:22px; padding:28px; text-align:center; background:rgb(255 189 90 / 8%); }
+      .center h2 { color:var(--amber); }
+      .arrow { position:absolute; color:var(--amber); font-size:42px; font-weight:900; }
+      .a1 { left:955px; top:115px; transform:rotate(35deg); } .a2 { left:1150px; top:310px; transform:rotate(90deg); } .a3 { left:960px; top:505px; transform:rotate(145deg); } .a4 { left:570px; top:525px; transform:rotate(215deg); } .a5 { left:375px; top:310px; transform:rotate(270deg); } .a6 { left:570px; top:105px; transform:rotate(325deg); }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Governed memory has a lifecycle</h1>
+      <section class="loop">
+        <div class="node n1"><h2>Approve</h2><p>Check consent, source, sensitivity, and scope.</p></div>
+        <div class="node n2"><h2>Retrieve</h2><p>Apply identity, policy, relevance, and freshness filters.</p></div>
+        <div class="node n3"><h2>Use</h2><p>Inject bounded context with provenance into the agent run.</p></div>
+        <div class="node n4"><h2>Correct</h2><p>Accept user edits, contradictions, and improved evidence.</p></div>
+        <div class="node n5"><h2>Expire</h2><p>Supersede, archive, or delete stale records.</p></div>
+        <div class="node n6"><h2>Audit</h2><p>Trace writes, reads, omissions, policy decisions, and deletions.</p></div>
+        <div class="center"><h2>Memory Contract</h2><p>Typed, scoped, inspectable, and reversible.</p></div>
+        <div class="arrow a1">&rarr;</div><div class="arrow a2">&rarr;</div><div class="arrow a3">&rarr;</div><div class="arrow a4">&rarr;</div><div class="arrow a5">&rarr;</div><div class="arrow a6">&rarr;</div>
+      </section>
+    </main>
+  </body>
+</html>

@@ -274,11 +274,11 @@ window.LEARN_CATALOG = {
       subtitle: "Types, Implementations, Frameworks, and Services",
       path: "slides/agent-development/agent-memory-systems/",
       summary:
-        "A technical deep dive into agent memory using a long-running customer account agent to compare memory types, write/read paths, database-backed implementations, framework primitives, dedicated memory services, graph layers, and governed shared memory.",
+        "A source-grounded deep dive into agent memory using a customer account intelligence agent to explain memory types, write/read paths, database-backed implementations, framework primitives, dedicated memory services, graph layers, emerging memory layers, and governance.",
       covers: [
-        "Agent memory taxonomy: working, session, episodic, semantic, procedural, associative, shared, and governed fleet memory.",
-        "Implementation mechanics: memory units, scopes, write paths, read paths, lifecycle, contradiction handling, privacy controls, and memory evals.",
-        "Frameworks and services including MongoDB, Postgres/pgvector, LangChain, LangGraph, LangMem, Mastra, LlamaIndex, CrewAI, OpenAI Agents SDK, Mem0, Zep, Letta, Memori Labs, Cognee, Rippletide, Semvec, Caura, and MemClaw.",
+        "Agent memory taxonomy: working, session, episodic, semantic, procedural, graph, shared, and governed fleet memory.",
+        "Implementation mechanics: memory units, scopes, write paths, read paths, lifecycle, contradiction handling, privacy controls, observability, and memory evals.",
+        "Frameworks and services including MongoDB, Postgres/pgvector, LangChain, LangGraph, LangMem, Mastra, LlamaIndex, OpenAI Agents SDK, Mem0, Zep, Letta, Cognee, Memori Labs, Rippletide, Semvec, and Caura.",
       ],
       learningGoals: [
         "Design an agent memory architecture that separates runtime state, session memory, long-term memory, product truth, and retrieval indexes.",
@@ -286,12 +286,10 @@ window.LEARN_CATALOG = {
         "Evaluate memory systems for recall quality, precision, contradiction handling, privacy, auditability, and production fit.",
       ],
       durationMinutes: 85,
-      slideCount: 50,
+      slideCount: 46,
       lastUpdated: "2026-05-27",
       tags: [
         { slug: "agent-development", label: "Agent Development" },
-        { slug: "agents", label: "Agents" },
-        { slug: "memory", label: "Memory" },
         { slug: "agent-memory", label: "Agent Memory" },
         { slug: "langchain", label: "LangChain" },
         { slug: "langgraph", label: "LangGraph" },
@@ -303,7 +301,6 @@ window.LEARN_CATALOG = {
         { slug: "databases", label: "Databases" },
         { slug: "knowledge-graphs", label: "Knowledge Graphs" },
         { slug: "governance", label: "Governance" },
-        { slug: "evals", label: "Evals" },
       ],
     },
   ],

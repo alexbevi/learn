@@ -1,0 +1,202 @@
+[
+  {
+    "id": "mongodb-agent-memory",
+    "title": "MongoDB: What Is Agent Memory?",
+    "url": "https://www.mongodb.com/resources/basics/artificial-intelligence/agent-memory",
+    "sourceType": "primary",
+    "publisher": "MongoDB",
+    "retrieved": "2026-05-27",
+    "confidence": "high",
+    "concepts": ["memory taxonomy", "memory engineering", "database role"]
+  },
+  {
+    "id": "langchain-memory-overview",
+    "title": "LangChain Docs: Memory Overview",
+    "url": "https://docs.langchain.com/oss/python/concepts/memory",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-05-27",
+    "confidence": "high",
+    "concepts": ["short-term memory", "long-term memory", "semantic memory", "episodic memory", "procedural memory"]
+  },
+  {
+    "id": "langchain-short-term-memory",
+    "title": "LangChain Docs: Short-Term Memory",
+    "url": "https://docs.langchain.com/oss/python/langchain/short-term-memory",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-05-27",
+    "confidence": "high",
+    "concepts": ["thread state", "checkpointers", "conversation history"]
+  },
+  {
+    "id": "langchain-deepagents-memory",
+    "title": "LangChain Docs: Deep Agents Memory",
+    "url": "https://docs.langchain.com/oss/python/deepagents/memory",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-05-27",
+    "confidence": "high",
+    "concepts": ["filesystem memory", "scoped memory", "background consolidation"]
+  },
+  {
+    "id": "langmem-github",
+    "title": "LangMem GitHub Repository",
+    "url": "https://github.com/langchain-ai/langmem",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-05-27",
+    "confidence": "medium",
+    "concepts": ["memory tools", "LangGraph stores", "production persistence"]
+  },
+  {
+    "id": "mastra-memory",
+    "title": "Mastra Docs: Memory",
+    "url": "https://mastra.ai/docs/memory/overview",
+    "sourceType": "primary",
+    "publisher": "Mastra",
+    "retrieved": "2026-05-27",
+    "confidence": "high",
+    "concepts": ["message history", "observational memory", "working memory", "semantic recall", "multi-agent memory"]
+  },
+  {
+    "id": "mastra-storage",
+    "title": "Mastra Docs: Storage",
+    "url": "https://mastra.ai/docs/server-db/storage",
+    "sourceType": "primary",
+    "publisher": "Mastra",
+    "retrieved": "2026-05-27",
+    "confidence": "high",
+    "concepts": ["storage providers", "persistence", "MongoDB storage"]
+  },
+  {
+    "id": "llamaindex-memory",
+    "title": "LlamaIndex Docs: Agent Memory",
+    "url": "https://developers.llamaindex.ai/python/framework/module_guides/deploying/agents/memory/",
+    "sourceType": "primary",
+    "publisher": "LlamaIndex",
+    "retrieved": "2026-05-27",
+    "confidence": "high",
+    "concepts": ["BaseMemory", "Memory class", "short-term memory", "long-term memory"]
+  },
+  {
+    "id": "openai-agents-sessions",
+    "title": "OpenAI Agents SDK: Sessions",
+    "url": "https://openai.github.io/openai-agents-python/sessions/",
+    "sourceType": "primary",
+    "publisher": "OpenAI",
+    "retrieved": "2026-05-27",
+    "confidence": "high",
+    "concepts": ["session memory", "conversation history", "custom storage"]
+  },
+  {
+    "id": "openai-agents-js-memory",
+    "title": "OpenAI Agents SDK JS: Agent Memory",
+    "url": "https://openai.github.io/openai-agents-js/guides/sandbox-agents/memory",
+    "sourceType": "primary",
+    "publisher": "OpenAI",
+    "retrieved": "2026-05-27",
+    "confidence": "medium",
+    "concepts": ["sandbox memory", "memory summaries", "memory isolation", "staleness"]
+  },
+  {
+    "id": "mem0-overview",
+    "title": "Mem0 Docs: Platform Overview",
+    "url": "https://docs.mem0.ai/platform/overview",
+    "sourceType": "primary",
+    "publisher": "Mem0",
+    "retrieved": "2026-05-27",
+    "confidence": "high",
+    "concepts": ["managed memory", "user memory", "agent memory", "session memory", "graph memory"]
+  },
+  {
+    "id": "zep-memory",
+    "title": "Zep Documentation: Memory",
+    "url": "https://help.getzep.com/v2/memory",
+    "sourceType": "primary",
+    "publisher": "Zep",
+    "retrieved": "2026-05-27",
+    "confidence": "high",
+    "concepts": ["memory API", "temporal knowledge graph", "short-term and long-term context"]
+  },
+  {
+    "id": "letta-stateful-agents",
+    "title": "Letta Docs: Introduction to Stateful Agents",
+    "url": "https://docs.letta.com/guides/core-concepts/stateful-agents",
+    "sourceType": "primary",
+    "publisher": "Letta",
+    "retrieved": "2026-05-27",
+    "confidence": "high",
+    "concepts": ["stateful agents", "memory blocks", "context management", "shared blocks"]
+  },
+  {
+    "id": "cognee-agent-memory",
+    "title": "Cognee Docs: Agent Memory Quickstart",
+    "url": "https://docs.cognee.ai/guides/agent-memory-quickstart",
+    "sourceType": "primary",
+    "publisher": "Cognee",
+    "retrieved": "2026-05-27",
+    "confidence": "medium",
+    "concepts": ["graph memory", "session memory", "agent memory decorator"]
+  },
+  {
+    "id": "cognee-remember",
+    "title": "Cognee Docs: Remember",
+    "url": "https://docs.cognee.ai/core-concepts/main-operations/remember",
+    "sourceType": "primary",
+    "publisher": "Cognee",
+    "retrieved": "2026-05-27",
+    "confidence": "medium",
+    "concepts": ["permanent graph memory", "session memory", "remember workflow"]
+  },
+  {
+    "id": "memori-agents",
+    "title": "Memori Docs: Agent System Documentation",
+    "url": "https://memorilabs.ai/docs/core-concepts/agents/",
+    "sourceType": "primary",
+    "publisher": "Memori Labs",
+    "retrieved": "2026-05-27",
+    "confidence": "medium",
+    "concepts": ["multi-agent memory processing", "dual memory modes", "provider configuration"]
+  },
+  {
+    "id": "rippletide-agent-docs",
+    "title": "Rippletide: Decision Runtime for Enterprise AI Agents",
+    "url": "https://www.rippletide.com/",
+    "sourceType": "primary",
+    "publisher": "Rippletide",
+    "retrieved": "2026-05-27",
+    "confidence": "medium",
+    "concepts": ["decision runtime", "runtime reinforcement", "agent decisions"]
+  },
+  {
+    "id": "semvec-pypi",
+    "title": "Semvec PyPI Package",
+    "url": "https://pypi.org/project/semvec/0.5.3/",
+    "sourceType": "primary",
+    "publisher": "PyPI",
+    "retrieved": "2026-05-27",
+    "confidence": "low",
+    "concepts": ["semantic state vector", "constant-cost memory", "local memory"]
+  },
+  {
+    "id": "caura-site",
+    "title": "Caura: Governed Shared Memory for AI Agents",
+    "url": "https://caura.ai/",
+    "sourceType": "primary",
+    "publisher": "Caura",
+    "retrieved": "2026-05-27",
+    "confidence": "low",
+    "concepts": ["governed shared memory", "agent fleets", "memory silos"]
+  },
+  {
+    "id": "memory-survey",
+    "title": "Memory for Autonomous LLM Agents: Mechanisms, Evaluation, and Emerging Frontiers",
+    "url": "https://arxiv.org/abs/2603.07670",
+    "sourceType": "secondary",
+    "publisher": "arXiv",
+    "retrieved": "2026-05-27",
+    "confidence": "medium",
+    "concepts": ["memory mechanisms", "evaluation", "privacy governance", "failure modes"]
+  }
+]
