@@ -1,0 +1,1149 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MongoDB Driver SDAM and Server Selection</title>
+    <link rel="stylesheet" href="../../../assets/vendor/reveal/dist/reveal.css" />
+    <link
+      rel="stylesheet"
+      href="../../../assets/vendor/reveal/dist/plugin/highlight/monokai.css"
+    />
+    <link rel="stylesheet" href="../../../assets/css/deck.css" />
+    <style>
+      .sdam-grid {
+        display: grid;
+        gap: 14px;
+        margin-top: 22px;
+      }
+
+      .cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .cols-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .visual {
+        width: min(100%, 1100px);
+        margin: 20px auto 0;
+      }
+
+      .card,
+      .step,
+      .cell,
+      .head,
+      .state {
+        border: 1px solid var(--deck-line);
+        border-radius: 8px;
+        background: linear-gradient(180deg, var(--deck-panel-2), var(--deck-panel));
+        padding: 14px;
+      }
+
+      .card strong,
+      .step strong,
+      .cell strong,
+      .state strong {
+        display: block;
+        color: var(--deck-text);
+        font-size: 0.55em;
+        line-height: 1.16;
+      }
+
+      .card span,
+      .step span,
+      .cell span,
+      .state span {
+        display: block;
+        margin-top: 7px;
+        color: var(--deck-muted);
+        font-size: 0.44em;
+        line-height: 1.3;
+      }
+
+      .card h3,
+      .head {
+        margin: 0 0 10px;
+        color: var(--deck-accent);
+        font-size: 0.72em;
+      }
+
+      .accent {
+        border-color: rgb(33 199 168 / 65%);
+        box-shadow: inset 0 0 0 1px rgb(33 199 168 / 18%);
+      }
+
+      .amber {
+        border-color: rgb(255 184 77 / 55%);
+      }
+
+      .red {
+        border-color: rgb(242 109 109 / 55%);
+      }
+
+      .stack {
+        display: grid;
+        grid-template-columns: 0.92fr 1.16fr 0.92fr;
+        gap: 14px;
+      }
+
+      .stack-col {
+        display: grid;
+        gap: 10px;
+      }
+
+      .flow {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 9px;
+      }
+
+      .flow .step {
+        position: relative;
+        min-height: 152px;
+      }
+
+      .flow .step:not(:last-child)::after {
+        content: ">";
+        position: absolute;
+        top: 58px;
+        right: -13px;
+        z-index: 2;
+        color: var(--deck-accent);
+        font-size: 0.9em;
+        font-weight: 900;
+      }
+
+      .num {
+        display: inline-grid;
+        place-items: center;
+        width: 26px;
+        height: 26px;
+        margin-bottom: 10px;
+        border-radius: 999px;
+        background: rgb(33 199 168 / 16%);
+        color: var(--deck-accent);
+        font-size: 0.42em;
+        font-weight: 900;
+      }
+
+      .state-machine {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .state {
+        min-height: 122px;
+      }
+
+      .matrix {
+        display: grid;
+        grid-template-columns: 0.86fr 1.08fr 1.08fr 1.08fr;
+        gap: 8px;
+        margin-top: 20px;
+      }
+
+      .matrix-5 {
+        grid-template-columns: 0.78fr 0.95fr 0.95fr 0.95fr 0.95fr;
+      }
+
+      .head {
+        border: 1px solid var(--deck-line);
+        border-radius: 8px;
+        background: linear-gradient(180deg, var(--deck-panel-2), var(--deck-panel));
+        padding: 12px;
+        font-weight: 860;
+      }
+
+      .cell {
+        min-height: 86px;
+      }
+
+      .tight-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 22px;
+      }
+
+      .mini-card {
+        border: 1px solid var(--deck-line);
+        border-radius: 8px;
+        background: linear-gradient(180deg, var(--deck-panel-2), var(--deck-panel));
+        padding: 14px;
+      }
+
+      .mini-card strong {
+        display: block;
+        color: var(--deck-text);
+        font-size: 0.52em;
+      }
+
+      .mini-card span {
+        display: block;
+        margin-top: 7px;
+        color: var(--deck-muted);
+        font-size: 0.44em;
+        line-height: 1.32;
+      }
+
+      .path-list {
+        display: grid;
+        gap: 10px;
+        margin-top: 22px;
+      }
+
+      .trace-row {
+        display: grid;
+        grid-template-columns: 190px minmax(0, 1fr) 260px;
+        gap: 14px;
+        align-items: start;
+        border: 1px solid var(--deck-line);
+        border-radius: 8px;
+        background: linear-gradient(180deg, var(--deck-panel-2), var(--deck-panel));
+        padding: 14px;
+      }
+
+      .trace-row strong {
+        display: block;
+        color: var(--deck-text);
+        font-size: 0.52em;
+      }
+
+      .trace-row span {
+        display: block;
+        color: var(--deck-muted);
+        font-size: 0.44em;
+        line-height: 1.32;
+      }
+
+      .trace-row em {
+        color: var(--deck-amber);
+        font-size: 0.42em;
+        font-style: normal;
+        line-height: 1.28;
+      }
+
+      .tag-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin-top: 10px;
+      }
+
+      .tag {
+        display: inline-flex;
+        padding: 5px 8px;
+        border: 1px solid rgb(255 255 255 / 12%);
+        border-radius: 999px;
+        color: var(--deck-muted);
+        font-size: 0.4em;
+        font-weight: 760;
+      }
+
+      .note {
+        margin-top: 12px;
+        color: var(--deck-amber);
+        font-size: 0.48em;
+        font-weight: 760;
+        line-height: 1.28;
+      }
+
+      .code-tight {
+        font-size: 0.82em;
+        line-height: 1.22;
+      }
+
+      .code-small {
+        font-size: 0.56em;
+        line-height: 1.2;
+      }
+
+      .two-code {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-top: 20px;
+      }
+
+      .good {
+        color: var(--deck-accent);
+      }
+
+      .warn {
+        color: var(--deck-amber);
+      }
+
+      .bad {
+        color: var(--deck-red);
+      }
+
+      @media (max-width: 900px) {
+        .cols-2,
+        .cols-3,
+        .cols-4,
+        .stack,
+        .flow,
+        .state-machine,
+        .matrix,
+        .matrix-5,
+        .tight-grid,
+        .trace-row,
+        .two-code {
+          grid-template-columns: 1fr;
+        }
+
+        .flow .step {
+          min-height: auto;
+        }
+
+        .flow .step:not(:last-child)::after {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body class="has-deck-topbar">
+    <header class="deck-topbar" aria-label="Presentation navigation">
+      <a class="deck-nav-link" href="../../../">Main menu</a>
+      <div class="deck-title">
+        <span>MongoDB Driver SDAM and Server Selection</span>
+        <small>Topology state, routing, monitoring, and failure resilience</small>
+      </div>
+      <a class="deck-nav-link" href="../../../topics/database-internals/">Topic</a>
+    </header>
+
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <p class="kicker">Database Internals</p>
+          <h1>MongoDB Driver Specifications: SDAM and Server Selection</h1>
+          <p class="lead">
+            How drivers discover topology, monitor health, select hosts for
+            reads and writes, route operations transparently, and preserve
+            resilience while abstracting a distributed database behind a normal
+            client API.
+          </p>
+          <p class="footnote">85 minutes / 42 slides</p>
+        </section>
+
+        <section>
+          <p class="kicker">Learning Goals</p>
+          <h2>What you should be able to reason about</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>State machine</h3>
+              <p>Explain how a driver turns seed hosts and <code>hello</code> replies into a live <code>TopologyDescription</code>.</p>
+            </div>
+            <div class="panel">
+              <h3>Routing</h3>
+              <p>Trace how writes, reads, cursors, transactions, and sharded operations are routed to suitable servers.</p>
+            </div>
+            <div class="panel">
+              <h3>Resilience knobs</h3>
+              <p>Choose and debug timeouts, read preference, latency windows, max staleness, pools, retries, and monitoring settings.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Why This Exists</p>
+          <h2>A MongoDB client is talking to a moving distributed system</h2>
+          <div class="visual stack" data-visual>
+            <div class="stack-col">
+              <div class="card"><strong>Application expectation</strong><span>Call <code>insertOne()</code>, <code>find()</code>, or <code>aggregate()</code> and get a result or a useful error.</span></div>
+              <div class="card"><strong>Driver responsibility</strong><span>Hide election, topology, network, cursor, retry, and pool details behind stable APIs.</span></div>
+            </div>
+            <div class="card accent">
+              <h3>Driver state machine</h3>
+              <strong>TopologyDescription + ServerDescription + selection rules</strong>
+              <span>The driver continuously converts uncertain network observations into routing decisions for individual operations.</span>
+              <div class="tag-row">
+                <span class="tag">SDAM</span>
+                <span class="tag">server selection</span>
+                <span class="tag">read preference</span>
+                <span class="tag">heartbeats</span>
+                <span class="tag">pools</span>
+              </div>
+            </div>
+            <div class="stack-col">
+              <div class="card"><strong>Distributed reality</strong><span>Primaries step down, secondaries lag, mongos routers fail, DNS changes, sockets break.</span></div>
+              <div class="card"><strong>Correctness constraint</strong><span>Route writes to primaries, reads to eligible servers, and stateful work to pinned hosts.</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Spec Map</p>
+          <h2>Three driver specs work together in practice</h2>
+          <div class="grid-3">
+            <div class="callout">
+              <h3>SDAM</h3>
+              <p>Server Discovery and Monitoring defines how drivers discover servers, classify them, update topology state, and react to errors.</p>
+            </div>
+            <div class="callout">
+              <h3>Server Selection</h3>
+              <p>Defines how a driver chooses a server for a read or write from the current topology description.</p>
+            </div>
+            <div class="callout">
+              <h3>CMAP and retries</h3>
+              <p>Connection pools, pool clearing, retryable reads/writes, and transactions sit beside SDAM and affect resilience.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Core Model</p>
+          <h2>The driver keeps an eventually fresh local map</h2>
+          <div class="visual stack" data-visual>
+            <div class="card">
+              <h3>Seed list</h3>
+              <strong>Initial addresses</strong>
+              <span>From URI hosts or SRV records. Seeds are hints, not necessarily the full deployment.</span>
+            </div>
+            <div class="card accent">
+              <h3>TopologyDescription</h3>
+              <strong>Client-side deployment view</strong>
+              <span>Topology type, set name, compatible wire version, logical session timeout, and a map of server descriptions.</span>
+            </div>
+            <div class="card">
+              <h3>ServerDescription</h3>
+              <strong>Per-host facts</strong>
+              <span>Address, server type, RTT, tags, wire versions, set metadata, election id, last write date, error state.</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Server Types</p>
+          <h2>Drivers route by classified server type, not by host string</h2>
+          <div class="tight-grid">
+            <div class="mini-card"><strong>Unknown</strong><span>No current usable information, failed heartbeat, or invalidated description.</span></div>
+            <div class="mini-card"><strong>Standalone</strong><span>Single <code>mongod</code> not participating in replica set routing.</span></div>
+            <div class="mini-card"><strong>Mongos</strong><span>Router for a sharded cluster; drivers can choose among multiple routers.</span></div>
+            <div class="mini-card"><strong>RSPrimary</strong><span>Writable replica set member for normal writes and primary reads.</span></div>
+            <div class="mini-card"><strong>RSSecondary</strong><span>Readable replica set member when read preference allows it.</span></div>
+            <div class="mini-card"><strong>RSArbiter / RSOther / RSGhost</strong><span>Replica set members that affect topology but are not normal data-bearing targets.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Topology Types</p>
+          <h2>The topology state machine narrows uncertainty over time</h2>
+          <div class="visual state-machine" data-visual>
+            <div class="state amber"><strong>Unknown</strong><span>Starting point for multi-host deployments. Monitor seeds and wait for evidence.</span></div>
+            <div class="state"><strong>Single</strong><span>Direct connection or single standalone-style target. Selection rules are constrained.</span></div>
+            <div class="state accent"><strong>ReplicaSetNoPrimary</strong><span>Set is known, but no current primary is known. Reads may still be possible.</span></div>
+            <div class="state accent"><strong>ReplicaSetWithPrimary</strong><span>Primary is known and replica set members are tracked from member lists.</span></div>
+            <div class="state"><strong>Sharded / LoadBalanced</strong><span>Driver routes to <code>mongos</code> routers or a load-balanced service boundary.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Monitoring Loop</p>
+          <h2>Background heartbeats keep the topology map current</h2>
+          <div class="visual flow" data-visual>
+            <div class="step"><span class="num">1</span><strong>Schedule check</strong><span>Each known server has a monitor with periodic heartbeat timing.</span></div>
+            <div class="step"><span class="num">2</span><strong>Send <code>hello</code></strong><span>Monitor opens or reuses its monitoring connection and asks for server status.</span></div>
+            <div class="step"><span class="num">3</span><strong>Measure RTT</strong><span>Heartbeat round-trip time feeds the latency window used during selection.</span></div>
+            <div class="step"><span class="num">4</span><strong>Parse response</strong><span>Classify server type, set name, hosts, tags, election id, last write date.</span></div>
+            <div class="step"><span class="num">5</span><strong>Update topology</strong><span>Add/remove hosts, invalidate stale primary, transition topology type.</span></div>
+            <div class="step"><span class="num">6</span><strong>Wake waiters</strong><span>Operations blocked in server selection can retry selection from the new state.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Hello Payload</p>
+          <h2>The <code>hello</code> response is the state machine's input</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Identity and role</h3>
+              <p><code>isWritablePrimary</code>, <code>secondary</code>, <code>arbiterOnly</code>, <code>msg: "isdbgrid"</code>, <code>setName</code>, and <code>me</code>.</p>
+            </div>
+            <div class="panel">
+              <h3>Membership</h3>
+              <p><code>hosts</code>, <code>passives</code>, <code>arbiters</code>, hidden members, and replica set reconfiguration metadata.</p>
+            </div>
+            <div class="panel">
+              <h3>Selection inputs</h3>
+              <p>Wire versions, tags, last write date, election id, set version, logical session timeout, and load-balanced signals.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Seed Discovery</p>
+          <h2>A seed list is only the beginning</h2>
+          <div class="visual flow" data-visual>
+            <div class="step"><span class="num">1</span><strong>URI seeds</strong><span>Driver starts with one or more addresses from connection string or SRV lookup.</span></div>
+            <div class="step"><span class="num">2</span><strong>Unknown descriptions</strong><span>Each seed begins as a server description of type <code>Unknown</code>.</span></div>
+            <div class="step"><span class="num">3</span><strong>First hello replies</strong><span>Driver learns whether hosts are replica set members, mongos, standalone, or ghosts.</span></div>
+            <div class="step"><span class="num">4</span><strong>Member expansion</strong><span>Replica set primary/secondary replies list canonical members to add and monitor.</span></div>
+            <div class="step"><span class="num">5</span><strong>Seed cleanup</strong><span>Hosts not in the set, wrong set name, or wrong deployment type are removed.</span></div>
+            <div class="step"><span class="num">6</span><strong>Stable map</strong><span>Driver continues monitoring known members as the deployment changes.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Replica Set Rules</p>
+          <h2>The driver can use a set even when the seed list is stale</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Members add members</h3>
+              <p>A primary or secondary reports the set's <code>hosts</code>, <code>passives</code>, and <code>arbiters</code>; the driver adds unknown descriptions for new addresses.</p>
+            </div>
+            <div class="panel">
+              <h3>Membership removes hosts</h3>
+              <p>Hosts no longer reported by the set are removed and no longer monitored.</p>
+            </div>
+            <div class="panel">
+              <h3>Wrong type is rejected</h3>
+              <p>A standalone in a multi-host seed list is removed instead of collapsing the deployment into <code>Single</code>.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Stale Primary</p>
+          <h2>Election metadata prevents routing to an old primary</h2>
+          <div class="path-list">
+            <div class="trace-row">
+              <strong>New primary discovered</strong>
+              <span>A heartbeat observes an <code>RSPrimary</code> with newer <code>setVersion</code> or <code>electionId</code>.</span>
+              <em>Topology update</em>
+            </div>
+            <div class="trace-row">
+              <strong>Old primary invalidated</strong>
+              <span>Any previous primary is replaced with an <code>Unknown</code> server description and checked again soon.</span>
+              <em>Correctness guard</em>
+            </div>
+            <div class="trace-row">
+              <strong>Writes stop targeting it</strong>
+              <span>Server selection no longer sees the old primary as eligible for writes.</span>
+              <em>Failure containment</em>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Monitoring Modes</p>
+          <h2>Drivers may monitor differently, but must expose equivalent behavior</h2>
+          <table class="table compare-table">
+            <thead>
+              <tr>
+                <th>Mode</th>
+                <th>How topology changes arrive</th>
+                <th>Selection implication</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Multi-threaded / async</td>
+                <td>Background monitors update topology while application operations run.</td>
+                <td>Waiting operations are unblocked as soon as a suitable server appears.</td>
+              </tr>
+              <tr>
+                <td>Single-threaded</td>
+                <td>Monitoring may be coupled to server selection attempts.</td>
+                <td><code>serverSelectionTryOnce</code> can control whether one scan is attempted before failing.</td>
+              </tr>
+              <tr>
+                <td>Streaming hello</td>
+                <td>Some modern monitors can wait for topology changes instead of only polling periodically.</td>
+                <td>Drivers can react faster to changes while still respecting heartbeat constraints.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Selection Pipeline</p>
+          <h2>Server selection turns topology state into one operation target</h2>
+          <div class="visual flow" data-visual>
+            <div class="step"><span class="num">1</span><strong>Operation type</strong><span>Write, read, command helper, transaction start, cursor continuation.</span></div>
+            <div class="step"><span class="num">2</span><strong>Topology filter</strong><span>Single, replica set, sharded, load-balanced each apply different rules.</span></div>
+            <div class="step"><span class="num">3</span><strong>Mode filter</strong><span>Read preference mode or write requirement narrows candidate servers.</span></div>
+            <div class="step"><span class="num">4</span><strong>Staleness/tags</strong><span>Max staleness and tag sets filter secondaries when configured.</span></div>
+            <div class="step"><span class="num">5</span><strong>Latency window</strong><span>Keep servers within fastest RTT plus <code>localThresholdMS</code>.</span></div>
+            <div class="step"><span class="num">6</span><strong>Select</strong><span>Choose suitable server, often with randomization or operation-count weighting.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Writes</p>
+          <h2>Normal writes require a writable target</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Replica set</h3>
+              <p>Writes target the known <code>RSPrimary</code>. If no primary is known, selection waits until timeout or a primary appears.</p>
+            </div>
+            <div class="panel">
+              <h3>Sharded cluster</h3>
+              <p>Writes target an eligible <code>mongos</code>; the router owns shard targeting inside the cluster.</p>
+            </div>
+            <div class="panel">
+              <h3>Load balanced</h3>
+              <p>Driver selects the load-balanced endpoint and lets the service route behind the boundary.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Read Preference</p>
+          <h2>Reads are routed by explicit policy</h2>
+          <div class="matrix">
+            <div class="head">Mode</div>
+            <div class="head">Primary available</div>
+            <div class="head">Primary unavailable</div>
+            <div class="head">Common use</div>
+            <div class="cell"><strong><code>primary</code></strong><span>Use primary only.</span></div>
+            <div class="cell"><strong>Primary</strong><span>Strictly current primary.</span></div>
+            <div class="cell"><strong>No server</strong><span>Wait/fail rather than use secondary.</span></div>
+            <div class="cell"><strong>Default correctness</strong><span>Strongest default routing assumption.</span></div>
+            <div class="cell"><strong><code>secondary</code></strong><span>Use secondaries only.</span></div>
+            <div class="cell"><strong>Secondary</strong><span>Eligible secondaries only.</span></div>
+            <div class="cell"><strong>Secondary</strong><span>Can still read if secondaries are known.</span></div>
+            <div class="cell"><strong>Analytics/offload</strong><span>Accepts replication lag.</span></div>
+            <div class="cell"><strong><code>nearest</code></strong><span>Use any eligible low-latency member.</span></div>
+            <div class="cell"><strong>Primary or secondary</strong><span>Within latency window.</span></div>
+            <div class="cell"><strong>Secondary</strong><span>If low-latency and eligible.</span></div>
+            <div class="cell"><strong>Latency-sensitive reads</strong><span>Not freshness-sensitive.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Read Constraints</p>
+          <h2>Staleness and tags refine secondary eligibility</h2>
+          <div class="visual stack" data-visual>
+            <div class="card">
+              <h3>Mode first</h3>
+              <strong>Primary / secondary / preferred / nearest</strong>
+              <span>Start by deciding which classes of servers may be candidates.</span>
+            </div>
+            <div class="card accent">
+              <h3>Max staleness</h3>
+              <strong>Replication lag budget</strong>
+              <span>Filter secondaries that are too far behind based on last write dates and heartbeat timing.</span>
+            </div>
+            <div class="card amber">
+              <h3>Tag sets</h3>
+              <strong>Data center or workload affinity</strong>
+              <span>Apply ordered tag sets after staleness; first tag set with matches wins.</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Latency Window</p>
+          <h2><code>localThresholdMS</code> prevents always choosing the absolute fastest ping</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Fastest RTT</h3>
+              <p>Use heartbeat round-trip time estimates from server descriptions.</p>
+            </div>
+            <div class="panel">
+              <h3>Window</h3>
+              <p>Eligible servers are those whose RTT is at most fastest RTT plus <code>localThresholdMS</code>.</p>
+            </div>
+            <div class="panel">
+              <h3>Effect</h3>
+              <p>Spread load across roughly local servers while avoiding obviously distant or unhealthy targets.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Special Routing</p>
+          <h2>Some operations must stay pinned to their original host</h2>
+          <div class="tight-grid">
+            <div class="mini-card"><strong><code>getMore</code></strong><span>Must go to the server that owns the cursor id and returned the previous batch.</span></div>
+            <div class="mini-card"><strong><code>killCursors</code></strong><span>Targets the server that owns the cursor being killed.</span></div>
+            <div class="mini-card"><strong>Transactions on mongos</strong><span>After the first sharded transaction operation selects a mongos, later operations are pinned.</span></div>
+            <div class="mini-card"><strong>Load-balanced cursors</strong><span>Can require connection or service-id pinning depending on operation type.</span></div>
+            <div class="mini-card"><strong>Change streams</strong><span>Long-lived cursor behavior makes resumability and server errors important.</span></div>
+            <div class="mini-card"><strong>Retry paths</strong><span>Retries may intentionally avoid a recently failed address when the spec requires deprioritization.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Timeout Budget</p>
+          <h2>Several timeouts control different parts of the path</h2>
+          <div class="visual flow" data-visual>
+            <div class="step"><span class="num">1</span><strong>Server selection</strong><span><code>serverSelectionTimeoutMS</code> or remaining <code>timeoutMS</code>.</span></div>
+            <div class="step"><span class="num">2</span><strong>Pool checkout</strong><span>Wait for an available connection or create one within pool constraints.</span></div>
+            <div class="step"><span class="num">3</span><strong>Connect</strong><span><code>connectTimeoutMS</code> bounds TCP/TLS connection establishment.</span></div>
+            <div class="step"><span class="num">4</span><strong>Socket read/write</strong><span><code>socketTimeoutMS</code> or context deadline bounds I/O.</span></div>
+            <div class="step"><span class="num">5</span><strong>Server work</strong><span><code>maxTimeMS</code> can limit server-side execution for supported commands.</span></div>
+            <div class="step"><span class="num">6</span><strong>Write concern</strong><span><code>wTimeoutMS</code> bounds replication acknowledgement waiting.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Server Selection Timeout</p>
+          <h2><code>serverSelectionTimeoutMS</code> is the wait for a suitable server</h2>
+          <div class="path-list">
+            <div class="trace-row">
+              <strong>No suitable server</strong>
+              <span>The topology has no primary for a write, no matching secondary for a read preference, or all candidates are unknown.</span>
+              <em>Selection waits</em>
+            </div>
+            <div class="trace-row">
+              <strong>Topology changes</strong>
+              <span>Background monitoring may discover a suitable server before timeout and wake the operation.</span>
+              <em>Retry selection</em>
+            </div>
+            <div class="trace-row">
+              <strong>Timeout expires</strong>
+              <span>The driver raises a server selection error with the current topology description and underlying server errors.</span>
+              <em>Actionable diagnosis</em>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">CSOT</p>
+          <h2><code>timeoutMS</code> gives one client-side operation budget</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>What it covers</h3>
+              <p>Client-side operation timeout can include server selection, pool checkout, connection establishment, command execution, and retries.</p>
+            </div>
+            <div class="panel">
+              <h3>Why it matters</h3>
+              <p>It prevents a stack of independent timeouts from producing unexpectedly long end-to-end latency.</p>
+            </div>
+            <div class="panel">
+              <h3>Caveat</h3>
+              <p>Driver support and precedence vary by language and version; know your driver's current CSOT behavior.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Knobs</p>
+          <h2>The main knobs map to routing, time, and resources</h2>
+          <div class="matrix matrix-5">
+            <div class="head">Knob</div>
+            <div class="head">Category</div>
+            <div class="head">Default tendency</div>
+            <div class="head">What it changes</div>
+            <div class="head">Risk</div>
+            <div class="cell"><strong><code>readPreference</code></strong><span>Routing</span></div>
+            <div class="cell"><strong>Primary</strong><span>Most drivers default to primary.</span></div>
+            <div class="cell"><strong>Correctness first</strong><span>Freshest normal read target.</span></div>
+            <div class="cell"><strong>Which servers can read</strong><span>May use secondaries or nearest.</span></div>
+            <div class="cell"><strong>Stale reads</strong><span>Secondary modes can return lagged data.</span></div>
+            <div class="cell"><strong><code>localThresholdMS</code></strong><span>Routing</span></div>
+            <div class="cell"><strong>Small window</strong><span>Often 15ms default.</span></div>
+            <div class="cell"><strong>Latency spread</strong><span>Which candidates remain after RTT filtering.</span></div>
+            <div class="cell"><strong>Load shape</strong><span>Too narrow concentrates traffic; too wide crosses regions.</span></div>
+            <div class="cell"><strong><code>serverSelectionTimeoutMS</code></strong><span>Time</span></div>
+            <div class="cell"><strong>Finite wait</strong><span>Often 30 seconds.</span></div>
+            <div class="cell"><strong>Failure patience</strong><span>How long operations wait for topology recovery.</span></div>
+            <div class="cell"><strong>User latency</strong><span>Too high hides outages; too low fails through elections.</span></div>
+            <div class="cell"><strong><code>heartbeatFrequencyMS</code></strong><span>Monitoring</span></div>
+            <div class="cell"><strong>Periodic checks</strong><span>Often 10 seconds.</span></div>
+            <div class="cell"><strong>Freshness</strong><span>How often monitors poll absent streaming changes.</span></div>
+            <div class="cell"><strong>Overhead</strong><span>Too aggressive adds noise and load.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">More Knobs</p>
+          <h2>Connection and pool settings decide whether selected servers are usable</h2>
+          <div class="tight-grid">
+            <div class="mini-card"><strong><code>connectTimeoutMS</code></strong><span>Bounds opening a TCP/TLS connection to a selected or monitored host.</span></div>
+            <div class="mini-card"><strong><code>socketTimeoutMS</code></strong><span>Bounds socket reads/writes in drivers that expose it independently.</span></div>
+            <div class="mini-card"><strong><code>maxPoolSize</code></strong><span>Caps concurrent checked-out connections per server.</span></div>
+            <div class="mini-card"><strong><code>minPoolSize</code></strong><span>Maintains warm connections at the cost of baseline resources.</span></div>
+            <div class="mini-card"><strong><code>maxConnecting</code></strong><span>Limits concurrent connection establishment after bursts or pool clears.</span></div>
+            <div class="mini-card"><strong><code>retryReads</code> / <code>retryWrites</code></strong><span>Controls whether eligible operations are retried after retryable failures.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Failure Handling</p>
+          <h2>Network errors mutate topology state, not only the current operation</h2>
+          <div class="visual flow" data-visual>
+            <div class="step"><span class="num">1</span><strong>Operation fails</strong><span>Socket error, timeout, not-primary, shutdown, or handshake failure.</span></div>
+            <div class="step"><span class="num">2</span><strong>Classify error</strong><span>Driver applies SDAM error handling rules for server type and topology.</span></div>
+            <div class="step"><span class="num">3</span><strong>Mark unknown</strong><span>ServerDescription may be replaced with <code>Unknown</code> and error stored.</span></div>
+            <div class="step"><span class="num">4</span><strong>Clear pool</strong><span>Some errors clear or pause a connection pool generation.</span></div>
+            <div class="step"><span class="num">5</span><strong>Request check</strong><span>Monitor is asked to heartbeat soon instead of waiting for the next period.</span></div>
+            <div class="step"><span class="num">6</span><strong>Reselect/retry</strong><span>Eligible retryable operations select again from updated topology.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Election Timeline</p>
+          <h2>The driver preserves correctness during primary failover</h2>
+          <div class="path-list">
+            <div class="trace-row">
+              <strong>T0: primary known</strong>
+              <span>Topology is <code>ReplicaSetWithPrimary</code>; writes target member A.</span>
+              <em>Normal routing</em>
+            </div>
+            <div class="trace-row">
+              <strong>T1: A steps down</strong>
+              <span>Operation errors or heartbeat observes A is no longer writable; A becomes <code>Unknown</code> or secondary.</span>
+              <em>Invalidate</em>
+            </div>
+            <div class="trace-row">
+              <strong>T2: no primary window</strong>
+              <span>Writes wait in server selection while monitors scan; secondary reads may continue if configured.</span>
+              <em>ReplicaSetNoPrimary</em>
+            </div>
+            <div class="trace-row">
+              <strong>T3: B elected</strong>
+              <span>Heartbeat observes B as primary; old primary is stale-checked; waiting writes wake and target B.</span>
+              <em>Recovery</em>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Retryability</p>
+          <h2>Retries depend on selection, labels, sessions, and operation type</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Retryable reads</h3>
+              <p>Eligible read operations can reselect a server after retryable network-style failures.</p>
+            </div>
+            <div class="panel">
+              <h3>Retryable writes</h3>
+              <p>Single-document writes and certain write operations use sessions and transaction numbers to avoid duplicate effects when supported.</p>
+            </div>
+            <div class="panel">
+              <h3>Not magic</h3>
+              <p>Retries cannot make non-idempotent operations safe unless the server and driver protocol semantics support it.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Sharded Clusters</p>
+          <h2>Drivers select routers; routers select shards</h2>
+          <div class="visual stack" data-visual>
+            <div class="card">
+              <h3>Driver</h3>
+              <strong>Select eligible <code>mongos</code></strong>
+              <span>Monitor router availability and RTT, then choose a router within the latency window.</span>
+            </div>
+            <div class="card accent">
+              <h3><code>mongos</code></h3>
+              <strong>Own shard targeting</strong>
+              <span>Parse command, consult cluster metadata, route to shards, merge results when needed.</span>
+            </div>
+            <div class="card">
+              <h3>Shards</h3>
+              <strong>Replica sets behind routers</strong>
+              <span>Driver normally does not select shard replica set members directly for sharded operations.</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Load Balanced</p>
+          <h2>Load-balanced mode changes what the driver is allowed to know</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>One service boundary</h3>
+              <p>The driver treats the endpoint as a load-balanced topology, not as a discoverable replica set.</p>
+            </div>
+            <div class="panel">
+              <h3>Service IDs</h3>
+              <p>Responses can identify backing services for pinning and pool behavior.</p>
+            </div>
+            <div class="panel">
+              <h3>Operational implication</h3>
+              <p>External load balancing shifts routing and health semantics away from direct host discovery.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Diagnostics</p>
+          <h2>A server selection error is a topology snapshot</h2>
+          <pre><code class="language-text code-tight">MongoServerSelectionError: server selection timed out after 30000 ms
+TopologyDescription {
+  type: ReplicaSetNoPrimary,
+  setName: "atlas-shard-0",
+  servers: {
+    "a:27017": { type: Unknown, error: "connect ETIMEDOUT" },
+    "b:27017": { type: RSSecondary, roundTripTime: 18ms },
+    "c:27017": { type: RSSecondary, roundTripTime: 21ms }
+  },
+  heartbeatFrequencyMS: 10000,
+  localThresholdMS: 15
+}</code></pre>
+        </section>
+
+        <section>
+          <p class="kicker">Reading The Error</p>
+          <h2>Ask which filter removed all candidates</h2>
+          <div class="path-list">
+            <div class="trace-row">
+              <strong>Topology filter</strong>
+              <span>Is the deployment known? Is there a primary? Are hosts reachable? Is the set name correct?</span>
+              <em>SDAM issue</em>
+            </div>
+            <div class="trace-row">
+              <strong>Read policy filter</strong>
+              <span>Did read preference, tag sets, or max staleness exclude otherwise healthy servers?</span>
+              <em>Selection issue</em>
+            </div>
+            <div class="trace-row">
+              <strong>Connection filter</strong>
+              <span>Was a server selected but connection checkout, DNS, TLS, auth, or socket I/O failed?</span>
+              <em>Pool/network issue</em>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Configuration Example</p>
+          <h2>A connection string encodes topology assumptions and budgets</h2>
+          <pre><code class="language-text code-small">mongodb+srv://app:***@cluster.example.mongodb.net/shop
+  ?replicaSet=atlas-shard-0
+  &readPreference=secondaryPreferred
+  &readPreferenceTags=region:us-east
+  &maxStalenessSeconds=120
+  &localThresholdMS=15
+  &serverSelectionTimeoutMS=5000
+  &connectTimeoutMS=2000
+  &timeoutMS=10000
+  &retryReads=true
+  &retryWrites=true
+  &maxPoolSize=100
+  &maxConnecting=2</code></pre>
+        </section>
+
+        <section>
+          <p class="kicker">Application-Level Routing</p>
+          <h2>Use read preference intentionally, not as a generic scale knob</h2>
+          <div class="two-code">
+            <pre><code class="language-js code-tight">// Node.js: analytics read from tagged secondaries
+const analytics = client
+  .db("shop")
+  .collection("orders")
+  .withReadPreference({
+    mode: "secondary",
+    tags: [{ workload: "analytics", region: "us-east" }],
+    maxStalenessSeconds: 120
+  });
+
+const rows = await analytics
+  .find({ status: "paid" })
+  .sort({ createdAt: -1 })
+  .limit(500)
+  .toArray();</code></pre>
+            <pre><code class="language-js code-tight">// Writes still select the primary
+await client
+  .db("shop")
+  .collection("orders")
+  .insertOne({
+    customerId: "C-1842",
+    status: "created",
+    createdAt: new Date()
+  });
+
+// Driver routes by operation type,
+// not by the collection's last selected host.</code></pre>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Tuning Scenarios</p>
+          <h2>Different failures call for different knobs</h2>
+          <div class="matrix">
+            <div class="head">Symptom</div>
+            <div class="head">Likely layer</div>
+            <div class="head">Knobs to inspect</div>
+            <div class="head">Avoid</div>
+            <div class="cell"><strong>Election causes short write errors</strong><span>Topology has no primary briefly.</span></div>
+            <div class="cell"><strong>SDAM + selection</strong><span>Election recovery and heartbeat discovery.</span></div>
+            <div class="cell"><strong><code>serverSelectionTimeoutMS</code>, retries</strong><span>Allow enough time for normal failover.</span></div>
+            <div class="cell"><strong>Infinite waits</strong><span>Do not hide real outages with huge timeouts.</span></div>
+            <div class="cell"><strong>Reads cross regions</strong><span>Latency window too broad or read preference too permissive.</span></div>
+            <div class="cell"><strong>Selection policy</strong><span>RTT and tag constraints.</span></div>
+            <div class="cell"><strong><code>localThresholdMS</code>, tags</strong><span>Constrain eligible region.</span></div>
+            <div class="cell"><strong>Primary-only by habit</strong><span>May overload one member unnecessarily.</span></div>
+            <div class="cell"><strong>Timeouts under burst load</strong><span>Pool checkout or connection creation bottleneck.</span></div>
+            <div class="cell"><strong>CMAP</strong><span>Pool size and connection creation.</span></div>
+            <div class="cell"><strong><code>maxPoolSize</code>, <code>maxConnecting</code></strong><span>Measure queueing first.</span></div>
+            <div class="cell"><strong>Only raising selection timeout</strong><span>It may not be a selection problem.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Observability</p>
+          <h2>Drivers expose events for the hidden state machine</h2>
+          <div class="grid-4">
+            <div class="panel"><h3>SDAM events</h3><p>Topology opening/changed/closed, server opening/changed/closed, heartbeat started/succeeded/failed.</p></div>
+            <div class="panel"><h3>Selection events</h3><p>Server selection started, succeeded, failed, waiting, and selector details.</p></div>
+            <div class="panel"><h3>Pool events</h3><p>Pool created, connection created/ready/checked out, wait queue, pool cleared.</p></div>
+            <div class="panel"><h3>Command events</h3><p>Command started/succeeded/failed with operation ids and durations.</p></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Resilience Pattern</p>
+          <h2>Let the driver own topology; make app retries bounded and observable</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Use one long-lived client</h3>
+              <p>A single client owns topology monitoring and pools. Recreating clients defeats the state machine.</p>
+            </div>
+            <div class="panel">
+              <h3>Set explicit budgets</h3>
+              <p>Use operation-level deadlines or <code>timeoutMS</code> and choose selection timeouts aligned with user latency.</p>
+            </div>
+            <div class="panel">
+              <h3>Log topology errors</h3>
+              <p>Server selection failures contain the current deployment view; capture it before turning everything into a generic 500.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Anti-Patterns</p>
+          <h2>Common ways to fight the driver</h2>
+          <div class="tight-grid">
+            <div class="mini-card"><strong>One client per request</strong><span>Destroys pool reuse, monitoring state, and normal failover behavior.</span></div>
+            <div class="mini-card"><strong>Huge selection timeout</strong><span>Turns topology problems into long user waits.</span></div>
+            <div class="mini-card"><strong>Secondary reads everywhere</strong><span>Can create stale reads, inconsistent UX, and harder debugging.</span></div>
+            <div class="mini-card"><strong>Ignoring tags</strong><span>Cross-region reads happen when read preference is broad and latency window allows it.</span></div>
+            <div class="mini-card"><strong>Only watching command latency</strong><span>Selection, pool checkout, and connect time can dominate before the command starts.</span></div>
+            <div class="mini-card"><strong>Retrying above the driver blindly</strong><span>Can amplify outages if app retries ignore driver retry labels and time budgets.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Checklist</p>
+          <h2>Production checklist for driver routing resilience</h2>
+          <div class="path-list">
+            <div class="trace-row">
+              <strong>1. Topology fit</strong>
+              <span>Use the right URI scheme, set name, load-balanced mode, TLS, and direct connection settings.</span>
+              <em>Discovery</em>
+            </div>
+            <div class="trace-row">
+              <strong>2. Routing policy</strong>
+              <span>Define read preference, tags, max staleness, and latency window per workload, not globally by accident.</span>
+              <em>Selection</em>
+            </div>
+            <div class="trace-row">
+              <strong>3. Time budgets</strong>
+              <span>Align <code>timeoutMS</code>, <code>serverSelectionTimeoutMS</code>, connect, socket, and server-side timeouts.</span>
+              <em>Failure behavior</em>
+            </div>
+            <div class="trace-row">
+              <strong>4. Pool capacity</strong>
+              <span>Size pools and connection creation limits from concurrency and latency, not from maximum traffic hopes.</span>
+              <em>Resources</em>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Mental Model</p>
+          <h2>What the driver does for you</h2>
+          <div class="visual stack" data-visual>
+            <div class="card">
+              <h3>Observe</h3>
+              <strong>Continuously monitor</strong>
+              <span>Heartbeat each known server and maintain topology descriptions with RTT, roles, tags, and errors.</span>
+            </div>
+            <div class="card accent">
+              <h3>Decide</h3>
+              <strong>Select suitable servers</strong>
+              <span>Apply operation type, topology, read preference, staleness, tags, latency, and pinning constraints.</span>
+            </div>
+            <div class="card">
+              <h3>Recover</h3>
+              <strong>Update state after failure</strong>
+              <span>Invalidate stale descriptions, clear pools when required, retry eligible operations, and wake waiting work.</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Recap</p>
+          <h2>The hidden state machine is the product</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Discovery</h3>
+              <p>SDAM turns a seed list and <code>hello</code> replies into a live topology description.</p>
+            </div>
+            <div class="panel">
+              <h3>Selection</h3>
+              <p>Server selection chooses an eligible host per operation using topology, read preference, latency, tags, and staleness.</p>
+            </div>
+            <div class="panel">
+              <h3>Resilience</h3>
+              <p>Timeouts, pools, retries, and error handling determine whether failures are brief routing events or user-visible outages.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Takeaways</p>
+          <h2>How to think about driver behavior</h2>
+          <ul>
+            <li>The driver is not a dumb socket wrapper; it is a topology-aware distributed systems client.</li>
+            <li>Writes route to known writable targets; reads route according to explicit read preference policy.</li>
+            <li><code>serverSelectionTimeoutMS</code> means “wait for a suitable server,” not “run the database command for this long.”</li>
+            <li><code>localThresholdMS</code>, tags, and max staleness shape where reads go after basic eligibility.</li>
+            <li>Server selection errors are often the best diagnostic artifact because they include the driver's current view of the deployment.</li>
+            <li>Use one long-lived client, explicit time budgets, and driver events to make failure behavior understandable.</li>
+          </ul>
+        </section>
+
+        <section>
+          <p class="kicker">References</p>
+          <h2>Follow-up reading</h2>
+          <div class="reference-list">
+            <h3>MongoDB driver specifications</h3>
+            <ul>
+              <li><a href="https://specifications.readthedocs.io/en/latest/server-discovery-and-monitoring/server-discovery-and-monitoring/">Server Discovery and Monitoring Specification</a></li>
+              <li><a href="https://specifications.readthedocs.io/en/latest/server-selection/server-selection/">Server Selection Specification</a></li>
+              <li><a href="https://specifications.readthedocs.io/en/latest/client-side-operations-timeout/client-side-operations-timeout/">Client Side Operations Timeout Specification</a></li>
+              <li><a href="https://specifications.readthedocs.io/en/latest/connection-monitoring-and-pooling/connection-monitoring-and-pooling/">Connection Monitoring and Pooling Specification</a></li>
+              <li><a href="https://github.com/mongodb/specifications">MongoDB Driver Specifications Repository</a></li>
+            </ul>
+            <h3>MongoDB manual and driver guides</h3>
+            <ul>
+              <li><a href="https://www.mongodb.com/docs/manual/core/read-preference-mechanics/">MongoDB Manual: Server Selection Algorithm</a></li>
+              <li><a href="https://www.mongodb.com/docs/manual/core/read-preference/">MongoDB Manual: Read Preference</a></li>
+              <li><a href="https://www.mongodb.com/docs/manual/core/read-preference-staleness/">MongoDB Manual: maxStalenessSeconds</a></li>
+              <li><a href="https://www.mongodb.com/docs/manual/reference/connection-string-options/">MongoDB Manual: Connection String Options</a></li>
+              <li><a href="https://www.mongodb.com/docs/drivers/node/current/fundamentals/connection/csot/">Node.js Driver: Client-Side Operation Timeout</a></li>
+              <li><a href="https://www.mongodb.com/docs/drivers/go/current/connect/specify-connection-options/">Go Driver: Connection Options</a></li>
+            </ul>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script src="../../../assets/vendor/reveal/dist/reveal.js"></script>
+    <script src="../../../assets/vendor/reveal/dist/plugin/highlight.js"></script>
+    <script>
+      Reveal.initialize({
+        hash: true,
+        controls: true,
+        progress: true,
+        center: false,
+        width: 1280,
+        height: 720,
+        margin: 0.04,
+        plugins: [RevealHighlight],
+      });
+    </script>
+  </body>
+</html>
