@@ -1,0 +1,1277 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Agent Frameworks, Harnesses, and Runtimes</title>
+    <link rel="stylesheet" href="../../../assets/vendor/reveal/dist/reveal.css" />
+    <link
+      rel="stylesheet"
+      href="../../../assets/vendor/reveal/dist/plugin/highlight/monokai.css"
+    />
+    <link rel="stylesheet" href="../../../assets/css/deck.css" />
+    <style>
+      .stack-map,
+      .flow-map,
+      .lane-map {
+        display: grid;
+        gap: 12px;
+        margin-top: 24px;
+      }
+
+      .stack-row,
+      .flow-node,
+      .lane-row {
+        border: 1px solid var(--deck-line);
+        border-radius: 8px;
+        background: linear-gradient(180deg, var(--deck-panel-2), var(--deck-panel));
+        padding: 14px 16px;
+      }
+
+      .stack-row {
+        display: grid;
+        grid-template-columns: 170px minmax(0, 1fr) 290px;
+        align-items: center;
+        gap: 18px;
+      }
+
+      .stack-row strong,
+      .flow-node strong,
+      .lane-row strong {
+        display: block;
+        color: var(--deck-text);
+        font-size: 0.62em;
+      }
+
+      .stack-row span,
+      .flow-node span,
+      .lane-row span {
+        color: var(--deck-muted);
+        font-size: 0.5em;
+        line-height: 1.35;
+      }
+
+      .stack-row em {
+        color: var(--deck-amber);
+        font-size: 0.48em;
+        font-style: normal;
+        line-height: 1.3;
+      }
+
+      .flow-map {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+
+      .flow-node {
+        min-height: 132px;
+      }
+
+      .lane-row {
+        display: grid;
+        grid-template-columns: 180px repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        align-items: stretch;
+      }
+
+      .lane-cell {
+        border-left: 2px solid rgb(33 199 168 / 55%);
+        padding-left: 12px;
+      }
+
+      .tagline {
+        display: inline-block;
+        margin: 8px 8px 0 0;
+        padding: 6px 9px;
+        border: 1px solid rgb(255 255 255 / 12%);
+        border-radius: 999px;
+        color: var(--deck-muted);
+        font-size: 0.42em;
+        font-weight: 700;
+      }
+
+      .compact-list li {
+        margin-bottom: 6px;
+        font-size: 0.58em;
+      }
+
+      .wide-table {
+        font-size: 0.46em;
+      }
+
+      .wide-table th,
+      .wide-table td {
+        padding: 10px;
+      }
+
+      .reference-list {
+        column-gap: 70px;
+      }
+
+      .reference-list h3 {
+        font-size: 0.72em;
+      }
+
+      .reference-list li {
+        font-size: 0.5em;
+      }
+
+      @media (max-width: 900px) {
+        .stack-row,
+        .lane-row,
+        .flow-map {
+          grid-template-columns: 1fr;
+        }
+
+        .flow-node {
+          min-height: auto;
+        }
+      }
+    </style>
+  </head>
+  <body class="has-deck-topbar">
+    <header class="deck-topbar" aria-label="Presentation navigation">
+      <a class="deck-nav-link" href="../../../">Main menu</a>
+      <div class="deck-title">
+        <span>Agent Frameworks, Harnesses, and Runtimes</span>
+        <small>The agentic development stack through one practical system</small>
+      </div>
+      <a class="deck-nav-link" href="../../../topics/agent-development/">Topic</a>
+    </header>
+
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <p class="kicker">Agent Development</p>
+          <h1>Agent Frameworks, Harnesses, and Runtimes</h1>
+          <p class="lead">
+            A practical map of the agentic development stack: what each layer
+            does, where framework boundaries sit, and how databases become
+            durable product infrastructure.
+          </p>
+          <p class="footnote">70 minutes / 42 slides</p>
+        </section>
+
+        <section>
+          <p class="kicker">Learning goals</p>
+          <h2>By the end, the stack should feel separable</h2>
+          <div class="grid-2">
+            <div class="callout">
+              <h3>Layer boundaries</h3>
+              <p>Separate model APIs, UI SDKs, agent harnesses, orchestration runtimes, low-code builders, observability, and databases.</p>
+            </div>
+            <div class="callout">
+              <h3>Tooling value</h3>
+              <p>Explain what LangChain, Mastra, n8n, Agno, Langflow, Flowise, LlamaIndex, ADK, OpenAI Agents SDK, Vercel AI SDK, and Microsoft Agent Framework actually add.</p>
+            </div>
+            <div class="callout">
+              <h3>Database fit</h3>
+              <p>Know when MongoDB, Postgres, pgvector, or another store is serving app state, retrieval, memory, checkpoints, audit, or eval data.</p>
+            </div>
+            <div class="callout">
+              <h3>Design choices</h3>
+              <p>Choose a stack from the shape of the work, not from a ranking of frameworks.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Running example</p>
+          <h2>Support operations agent</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Ticket</h3>
+              <p>
+                A customer says order <code>A-123</code> is late, wants a
+                refund, and threatens to churn. The agent must investigate,
+                propose an action, and avoid unauthorized side effects.
+              </p>
+            </div>
+            <div class="panel">
+              <h3>Why this is useful</h3>
+              <ul>
+                <li>Needs structured tools, retrieval, memory, workflow state, approval, and traces.</li>
+                <li>Can be built code-first, low-code, or as a hybrid.</li>
+                <li>Exposes where databases add value beyond vector search.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Mental model</p>
+          <h2>The stack is layered, but products blur layers</h2>
+          <div class="stack-map">
+            <div class="stack-row">
+              <strong>Experience</strong>
+              <span>Chat UI, ticket UI, internal tool, webhook, voice, Slack, email.</span>
+              <em>Vercel AI SDK UI, n8n triggers, Langflow chat, custom app.</em>
+            </div>
+            <div class="stack-row">
+              <strong>Harness</strong>
+              <span>Prompt, tools, model loop, structured output, middleware, guardrails.</span>
+              <em>LangChain, Mastra, OpenAI Agents SDK, ADK, LlamaIndex, Agno.</em>
+            </div>
+            <div class="stack-row">
+              <strong>Runtime</strong>
+              <span>State graph, durable execution, checkpoints, interrupts, streaming.</span>
+              <em>LangGraph, Mastra workflows, Microsoft Agent Framework workflows, ADK workflows.</em>
+            </div>
+            <div class="stack-row">
+              <strong>Data plane</strong>
+              <span>App records, policy docs, embeddings, memory, audit, traces, eval datasets.</span>
+              <em>MongoDB, Postgres, pgvector, vector databases, object stores.</em>
+            </div>
+            <div class="stack-row">
+              <strong>Operations</strong>
+              <span>Observability, evals, prompt management, deployment, access control.</span>
+              <em>LangSmith, Langfuse, Mastra observability, Agno AgentOS, provider consoles.</em>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Boundary language</p>
+          <h2>Use precise names or the stack becomes muddy</h2>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Term</th>
+                <th>Meaning in this deck</th>
+                <th>Support agent example</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Model API</td>
+                <td>Generates text, tool calls, embeddings, or multimodal output.</td>
+                <td>Classifies customer intent or drafts the response.</td>
+              </tr>
+              <tr>
+                <td>Harness</td>
+                <td>Owns the model loop and decides how tools, prompts, context, and guardrails are applied.</td>
+                <td>Lets the model call <code>getOrder</code> and <code>searchPolicy</code>.</td>
+              </tr>
+              <tr>
+                <td>Runtime</td>
+                <td>Owns long-running state, checkpoints, deterministic routing, and resumption.</td>
+                <td>Pauses before refund approval, resumes after manager review.</td>
+              </tr>
+              <tr>
+                <td>Control plane</td>
+                <td>Manages agents, versions, traces, evals, credentials, schedules, and access.</td>
+                <td>Shows failed refund attempts and regression scores by release.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">First decision</p>
+          <h2>Do not start by picking a framework</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Use a function</h3>
+              <p>When the steps and inputs are deterministic, write normal code. The model may only classify or summarize.</p>
+            </div>
+            <div class="panel">
+              <h3>Use a harness</h3>
+              <p>When the model should choose among tools, reason over context, and produce structured output.</p>
+            </div>
+            <div class="panel">
+              <h3>Use a runtime</h3>
+              <p>When state, approvals, retries, branches, parallel work, or resumption are business requirements.</p>
+            </div>
+          </div>
+          <p class="lead">
+            The support agent uses all three: deterministic policy checks, a tool-using agent loop, and a workflow for high-risk actions.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Layer 1</p>
+          <h2>Model and provider APIs are the substrate</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>What they solve</h3>
+              <ul>
+                <li>Text generation, tool-call generation, embeddings, vision, audio, and streaming.</li>
+                <li>Provider-specific model features, cost, latency, safety controls, and context windows.</li>
+                <li>Low-level request/response contracts.</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>What they do not solve</h3>
+              <ul>
+                <li>Business workflow state.</li>
+                <li>Reliable tool authorization.</li>
+                <li>Long-term memory semantics.</li>
+                <li>Evaluation and product ownership.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Vercel AI SDK</p>
+          <h2>UI and application integration can be its own layer</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Boundary</h3>
+              <p>
+                Vercel AI SDK is excellent when the product surface is a web
+                app: typed tool definitions, streaming, model providers, UI
+                helpers, and generative UI patterns.
+              </p>
+            </div>
+            <div class="panel">
+              <h3>Support agent use</h3>
+              <p>
+                Stream the draft response into the ticket UI, show tool status,
+                and render an approval component when the agent proposes a
+                refund.
+              </p>
+            </div>
+          </div>
+          <pre><code class="language-ts code-small">const result = await streamText({
+  model,
+  tools: { getOrder, searchPolicy },
+  stopWhen: stepCountIs(6),
+  prompt: ticket.message,
+});</code></pre>
+        </section>
+
+        <section>
+          <p class="kicker">OpenAI Agents SDK</p>
+          <h2>Provider-native agent runtime with few primitives</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Agent</h3>
+              <p>Instructions plus tools around a model, with an SDK-managed loop.</p>
+            </div>
+            <div class="panel">
+              <h3>Handoffs</h3>
+              <p>Delegate to specialized agents, such as a policy reviewer or fraud analyst.</p>
+            </div>
+            <div class="panel">
+              <h3>Sessions and tracing</h3>
+              <p>Persist working context and inspect tool calls, guardrails, and runs.</p>
+            </div>
+          </div>
+          <p class="lead">
+            Use it when you want a lightweight Python-first path that stays close to OpenAI model behavior while adding tools, guardrails, sessions, handoffs, and tracing.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Layer 2</p>
+          <h2>The harness is where "agent" becomes product behavior</h2>
+          <div class="flow-map">
+            <div class="flow-node">
+              <strong>Instructions</strong>
+              <span>Role, policy, tone, constraints, stop criteria.</span>
+            </div>
+            <div class="flow-node">
+              <strong>Context</strong>
+              <span>Ticket, customer, policies, prior interactions.</span>
+            </div>
+            <div class="flow-node">
+              <strong>Tools</strong>
+              <span>Typed actions with auth, schemas, logging, and side effects.</span>
+            </div>
+            <div class="flow-node">
+              <strong>Loop</strong>
+              <span>Decide, call, observe, continue, stop, stream.</span>
+            </div>
+            <div class="flow-node">
+              <strong>Output</strong>
+              <span>Draft, action plan, citations, risk flags, next step.</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Tools</p>
+          <h2>Tools are the hard boundary between language and action</h2>
+          <pre><code class="language-ts code-small">const issueRefund = tool({
+  description: "Create a refund request. Requires manager approval for high-value orders.",
+  inputSchema: z.object({
+    orderId: z.string(),
+    amountCents: z.number().int().positive(),
+    reasonCode: z.enum(["late_delivery", "damaged", "policy_exception"]),
+  }),
+  execute: async ({ orderId, amountCents, reasonCode }, context) => {
+    await authorize(context.user, "refund:create");
+    return refundService.createRequest({ orderId, amountCents, reasonCode });
+  },
+});</code></pre>
+          <p class="footnote">
+            The framework can expose the tool, but your application owns authorization, idempotency, validation, audit, and compensating actions.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">LangChain</p>
+          <h2>LangChain is the broad harness and integration ecosystem</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Value added</h3>
+              <ul>
+                <li>Agent loop around models, tools, prompts, middleware, structured output, and memory.</li>
+                <li>Large integration surface across model providers, retrievers, vector stores, and tooling.</li>
+                <li>Middleware for context management, guardrails, retries, human steering, and execution environments.</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>Boundary</h3>
+              <p>
+                LangChain is a strong default harness. When the support flow
+                becomes a stateful business process, push orchestration into
+                LangGraph rather than hiding every branch in prompt text.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Mastra</p>
+          <h2>Mastra packages the TypeScript agent stack as one product shape</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Agents</h3>
+              <p>TypeScript agents with tools, structured output, processors, approvals, and multi-agent patterns.</p>
+            </div>
+            <div class="panel">
+              <h3>Workflows</h3>
+              <p>Step-based workflows with schemas, state, suspend/resume, streaming, and time travel.</p>
+            </div>
+            <div class="panel">
+              <h3>Developer loop</h3>
+              <p>Studio, server adapters, memory, RAG, observability, and evals are presented as framework-level concerns.</p>
+            </div>
+          </div>
+          <p class="lead">
+            For a Node or Next.js product team, Mastra competes by reducing stack seams: application code, agent logic, and workflow code can live in TypeScript.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Google ADK</p>
+          <h2>ADK is an agent app framework with workflow agents and runtime services</h2>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Primitive</th>
+                <th>Boundary</th>
+                <th>Support agent use</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>LlmAgent</code></td>
+                <td>Reasoning worker using an LLM and tools.</td>
+                <td>Drafts the customer response and calls policy tools.</td>
+              </tr>
+              <tr>
+                <td>Workflow agents</td>
+                <td>Deterministic sequence, loop, parallel, or graph control.</td>
+                <td>Classify, retrieve, draft, approve, update in order.</td>
+              </tr>
+              <tr>
+                <td>Sessions, state, memory</td>
+                <td>Short-term run context and long-term recall are separate concepts.</td>
+                <td>Keep ticket state distinct from customer-level memory.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Microsoft Agent Framework</p>
+          <h2>Microsoft's stack makes agents and workflows first-class</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Agents</h3>
+              <p>
+                Individual agents process inputs, call tools and MCP servers,
+                and generate responses across providers such as Microsoft
+                Foundry, Azure OpenAI, OpenAI, Anthropic, and Ollama.
+              </p>
+            </div>
+            <div class="panel">
+              <h3>Workflows</h3>
+              <p>
+                Graph-based workflows connect agents and functions with
+                type-safe routing, checkpointing, and human-in-the-loop support.
+              </p>
+            </div>
+          </div>
+          <p class="footnote">
+            If you have heard "FAgent Framework," the public Microsoft Learn name is Microsoft Agent Framework.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">LlamaIndex</p>
+          <h2>LlamaIndex starts from the data problem</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Where it shines</h3>
+              <p>
+                Loading, parsing, indexing, retrieving, and composing knowledge
+                over private data, then exposing query engines and tools to an
+                agent.
+              </p>
+            </div>
+            <div class="panel">
+              <h3>Support agent use</h3>
+              <p>
+                Build a policy and order-history retrieval layer first, then let
+                the support agent call it with citations and metadata filters.
+              </p>
+            </div>
+          </div>
+          <p class="lead">
+            If your hardest problem is trustworthy retrieval over messy enterprise data, a data-first framework changes where you start.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Agno</p>
+          <h2>Agno leans into the agent platform/control-plane problem</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Build</h3>
+              <p>Use the Agno SDK or bring agents built with another framework.</p>
+            </div>
+            <div class="panel">
+              <h3>Run</h3>
+              <p>Run agents as services with scheduling, tracing, RBAC, and audit trails.</p>
+            </div>
+            <div class="panel">
+              <h3>Manage</h3>
+              <p>Use AgentOS as a control plane while keeping data in your own infrastructure.</p>
+            </div>
+          </div>
+          <p class="lead">
+            This is valuable when agent operations, governance, and ownership matter as much as the agent loop.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Layer 3</p>
+          <h2>Runtimes exist because real work outlives one model call</h2>
+          <div class="grid-4">
+            <div class="panel">
+              <h3>State</h3>
+              <p>What has happened, what is pending, what can be retried?</p>
+            </div>
+            <div class="panel">
+              <h3>Control</h3>
+              <p>Which branch runs, which steps are deterministic, which are model-driven?</p>
+            </div>
+            <div class="panel">
+              <h3>Interrupts</h3>
+              <p>Where must a human approve, edit, or reject?</p>
+            </div>
+            <div class="panel">
+              <h3>Durability</h3>
+              <p>Can the work resume after a crash, deploy, timeout, or queue delay?</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">LangGraph</p>
+          <h2>LangGraph is the stateful runtime under many LangChain agents</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Boundary</h3>
+              <p>
+                Model and tool behavior live in nodes. State, edges,
+                checkpoints, interrupts, streaming, and recovery live in the
+                graph runtime.
+              </p>
+            </div>
+            <div class="panel">
+              <h3>Support agent use</h3>
+              <p>
+                Route low-risk tickets to auto-response, high-risk tickets to
+                approval, and fraud-risk tickets to a separate investigator
+                node.
+              </p>
+            </div>
+          </div>
+          <div class="lane-map">
+            <div class="lane-row">
+              <strong>Graph path</strong>
+              <div class="lane-cell"><span>classify</span></div>
+              <div class="lane-cell"><span>retrieve</span></div>
+              <div class="lane-cell"><span>draft</span></div>
+              <div class="lane-cell"><span>approve or execute</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Mastra workflows</p>
+          <h2>Mastra uses workflows for explicit TypeScript processes</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Agent when open-ended</h3>
+              <p>The model decides which support tools to call and how to synthesize the answer.</p>
+            </div>
+            <div class="panel">
+              <h3>Workflow when ordered</h3>
+              <p>The process defines classify, retrieve, draft, approval, refund request, notification, and audit write.</p>
+            </div>
+          </div>
+          <p class="lead">
+            This is the core distinction: agents improvise within constraints; workflows encode the business process.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Runtime comparison</p>
+          <h2>Google and Microsoft also draw the agent/workflow boundary</h2>
+          <table class="table wide-table">
+            <thead>
+              <tr>
+                <th>Framework</th>
+                <th>Agent side</th>
+                <th>Workflow side</th>
+                <th>When it fits</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Google ADK</td>
+                <td>Agents use LLMs, tools, sessions, state, and memory.</td>
+                <td>Workflow agents and ADK 2.0 graph workflows control execution.</td>
+                <td>Google/Gemini-heavy stacks, multi-agent app patterns, and deployable agent services.</td>
+              </tr>
+              <tr>
+                <td>Microsoft Agent Framework</td>
+                <td>Agents call tools and MCP servers across supported providers.</td>
+                <td>Graph workflows add checkpointing and human-in-the-loop control.</td>
+                <td>Microsoft/Azure enterprise stacks and teams migrating from AutoGen or Semantic Kernel.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Layer 4</p>
+          <h2>Low-code builders are orchestration products, not toys</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>n8n</h3>
+              <p>Operational workflow automation with triggers, nodes, credentials, execution history, and AI agent nodes.</p>
+            </div>
+            <div class="panel">
+              <h3>Langflow</h3>
+              <p>Visual builder for agents and flows that makes component wiring inspectable and reusable.</p>
+            </div>
+            <div class="panel">
+              <h3>Flowise</h3>
+              <p>Visual LLM app builder with Agentflow for multi-step and agentic flows.</p>
+            </div>
+          </div>
+          <p class="lead">
+            They add value when domain owners need visibility and iteration speed, or when the real work is connecting business systems.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">n8n example</p>
+          <h2>n8n is strongest at evented operations glue</h2>
+          <div class="flow-map">
+            <div class="flow-node">
+              <strong>Webhook</strong>
+              <span>Ticket created in Zendesk, Intercom, Jira, or internal support system.</span>
+            </div>
+            <div class="flow-node">
+              <strong>AI Agent</strong>
+              <span>Classifies, reasons, and calls connected tools.</span>
+            </div>
+            <div class="flow-node">
+              <strong>Business apps</strong>
+              <span>CRM, order service, warehouse, Slack, email.</span>
+            </div>
+            <div class="flow-node">
+              <strong>Branch</strong>
+              <span>Low risk auto-draft, high risk human approval.</span>
+            </div>
+            <div class="flow-node">
+              <strong>Audit</strong>
+              <span>Execution log, data table row, trace link, ticket update.</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Langflow and Flowise</p>
+          <h2>Visual builders make composition legible</h2>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Boundary</th>
+                <th>Support agent use</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Langflow</td>
+                <td>Visual construction of agent flows and components.</td>
+                <td>Prototype retrieval, prompt variants, tools, and chat behavior with a visible graph.</td>
+              </tr>
+              <tr>
+                <td>Flowise</td>
+                <td>Visual LLM app and Agentflow builder.</td>
+                <td>Wire ticket intake, policy retrieval, decision branches, and response generation.</td>
+              </tr>
+              <tr>
+                <td>Code frameworks</td>
+                <td>Versioned source, tests, custom runtime behavior.</td>
+                <td>Promote the validated flow into application-owned code when it needs stronger controls.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Low-code boundary</p>
+          <h2>The question is not low-code versus code</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Low-code is useful for</h3>
+              <ul>
+                <li>Business-system integration.</li>
+                <li>Trigger and notification plumbing.</li>
+                <li>Fast operational prototypes.</li>
+                <li>Flows that domain experts must inspect.</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>Code is useful for</h3>
+              <ul>
+                <li>Typed contracts and tests.</li>
+                <li>Fine-grained state semantics.</li>
+                <li>Custom authorization and deployment patterns.</li>
+                <li>Deep observability and CI/CD ownership.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Layer 5</p>
+          <h2>Databases are the agent's product memory, not just vector search</h2>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Database role</th>
+                <th>What lives there</th>
+                <th>Why it matters</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Application state</td>
+                <td>Tickets, orders, customers, refunds, approvals.</td>
+                <td>The agent must act on source-of-truth records.</td>
+              </tr>
+              <tr>
+                <td>Retrieval index</td>
+                <td>Policy chunks, embeddings, metadata, document versions.</td>
+                <td>Ground responses in current product and policy knowledge.</td>
+              </tr>
+              <tr>
+                <td>Runtime state</td>
+                <td>Threads, checkpoints, workflow snapshots, pending interrupts.</td>
+                <td>Resume safely and explain what happened.</td>
+              </tr>
+              <tr>
+                <td>Learning system</td>
+                <td>Traces, feedback, eval datasets, golden answers, regressions.</td>
+                <td>Improve behavior with evidence instead of anecdotes.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">MongoDB</p>
+          <h2>MongoDB fits when operational data and semantic search should sit together</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Support agent use</h3>
+              <ul>
+                <li>Customer profile, ticket timeline, order events, entitlement flags.</li>
+                <li>Policy chunks with embedded vectors and rich metadata filters.</li>
+                <li>Trace/audit records that match application document shape.</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>Boundary</h3>
+              <p>
+                MongoDB is not the agent harness. It is the durable data plane
+                the harness and runtime query, update, and audit against.
+              </p>
+            </div>
+          </div>
+          <span class="tagline">Document data</span>
+          <span class="tagline">Vector Search</span>
+          <span class="tagline">Metadata filters</span>
+          <span class="tagline">Operational records</span>
+        </section>
+
+        <section>
+          <p class="kicker">Postgres and pgvector</p>
+          <h2>Postgres fits when relational integrity and vectors should share a transaction boundary</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Support agent use</h3>
+              <ul>
+                <li>Refund approvals, account entitlements, SLA rules, and policy versions in relational tables.</li>
+                <li>Policy embeddings through <code>pgvector</code> alongside ordinary SQL joins and filters.</li>
+                <li>Workflow state and audit events with transactional guarantees.</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>Boundary</h3>
+              <p>
+                <code>pgvector</code> adds vector similarity search to Postgres;
+                it does not replace retrieval design, chunking, reranking, or
+                access-control filtering.
+              </p>
+            </div>
+          </div>
+          <span class="tagline">SQL</span>
+          <span class="tagline">Transactions</span>
+          <span class="tagline">Vector similarity</span>
+          <span class="tagline">Policy joins</span>
+        </section>
+
+        <section>
+          <p class="kicker">Retrieval pipeline</p>
+          <h2>RAG is a data product pipeline, not a one-line tool</h2>
+          <div class="flow-map">
+            <div class="flow-node">
+              <strong>Ingest</strong>
+              <span>Load policy docs, ticket histories, release notes, and procedures.</span>
+            </div>
+            <div class="flow-node">
+              <strong>Transform</strong>
+              <span>Chunk, normalize, classify, redact, and attach metadata.</span>
+            </div>
+            <div class="flow-node">
+              <strong>Index</strong>
+              <span>Store text, embeddings, metadata, version, and permissions.</span>
+            </div>
+            <div class="flow-node">
+              <strong>Retrieve</strong>
+              <span>Filter by tenant, product, region, entitlement, freshness.</span>
+            </div>
+            <div class="flow-node">
+              <strong>Evaluate</strong>
+              <span>Measure recall, citation quality, answer quality, and cost.</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Memory taxonomy</p>
+          <h2>Memory means several different things</h2>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Memory type</th>
+                <th>Example</th>
+                <th>Storage pattern</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Conversation history</td>
+                <td>Messages in ticket <code>T-9482</code>.</td>
+                <td>Thread/session store, often scoped by run or user.</td>
+              </tr>
+              <tr>
+                <td>Working state</td>
+                <td>Risk score, proposed action, pending approval.</td>
+                <td>Workflow checkpoint or runtime state table.</td>
+              </tr>
+              <tr>
+                <td>Long-term user memory</td>
+                <td>Customer prefers SMS updates and has approved exception handling.</td>
+                <td>Profile facts with write policy, provenance, correction, deletion.</td>
+              </tr>
+              <tr>
+                <td>Semantic memory</td>
+                <td>Similar past tickets and effective resolutions.</td>
+                <td>Vector search over curated prior interactions.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Durable state</p>
+          <h2>Checkpoints are different from memories</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Checkpoint</h3>
+              <p>
+                Execution state needed to resume a specific run: graph state,
+                pending node, tool outputs, interrupt payload, and retry
+                position.
+              </p>
+            </div>
+            <div class="panel">
+              <h3>Memory</h3>
+              <p>
+                Context intentionally made available to future runs: facts,
+                preferences, summaries, examples, or retrieved knowledge.
+              </p>
+            </div>
+          </div>
+          <p class="lead">
+            Storing both in the same database can be reasonable. Treating them as the same concept is where agent systems become hard to debug.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Layer 6</p>
+          <h2>Observability turns agent behavior into inspectable evidence</h2>
+          <div class="grid-4">
+            <div class="panel">
+              <h3>Trace</h3>
+              <p>Every model call, tool call, retrieval step, and branch.</p>
+            </div>
+            <div class="panel">
+              <h3>Metrics</h3>
+              <p>Latency, tokens, cost, retries, approvals, failure modes.</p>
+            </div>
+            <div class="panel">
+              <h3>Feedback</h3>
+              <p>Human ratings, corrections, escalations, user outcomes.</p>
+            </div>
+            <div class="panel">
+              <h3>Evals</h3>
+              <p>Regression tests, golden cases, judges, and scenario simulation.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">LangSmith</p>
+          <h2>LangSmith is the LangChain ecosystem control plane</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>What it adds</h3>
+              <p>
+                Tracing, monitoring, evaluation, datasets, feedback, prompt
+                engineering, deployment support, automations, and integrations
+                across LLM application frameworks.
+              </p>
+            </div>
+            <div class="panel">
+              <h3>Support agent use</h3>
+              <p>
+                Compare traces for refund errors, build a dataset of risky
+                tickets, run evals before prompt changes, and monitor production
+                quality by ticket category.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Langfuse</p>
+          <h2>Langfuse is framework-independent LLM observability and evals</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>What it captures</h3>
+              <p>
+                Trace trees with prompts, responses, token usage, latency, cost,
+                tool calls, retrieval steps, sessions, and metadata.
+              </p>
+            </div>
+            <div class="panel">
+              <h3>Why it matters</h3>
+              <p>
+                You can instrument a mixed stack: Vercel AI SDK UI, Mastra or
+                LangChain harness, n8n automation, and custom database tools.
+              </p>
+            </div>
+          </div>
+          <p class="lead">
+            Observability becomes the shared record when a single user interaction crosses multiple frameworks.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Developer loop</p>
+          <h2>A production agent team needs a release process</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Design</h3>
+              <p>Define tools, memory writes, approval points, and data ownership before prompts.</p>
+            </div>
+            <div class="panel">
+              <h3>Test</h3>
+              <p>Run unit tests for tools, fixture-based traces, and eval datasets for behavior.</p>
+            </div>
+            <div class="panel">
+              <h3>Operate</h3>
+              <p>Monitor cost, failures, user corrections, drift, policy changes, and rollback paths.</p>
+            </div>
+          </div>
+          <p class="lead">
+            Frameworks help, but the product discipline is the difference between a demo and a dependable system.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Interop</p>
+          <h2>Protocols reduce glue, but do not erase ownership</h2>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Interop surface</th>
+                <th>What it helps with</th>
+                <th>What you still own</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>MCP</td>
+                <td>Expose tools and data sources to agent clients in a common way.</td>
+                <td>Auth, permissions, rate limits, tool semantics, data leakage.</td>
+              </tr>
+              <tr>
+                <td>A2A</td>
+                <td>Agent-to-agent communication across languages or platforms.</td>
+                <td>Trust, identity, audit, task boundaries, failure handling.</td>
+              </tr>
+              <tr>
+                <td>OpenAPI and webhooks</td>
+                <td>Turn existing business APIs and event streams into tools.</td>
+                <td>Contract quality, retries, idempotency, and business invariants.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Safety boundary</p>
+          <h2>Human approval is a runtime feature, not a prompt</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Bad boundary</h3>
+              <p>
+                "Only issue refunds when appropriate" in the system prompt,
+                with a tool that directly creates refunds.
+              </p>
+            </div>
+            <div class="panel">
+              <h3>Good boundary</h3>
+              <p>
+                The agent proposes a refund request. The workflow pauses. A
+                manager approves, edits, or rejects. The tool executes only
+                after deterministic authorization.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Decision matrix</p>
+          <h2>Pick by workload shape</h2>
+          <table class="table wide-table">
+            <thead>
+              <tr>
+                <th>Workload</th>
+                <th>Good fit</th>
+                <th>Reason</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Web chat with streaming UI and tool cards</td>
+                <td>Vercel AI SDK plus custom tools</td>
+                <td>Product surface and streaming UX are central.</td>
+              </tr>
+              <tr>
+                <td>TypeScript product agent with workflows</td>
+                <td>Mastra</td>
+                <td>Agent, workflow, memory, RAG, server, and observability live close to app code.</td>
+              </tr>
+              <tr>
+                <td>Broad integration ecosystem with stateful control</td>
+                <td>LangChain plus LangGraph plus LangSmith</td>
+                <td>Harness breadth, graph runtime, and mature observability/eval platform.</td>
+              </tr>
+              <tr>
+                <td>Data-heavy RAG and query agents</td>
+                <td>LlamaIndex plus database/vector store</td>
+                <td>Data ingestion, indexing, retrieval, and query composition dominate.</td>
+              </tr>
+              <tr>
+                <td>Operational automation across SaaS tools</td>
+                <td>n8n, Langflow, Flowise, or hybrid</td>
+                <td>Connectivity and visible workflows are more valuable than custom runtime code.</td>
+              </tr>
+              <tr>
+                <td>Enterprise agent platform and governance</td>
+                <td>Agno or Microsoft Agent Framework</td>
+                <td>Control plane, RBAC, audit, workflow hosting, and enterprise integration matter.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Blueprint</p>
+          <h2>A realistic support agent architecture</h2>
+          <div class="stack-map">
+            <div class="stack-row">
+              <strong>UI</strong>
+              <span>Ticket console streams draft, citations, tool status, and approval forms.</span>
+              <em>Vercel AI SDK UI or custom frontend.</em>
+            </div>
+            <div class="stack-row">
+              <strong>Agent harness</strong>
+              <span>Classify, retrieve, call tools, draft response, emit structured action plan.</span>
+              <em>Mastra, LangChain, OpenAI Agents SDK, ADK, or Microsoft Agent Framework.</em>
+            </div>
+            <div class="stack-row">
+              <strong>Workflow runtime</strong>
+              <span>Approval, branch, retry, schedule follow-up, write audit, resume after human input.</span>
+              <em>LangGraph, Mastra workflows, ADK workflows, Microsoft workflows, n8n.</em>
+            </div>
+            <div class="stack-row">
+              <strong>Data plane</strong>
+              <span>Orders, customers, policy docs, embeddings, checkpoints, traces, eval datasets.</span>
+              <em>MongoDB, Postgres/pgvector, object storage, analytics warehouse.</em>
+            </div>
+            <div class="stack-row">
+              <strong>Ops</strong>
+              <span>Trace every run, run evals, observe cost/quality, version prompts and tools.</span>
+              <em>LangSmith, Langfuse, Mastra observability, Agno AgentOS, provider telemetry.</em>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Tooling value</p>
+          <h2>What tooling is really buying you</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Faster assembly</h3>
+              <p>Provider adapters, tool schemas, retrievers, streaming, and UI helpers reduce boilerplate.</p>
+            </div>
+            <div class="panel">
+              <h3>Safer boundaries</h3>
+              <p>Typed tools, guardrails, middleware, interrupts, and workflow state make behavior inspectable.</p>
+            </div>
+            <div class="panel">
+              <h3>Operational learning</h3>
+              <p>Traces, evals, feedback, and datasets let the system improve without guessing.</p>
+            </div>
+          </div>
+          <p class="lead">
+            The valuable tools do not make the model smart. They make the system surrounding the model explicit, testable, and recoverable.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Recap</p>
+          <h2>The stack fits together when each layer owns one job</h2>
+          <div class="grid-2">
+            <div class="callout">
+              <h3>Harness</h3>
+              <p>Owns the model loop, tools, context, and immediate behavior.</p>
+            </div>
+            <div class="callout">
+              <h3>Runtime</h3>
+              <p>Owns long-running state, branches, checkpoints, interrupts, and recovery.</p>
+            </div>
+            <div class="callout">
+              <h3>Builder/control plane</h3>
+              <p>Owns composition, operations, governance, and human visibility.</p>
+            </div>
+            <div class="callout">
+              <h3>Database</h3>
+              <p>Owns product truth, retrieval indexes, memory, checkpoints, audit, traces, and eval evidence.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">References</p>
+          <h2>Sources used to build this deck</h2>
+          <div class="reference-list">
+            <h3>Core frameworks and runtimes</h3>
+            <ul>
+              <li><a href="https://docs.langchain.com/oss/javascript/langchain/agents">LangChain Agents documentation</a></li>
+              <li><a href="https://docs.langchain.com/oss/javascript/langgraph/overview">LangGraph overview</a></li>
+              <li><a href="https://mastra.ai/docs/agents/overview">Mastra Agents overview</a></li>
+              <li><a href="https://mastra.ai/docs/workflows/overview">Mastra Workflows overview</a></li>
+              <li><a href="https://openai.github.io/openai-agents-python/">OpenAI Agents SDK documentation</a></li>
+              <li><a href="https://adk.dev/get-started/about/">Google Agent Development Kit technical overview</a></li>
+              <li><a href="https://learn.microsoft.com/en-us/agent-framework/overview/">Microsoft Agent Framework overview</a></li>
+            </ul>
+
+            <h3>UI, low-code, and visual builders</h3>
+            <ul>
+              <li><a href="https://ai-sdk.dev/docs/ai-sdk-core/tools-and-tool-calling">Vercel AI SDK tool calling</a></li>
+              <li><a href="https://ai-sdk.dev/docs/agents">Vercel AI SDK agents guide</a></li>
+              <li><a href="https://docs.n8n.io/advanced-ai/intro-tutorial/">n8n AI workflow tutorial</a></li>
+              <li><a href="https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.agent/">n8n AI Agent node documentation</a></li>
+              <li><a href="https://docs.langflow.org/agents">Langflow agents documentation</a></li>
+              <li><a href="https://docs.flowiseai.com/using-flowise/agentflowv2">Flowise Agentflow V2 documentation</a></li>
+            </ul>
+
+            <h3>Data, memory, and retrieval</h3>
+            <ul>
+              <li><a href="https://mastra.ai/docs/memory/overview">Mastra Memory overview</a></li>
+              <li><a href="https://mastra.ai/docs/rag/overview">Mastra RAG overview</a></li>
+              <li><a href="https://developers.llamaindex.ai/python/framework/module_guides/deploying/agents/">LlamaIndex Agents guide</a></li>
+              <li><a href="https://developers.llamaindex.ai/python/llamaagents/workflows/">LlamaIndex Workflows documentation</a></li>
+              <li><a href="https://www.mongodb.com/docs/vector-search/">MongoDB Vector Search documentation</a></li>
+              <li><a href="https://www.mongodb.com/docs/atlas/ai-integrations/langchain/">MongoDB LangChain integration documentation</a></li>
+              <li><a href="https://github.com/pgvector/pgvector">pgvector project README</a></li>
+            </ul>
+
+            <h3>Observability, evals, and platforms</h3>
+            <ul>
+              <li><a href="https://docs.langchain.com/langsmith/observability">LangSmith Observability documentation</a></li>
+              <li><a href="https://docs.langchain.com/langsmith/evaluation">LangSmith Evaluation documentation</a></li>
+              <li><a href="https://langfuse.com/docs/observability/overview">Langfuse Observability overview</a></li>
+              <li><a href="https://langfuse.com/docs/evaluation/overview">Langfuse Evaluation overview</a></li>
+              <li><a href="https://docs.agno.com/">Agno documentation</a></li>
+              <li><a href="https://adk.dev/agents/workflow-agents/">Google ADK workflow agents documentation</a></li>
+            </ul>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script src="../../../assets/vendor/reveal/dist/reveal.js"></script>
+    <script src="../../../assets/vendor/reveal/dist/plugin/highlight.js"></script>
+    <script>
+      Reveal.initialize({
+        hash: true,
+        controls: true,
+        progress: true,
+        center: true,
+        width: 1280,
+        height: 720,
+        margin: 0.06,
+        plugins: [RevealHighlight],
+      });
+    </script>
+  </body>
+</html>
