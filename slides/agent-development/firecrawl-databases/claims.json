@@ -1,0 +1,326 @@
+[
+  {
+    "slide": 1,
+    "title": "Firecrawl, Databases, and MongoDB",
+    "objective": "Set the learning scope and practical anchor.",
+    "coreClaim": "Firecrawl is best understood as the web acquisition layer in an AI data pipeline, while databases own durability, retrieval, governance, and product state.",
+    "sourceIds": ["firecrawl-v2-intro", "mongodb-vector-search"],
+    "visual": "none",
+    "practicalTakeaway": "Evaluate Firecrawl and MongoDB together as pipeline components, not substitutes."
+  },
+  {
+    "slide": 2,
+    "title": "Why Firecrawl Exists",
+    "objective": "Explain the problem Firecrawl tries to remove.",
+    "coreClaim": "AI applications need current web context, but raw web pages are noisy, dynamic, and operationally expensive to convert into useful model input.",
+    "sourceIds": ["firecrawl-v2-intro", "firecrawl-github"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "Use Firecrawl when web acquisition is infrastructure work, not your product differentiator."
+  },
+  {
+    "slide": 3,
+    "title": "Learning Goals",
+    "objective": "Define what the learner should be able to do after the deck.",
+    "coreClaim": "A useful Firecrawl decision requires practical API knowledge, ingestion architecture, database role separation, and strategic adoption criteria.",
+    "sourceIds": ["firecrawl-v2-intro", "mongodb-vector-search"],
+    "visual": "none",
+    "practicalTakeaway": "Keep product, technical, and strategic questions visible at the same time."
+  },
+  {
+    "slide": 4,
+    "title": "The Product Surface",
+    "objective": "Show the public Firecrawl UI and endpoint families.",
+    "coreClaim": "Firecrawl exposes the same core ideas through product UI and APIs: search, scrape, parse, map, and crawl.",
+    "sourceIds": ["firecrawl-playground", "firecrawl-v2-intro"],
+    "visual": "screenshot",
+    "practicalTakeaway": "Start by learning the endpoint choice, not every option."
+  },
+  {
+    "slide": 5,
+    "title": "Endpoint Map",
+    "objective": "Map the main Firecrawl endpoints to jobs.",
+    "coreClaim": "The endpoint decision is mostly about whether you know the URL, need discovery, need a whole corpus, or need browser interaction.",
+    "sourceIds": ["firecrawl-scrape", "firecrawl-map", "firecrawl-crawl", "firecrawl-search", "firecrawl-interact", "firecrawl-extractor-guide"],
+    "visual": "comparison",
+    "practicalTakeaway": "Choose the smallest endpoint that matches the uncertainty in your source set."
+  },
+  {
+    "slide": 6,
+    "title": "Output Contract",
+    "objective": "Explain what Firecrawl returns to downstream systems.",
+    "coreClaim": "Firecrawl outputs useful acquisition artifacts such as markdown, structured JSON, screenshots, links, metadata, status codes, and errors, but downstream systems decide what becomes durable truth.",
+    "sourceIds": ["firecrawl-scrape", "firecrawl-crawl-status"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "Persist the output plus provenance, not just the text."
+  },
+  {
+    "slide": 7,
+    "title": "Scrape",
+    "objective": "Teach the single-page primitive.",
+    "coreClaim": "`/scrape` is the controlled choice for one known URL, especially when you want markdown, JSON mode, cache controls, waits, and parser options.",
+    "sourceIds": ["firecrawl-scrape", "firecrawl-extractor-guide"],
+    "visual": "code",
+    "practicalTakeaway": "Use scrape for exact pages before reaching for crawls or agents."
+  },
+  {
+    "slide": 8,
+    "title": "Scrape Code",
+    "objective": "Show a minimal API usage shape.",
+    "coreClaim": "A small Firecrawl call can hide meaningful acquisition decisions: format, freshness, timeout, and whether LLM-based cleaning or extraction is used.",
+    "sourceIds": ["firecrawl-scrape", "firecrawl-langchain"],
+    "visual": "code",
+    "practicalTakeaway": "Make options explicit so ingestion behavior is repeatable."
+  },
+  {
+    "slide": 9,
+    "title": "Map Before Crawl",
+    "objective": "Separate URL discovery from content fetching.",
+    "coreClaim": "`/map` is a low-commitment way to discover and filter candidate URLs before paying the cost of scraping or crawling full content.",
+    "sourceIds": ["firecrawl-map", "firecrawl-crawl"],
+    "visual": "flow",
+    "practicalTakeaway": "Use map to control scope, cost, and corpus quality."
+  },
+  {
+    "slide": 10,
+    "title": "Crawl Lifecycle",
+    "objective": "Explain asynchronous crawl execution.",
+    "coreClaim": "`/crawl` turns a site into a multi-page job with discovery rules, scrape options, polling or webhook delivery, page metadata, credits, and per-page errors.",
+    "sourceIds": ["firecrawl-crawl", "firecrawl-crawl-status"],
+    "visual": "sequence",
+    "practicalTakeaway": "Design crawls as jobs with state, not as one big synchronous function call."
+  },
+  {
+    "slide": 11,
+    "title": "Search",
+    "objective": "Explain when source discovery starts as a query.",
+    "coreClaim": "`/search` is useful when the corpus starts from a topic or question rather than a known site, and it can optionally scrape search results.",
+    "sourceIds": ["firecrawl-search"],
+    "visual": "comparison",
+    "practicalTakeaway": "Use search to find candidates, then preserve chosen source URLs for repeatable ingestion."
+  },
+  {
+    "slide": 12,
+    "title": "Interact",
+    "objective": "Explain dynamic page handling.",
+    "coreClaim": "When static scraping is insufficient, Firecrawl can resume a scraped browser session and interact by prompt or code before returning extracted output.",
+    "sourceIds": ["firecrawl-interact", "firecrawl-scrape"],
+    "visual": "flow",
+    "practicalTakeaway": "Reserve browser interaction for pages that actually require stateful UI work."
+  },
+  {
+    "slide": 13,
+    "title": "Structured Extraction Choice",
+    "objective": "Compare `/agent`, `/extract`, and scrape JSON mode.",
+    "coreClaim": "Firecrawl's current guidance is to use `/agent` for autonomous discovery, scrape JSON mode for one known page, and avoid starting new work on `/extract` unless the fit is deliberate.",
+    "sourceIds": ["firecrawl-extractor-guide"],
+    "visual": "comparison",
+    "practicalTakeaway": "Match extraction tooling to URL uncertainty and cost tolerance."
+  },
+  {
+    "slide": 14,
+    "title": "Running Example",
+    "objective": "Introduce the practical anchor workload.",
+    "coreClaim": "A practical first project is a competitor-docs assistant that ingests public docs, tracks changes, embeds chunks, and answers with source provenance.",
+    "sourceIds": ["firecrawl-crawl", "firecrawl-monitoring", "mongodb-vector-search"],
+    "visual": "none",
+    "practicalTakeaway": "Anchor the architecture in one repeatable workflow."
+  },
+  {
+    "slide": 15,
+    "title": "Ingestion Architecture",
+    "objective": "Show how Firecrawl connects to storage and retrieval.",
+    "coreClaim": "The production pipeline is discover, acquire, normalize, chunk, embed, index, retrieve, answer, and observe.",
+    "sourceIds": ["firecrawl-map", "firecrawl-crawl", "mongodb-vector-search"],
+    "visual": "architecture",
+    "practicalTakeaway": "Put Firecrawl at the acquisition boundary and databases after it."
+  },
+  {
+    "slide": 16,
+    "title": "Database Role Map",
+    "objective": "Prevent the learner from treating databases as one bucket.",
+    "coreClaim": "A web-to-AI system needs distinct storage roles for source inventory, job state, raw archive, normalized documents, chunks, embeddings, retrieval, evaluation, and audit.",
+    "sourceIds": ["firecrawl-crawl-status", "firecrawl-monitoring", "mongodb-vector-search"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "Name the database role before picking a database product."
+  },
+  {
+    "slide": 17,
+    "title": "Job Ledger",
+    "objective": "Explain operational state around Firecrawl.",
+    "coreClaim": "Async crawls, batch scrapes, webhooks, polling, retries, costs, and per-page errors require an external job ledger if the system must be debuggable.",
+    "sourceIds": ["firecrawl-crawl-status", "firecrawl-batch", "firecrawl-errors"],
+    "visual": "state-machine",
+    "practicalTakeaway": "Store job state independently from Firecrawl's transient API responses."
+  },
+  {
+    "slide": 18,
+    "title": "Raw Archive",
+    "objective": "Explain immutable acquisition storage.",
+    "coreClaim": "Raw captured content should be versioned with content hashes, source URLs, final URLs, timestamps, and acquisition settings so downstream extraction can be replayed.",
+    "sourceIds": ["firecrawl-scrape", "firecrawl-crawl-status"],
+    "visual": "none",
+    "practicalTakeaway": "Do not overwrite the evidence that produced an answer."
+  },
+  {
+    "slide": 19,
+    "title": "Normalized Documents",
+    "objective": "Explain the operational document model.",
+    "coreClaim": "After acquisition, the application needs normalized document records that combine cleaned text, source metadata, extracted fields, lineage, freshness, and policy metadata.",
+    "sourceIds": ["firecrawl-scrape", "firecrawl-monitoring", "mongodb-vector-search"],
+    "visual": "code",
+    "practicalTakeaway": "Model web content as application data, not only as prompt context."
+  },
+  {
+    "slide": 20,
+    "title": "Chunks and Embeddings",
+    "objective": "Explain retrieval storage.",
+    "coreClaim": "RAG adds chunk boundaries, embedding model metadata, vector fields, filterable metadata, and retrieval metrics to the acquired content model.",
+    "sourceIds": ["mongodb-vector-search", "mongodb-langchain"],
+    "visual": "flow",
+    "practicalTakeaway": "Keep chunks traceable to source documents and acquisition versions."
+  },
+  {
+    "slide": 21,
+    "title": "Where MongoDB Fits",
+    "objective": "State the MongoDB fit clearly.",
+    "coreClaim": "MongoDB is a strong fit when scraped data is document-shaped and the application benefits from storing metadata, chunks, vectors, filters, search, and operational state close together.",
+    "sourceIds": ["mongodb-vector-search", "mongodb-langchain"],
+    "visual": "comparison",
+    "practicalTakeaway": "MongoDB is strongest when retrieval is tied to rich product data and metadata filters."
+  },
+  {
+    "slide": 22,
+    "title": "MongoDB Document Shape",
+    "objective": "Show a concrete schema shape.",
+    "coreClaim": "A MongoDB document can hold source lineage, normalized content, extracted fields, freshness metadata, and retrieval-facing chunk metadata without forcing premature relational decomposition.",
+    "sourceIds": ["mongodb-vector-search", "mongodb-langchain"],
+    "visual": "code",
+    "practicalTakeaway": "Use document structure to keep provenance beside content."
+  },
+  {
+    "slide": 23,
+    "title": "MongoDB Retrieval",
+    "objective": "Explain vector, full-text, and hybrid retrieval.",
+    "coreClaim": "MongoDB Vector Search supports embedding fields, vector indexes, ANN and ENN search, metadata pre-filtering, and hybrid search with full-text results.",
+    "sourceIds": ["mongodb-vector-search", "mongodb-hybrid-search"],
+    "visual": "architecture",
+    "practicalTakeaway": "Use hybrid retrieval when exact terms and semantic similarity both matter."
+  },
+  {
+    "slide": 24,
+    "title": "Change Detection Loop",
+    "objective": "Explain ongoing freshness.",
+    "coreClaim": "Monitoring and re-crawling turn ingestion into a delta system where pages become same, new, changed, removed, or error and downstream indexes update selectively.",
+    "sourceIds": ["firecrawl-monitoring", "firecrawl-crawl-status"],
+    "visual": "state-machine",
+    "practicalTakeaway": "Design for deltas before the corpus becomes too large to refresh naively."
+  },
+  {
+    "slide": 25,
+    "title": "Quality and Evaluation",
+    "objective": "Explain why parseable data is not automatically correct.",
+    "coreClaim": "Structured JSON, markdown, and embeddings all need evaluation: source coverage, extraction accuracy, retrieval recall, answer citation quality, and freshness.",
+    "sourceIds": ["firecrawl-extractor-guide", "mongodb-vector-search"],
+    "visual": "metric-map",
+    "practicalTakeaway": "Create golden source sets and measure useful answers, not just successful API calls."
+  },
+  {
+    "slide": 26,
+    "title": "Governance",
+    "objective": "Cover compliance and policy surfaces.",
+    "coreClaim": "Web acquisition systems need source policy, robots behavior, retention controls, credentials boundaries, and auditability in addition to crawling mechanics.",
+    "sourceIds": ["firecrawl-crawl", "firecrawl-scrape", "firecrawl-github"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "Store source policy and retention settings as data."
+  },
+  {
+    "slide": 27,
+    "title": "Reliability",
+    "objective": "Teach retry and limit handling.",
+    "coreClaim": "Rate limits, concurrency limits, queue waits, retryable errors, and `Retry-After` handling should be explicit parts of the ingestion runtime.",
+    "sourceIds": ["firecrawl-errors", "firecrawl-rate-limits"],
+    "visual": "state-machine",
+    "practicalTakeaway": "Use backoff, idempotency, and dashboards instead of blind retries."
+  },
+  {
+    "slide": 28,
+    "title": "Cost Model",
+    "objective": "Explain where costs arise.",
+    "coreClaim": "The total cost of Firecrawl-backed RAG includes discovery, scraping, browser concurrency, extraction, embedding, database storage/compute, refreshes, and evaluation.",
+    "sourceIds": ["firecrawl-rate-limits", "firecrawl-extractor-guide", "mongodb-vector-search"],
+    "visual": "metric-map",
+    "practicalTakeaway": "Optimize cost before acquisition with scope controls and after acquisition with dedupe."
+  },
+  {
+    "slide": 29,
+    "title": "Build, Buy, or Blend",
+    "objective": "Frame strategic adoption.",
+    "coreClaim": "Firecrawl is attractive when web acquisition is common infrastructure; custom systems are attractive when source behavior, legal constraints, or unit economics dominate.",
+    "sourceIds": ["firecrawl-github", "firecrawl-rate-limits"],
+    "visual": "comparison",
+    "practicalTakeaway": "Decide by workload evidence, not by crawler enthusiasm."
+  },
+  {
+    "slide": 30,
+    "title": "Database Alternatives",
+    "objective": "Position MongoDB relative to other stores.",
+    "coreClaim": "MongoDB can cover document storage, metadata, vector search, and hybrid retrieval, but object stores, queues, warehouses, graph databases, and specialized vector databases may still be the right role-specific choice.",
+    "sourceIds": ["mongodb-vector-search", "mongodb-hybrid-search"],
+    "visual": "comparison",
+    "practicalTakeaway": "A good architecture may use MongoDB for several roles, not necessarily every role."
+  },
+  {
+    "slide": 31,
+    "title": "Adoption Path",
+    "objective": "Give a concrete first implementation sequence.",
+    "coreClaim": "The safest adoption path is a bounded pilot with source inventory, map/crawl policy, job ledger, raw archive, normalized documents, embeddings, retrieval evals, and cost reporting.",
+    "sourceIds": ["firecrawl-map", "firecrawl-crawl", "firecrawl-errors", "mongodb-langchain"],
+    "visual": "flow",
+    "practicalTakeaway": "Pilot the whole pipeline, not only the scrape call."
+  },
+  {
+    "slide": 32,
+    "title": "Anti-Patterns",
+    "objective": "Name common mistakes.",
+    "coreClaim": "Common failures include crawling everything, skipping source provenance, embedding unfiltered boilerplate, treating JSON extraction as truth, and ignoring refresh economics.",
+    "sourceIds": ["firecrawl-scrape", "firecrawl-map", "firecrawl-extractor-guide", "firecrawl-rate-limits"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "Most bad RAG starts as bad ingestion."
+  },
+  {
+    "slide": 33,
+    "title": "First Project Blueprint",
+    "objective": "Translate the concepts into an actionable build.",
+    "coreClaim": "A useful first build has one source domain, explicit inclusion rules, a job ledger, MongoDB document/chunk collections, vector/hybrid search, and a small answer-quality test set.",
+    "sourceIds": ["firecrawl-map", "firecrawl-crawl", "mongodb-vector-search", "mongodb-langchain"],
+    "visual": "architecture",
+    "practicalTakeaway": "Keep the first build narrow enough that failures are explainable."
+  },
+  {
+    "slide": 34,
+    "title": "Decision Checklist",
+    "objective": "Help the learner choose.",
+    "coreClaim": "The adoption decision should check source complexity, freshness needs, extraction quality, cost per useful document, operational recoverability, and database fit.",
+    "sourceIds": ["firecrawl-errors", "firecrawl-rate-limits", "mongodb-vector-search"],
+    "visual": "comparison",
+    "practicalTakeaway": "Use the checklist before scaling the corpus."
+  },
+  {
+    "slide": 35,
+    "title": "Recap",
+    "objective": "Summarize the mental model.",
+    "coreClaim": "Firecrawl acquires and cleans web context; databases make that context durable, queryable, observable, governable, and useful to applications.",
+    "sourceIds": ["firecrawl-v2-intro", "mongodb-vector-search"],
+    "visual": "none",
+    "practicalTakeaway": "The winning system is a controlled ingestion pipeline, not a scrape pasted into a prompt."
+  },
+  {
+    "slide": 36,
+    "title": "References",
+    "objective": "Provide source paths for further reading.",
+    "coreClaim": "The deck is grounded in Firecrawl official docs and repository material plus MongoDB official vector search and integration documentation.",
+    "sourceIds": ["firecrawl-v2-intro", "firecrawl-scrape", "firecrawl-crawl", "firecrawl-map", "firecrawl-search", "firecrawl-extractor-guide", "firecrawl-errors", "firecrawl-rate-limits", "mongodb-vector-search", "mongodb-langchain", "mongodb-hybrid-search"],
+    "visual": "none",
+    "practicalTakeaway": "Use primary sources to refresh API details before implementation."
+  }
+]

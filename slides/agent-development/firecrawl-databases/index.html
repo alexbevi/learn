@@ -1,0 +1,929 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Firecrawl, Databases, and MongoDB</title>
+    <link rel="stylesheet" href="../../../assets/vendor/reveal/dist/reveal.css" />
+    <link
+      rel="stylesheet"
+      href="../../../assets/vendor/reveal/dist/plugin/highlight/monokai.css"
+    />
+    <link rel="stylesheet" href="../../../assets/css/deck.css" />
+    <style>
+      .fc-visual {
+        display: grid;
+        gap: 0.75rem;
+        margin-top: 1rem;
+      }
+
+      .fc-pipeline,
+      .fc-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 0.65rem;
+        align-items: stretch;
+      }
+
+      .fc-step,
+      .fc-node,
+      .fc-card {
+        border: 1px solid rgba(30, 41, 59, 0.16);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 0.85rem;
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+      }
+
+      .fc-step strong,
+      .fc-node strong,
+      .fc-card strong {
+        display: block;
+        font-size: 0.72em;
+        margin-bottom: 0.25rem;
+      }
+
+      .fc-step code,
+      .fc-node code,
+      .fc-card code,
+      .fc-matrix code {
+        color: #0f172a !important;
+        background: rgba(226, 232, 240, 0.86);
+      }
+
+      .fc-step span,
+      .fc-node span,
+      .fc-card span {
+        display: block;
+        color: #475569;
+        font-size: 0.48em;
+        line-height: 1.35;
+      }
+
+      .fc-arrow {
+        align-self: center;
+        justify-self: center;
+        color: #ea580c;
+        font-weight: 700;
+      }
+
+      .fc-two-col {
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+        gap: 1rem;
+        align-items: center;
+      }
+
+      .fc-shot {
+        width: 100%;
+        max-height: 430px;
+        object-fit: contain;
+        border-radius: 8px;
+        border: 1px solid rgba(30, 41, 59, 0.16);
+        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.14);
+      }
+
+      .fc-matrix {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.46em;
+      }
+
+      .fc-matrix th,
+      .fc-matrix td {
+        border: 1px solid rgba(30, 41, 59, 0.14);
+        padding: 0.55rem;
+        vertical-align: top;
+      }
+
+      .fc-matrix th {
+        background: #f8fafc;
+      }
+
+      .fc-good {
+        color: #166534;
+        font-weight: 700;
+      }
+
+      .fc-watch {
+        color: #9a3412;
+        font-weight: 700;
+      }
+
+      .fc-alt {
+        color: #1d4ed8;
+        font-weight: 700;
+      }
+
+      .fc-state {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+        gap: 0.55rem;
+      }
+
+      .fc-state .fc-node {
+        min-height: 92px;
+      }
+
+      .fc-band {
+        border-left: 4px solid #ea580c;
+        padding-left: 0.9rem;
+      }
+
+      .fc-code-tight {
+        font-size: 0.44em;
+        line-height: 1.2;
+      }
+
+      @media (max-width: 820px) {
+        .fc-two-col {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body class="has-deck-topbar">
+    <header class="deck-topbar" aria-label="Presentation navigation">
+      <a class="deck-nav-link" href="../../../">Main menu</a>
+      <div class="deck-title">
+        <span>Firecrawl, Databases, and MongoDB</span>
+        <small>Web acquisition, RAG pipelines, and strategic fit</small>
+      </div>
+      <a class="deck-nav-link" href="../../../topics/agent-development/">Topic</a>
+    </header>
+
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <p class="kicker">Agent Development</p>
+          <h1>Firecrawl, Databases, and MongoDB</h1>
+          <p class="lead">
+            How web acquisition becomes AI-ready data, where databases fit, and
+            when MongoDB is a strong architectural choice.
+          </p>
+          <p class="footnote">55 minutes / 36 slides</p>
+        </section>
+
+        <section>
+          <p class="kicker">Why this matters</p>
+          <h2>AI systems need web context, but the web is not a database</h2>
+          <div class="grid-3" data-visual="web acquisition problem">
+            <div class="panel">
+              <h3>Pages are messy</h3>
+              <p>Navigation, ads, cookie banners, scripts, redirects, PDFs, tables, and hidden state all pollute naive scraping.</p>
+            </div>
+            <div class="panel">
+              <h3>Sources change</h3>
+              <p>Docs, prices, policies, competitors, and changelogs drift after the first successful ingest.</p>
+            </div>
+            <div class="panel">
+              <h3>Models need evidence</h3>
+              <p>Useful answers require source lineage, freshness, retrieval quality, and repeatable ingestion behavior.</p>
+            </div>
+          </div>
+          <p class="lead">
+            Firecrawl handles acquisition. Your data architecture decides what
+            becomes durable, searchable, and trustworthy.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Learning goals</p>
+          <h2>By the end, you should be able to explain</h2>
+          <div class="grid-2">
+            <div class="callout">
+              <h3>Practical use</h3>
+              <p>Choose between scraping, mapping, crawling, searching, browser interaction, and structured extraction.</p>
+            </div>
+            <div class="callout">
+              <h3>Technical architecture</h3>
+              <p>Design a web-to-RAG pipeline with job state, raw capture, normalized documents, chunks, embeddings, and retrieval.</p>
+            </div>
+            <div class="callout">
+              <h3>Database judgment</h3>
+              <p>Separate source inventory, job ledger, archive, document store, vector index, evals, and audit logs.</p>
+            </div>
+            <div class="callout">
+              <h3>Strategic fit</h3>
+              <p>Decide when Firecrawl is worth adopting and when MongoDB is the right place to keep the acquired data.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Product surface</p>
+          <h2>Firecrawl is an API product with an explorable UI</h2>
+          <div class="fc-two-col">
+            <img
+              class="fc-shot"
+              src="../../../assets/img/agent-development/firecrawl-databases/firecrawl-playground.jpg"
+              alt="Firecrawl Playground UI showing tabs for Search, Scrape, Parse, Map, and Crawl with a URL input and start scraping button."
+            />
+            <div class="fc-band">
+              <p>
+                The public playground makes the mental model visible:
+                <code>Search</code>, <code>Scrape</code>, <code>Parse</code>,
+                <code>Map</code>, and <code>Crawl</code> are different ways to
+                turn web locations into usable data.
+              </p>
+              <p class="footnote">
+                Screenshot captured from the public Firecrawl Playground on
+                2026-05-31.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Endpoint map</p>
+          <h2>Pick the endpoint based on what you know</h2>
+          <div class="fc-visual fc-row" data-visual="endpoint map">
+            <div class="fc-card"><strong><code>scrape</code></strong><span>One known URL. Return markdown, JSON, HTML, links, screenshot, or metadata.</span></div>
+            <div class="fc-card"><strong><code>batch scrape</code></strong><span>Many known URLs. Same extraction shape, async delivery, webhooks, and concurrency controls.</span></div>
+            <div class="fc-card"><strong><code>map</code></strong><span>Discover URLs first. Use sitemap, filters, subdomains, and query handling before fetching content.</span></div>
+            <div class="fc-card"><strong><code>crawl</code></strong><span>Walk a site from a base URL with include/exclude paths, depth, limits, webhooks, and nested scrape options.</span></div>
+            <div class="fc-card"><strong><code>search</code></strong><span>Start with a query. Optionally scrape search results and use domain, time, and category filters.</span></div>
+            <div class="fc-card"><strong><code>interact</code></strong><span>Resume a browser session after scrape and click, type, scroll, or run Playwright-style code.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Output contract</p>
+          <h2>Firecrawl gives you acquisition artifacts, not final truth</h2>
+          <div class="fc-visual fc-row" data-visual="output contract">
+            <div class="fc-step"><strong>Content</strong><span>Markdown, HTML, raw HTML, screenshots, parsed documents, or structured JSON.</span></div>
+            <div class="fc-step"><strong>Metadata</strong><span>Source URL, final URL, title, description, language, status code, and page-level fields.</span></div>
+            <div class="fc-step"><strong>Job facts</strong><span>Job id, status, total pages, completed pages, credits used, expiration, and pagination cursor.</span></div>
+            <div class="fc-step"><strong>Failure facts</strong><span>Validation errors, timeouts, rate limits, concurrency queue data, page errors, and retry signals.</span></div>
+          </div>
+          <p class="lead">Your database decides what is canonical, current, queryable, and auditable.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Scrape</p>
+          <h2><code>scrape</code> is the single-page primitive</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Use it when</h3>
+              <ul>
+                <li>You know the exact URL.</li>
+                <li>You need synchronous output.</li>
+                <li>You want controlled markdown or JSON extraction.</li>
+                <li>You need cache age, waits, headers, mobile mode, or parser choices.</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>Be careful when</h3>
+              <ul>
+                <li>The URL list is unknown.</li>
+                <li>The page requires multi-step navigation.</li>
+                <li>The source changes frequently.</li>
+                <li>The page is only one piece of a larger corpus.</li>
+              </ul>
+            </div>
+          </div>
+          <p class="footnote">
+            For one known page, start here before reaching for crawling or autonomous research.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Scrape code</p>
+          <h2>Small call, meaningful acquisition contract</h2>
+          <pre><code class="language-ts fc-code-tight">import { Firecrawl } from "firecrawl";
+
+const firecrawl = new Firecrawl({ apiKey: process.env.FIRECRAWL_API_KEY });
+
+const page = await firecrawl.scrape("https://docs.example.com/pricing", {
+  formats: ["markdown"],
+  onlyMainContent: true,
+  maxAge: 60 * 60 * 1000,
+  timeout: 120000,
+});
+
+await documents.updateOne(
+  { sourceUrl: page.metadata?.sourceURL },
+  {
+    $set: {
+      markdown: page.markdown,
+      finalUrl: page.metadata?.url,
+      title: page.metadata?.title,
+      acquiredAt: new Date(),
+    },
+  },
+  { upsert: true },
+);</code></pre>
+          <p class="footnote">
+            The important design move is making freshness, content shape, and provenance explicit.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Discovery</p>
+          <h2>Map before you crawl when scope is uncertain</h2>
+          <div class="fc-visual fc-pipeline" data-visual="map preflight">
+            <div class="fc-step"><strong>Map site</strong><span>Collect candidate URLs from sitemap and discovered links.</span></div>
+            <div class="fc-arrow">→</div>
+            <div class="fc-step"><strong>Filter</strong><span>Keep docs, pricing, changelog, or product paths; drop login, tags, and low-value pages.</span></div>
+            <div class="fc-arrow">→</div>
+            <div class="fc-step"><strong>Dedupe</strong><span>Normalize query parameters and keep stable source identifiers.</span></div>
+            <div class="fc-arrow">→</div>
+            <div class="fc-step"><strong>Acquire</strong><span>Batch scrape selected URLs or crawl with explicit path rules.</span></div>
+          </div>
+          <p class="lead">
+            Discovery is an architectural control point for quality and cost.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Crawl lifecycle</p>
+          <h2>Crawls are async jobs with page-level outcomes</h2>
+          <div class="fc-visual fc-state" data-visual="crawl lifecycle">
+            <div class="fc-node"><strong>Submit</strong><span>Base URL, limits, sitemap mode, include/exclude paths, scrape options, webhook.</span></div>
+            <div class="fc-node"><strong>Queued or running</strong><span>Concurrency and queue wait can affect timeout behavior.</span></div>
+            <div class="fc-node"><strong>Page event</strong><span>Each crawled page can arrive through webhook or status polling.</span></div>
+            <div class="fc-node"><strong>Status</strong><span>Track total, completed, credits used, status, expiration, and next page cursor.</span></div>
+            <div class="fc-node"><strong>Complete</strong><span>Persist page data, metadata, source lineage, and acquisition settings.</span></div>
+            <div class="fc-node"><strong>Fail or retry</strong><span>Classify retryable errors separately from policy or validation errors.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Search</p>
+          <h2>Use search when the source set starts as a question</h2>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Starting point</th>
+                <th>Firecrawl shape</th>
+                <th>Storage implication</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Known URL</td>
+                <td><code>scrape</code> or <code>batch scrape</code></td>
+                <td>Store source policy and refresh cadence.</td>
+              </tr>
+              <tr>
+                <td>Known domain</td>
+                <td><code>map</code> then <code>crawl</code></td>
+                <td>Store URL inventory and inclusion rules.</td>
+              </tr>
+              <tr>
+                <td>Unknown source</td>
+                <td><code>search</code> or <code>agent</code></td>
+                <td>Store discovered URLs before relying on the answer.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Dynamic pages</p>
+          <h2><code>interact</code> is for pages that need browser state</h2>
+          <div class="fc-visual fc-pipeline" data-visual="interact flow">
+            <div class="fc-step"><strong>Scrape</strong><span>Call <code>/scrape</code> and keep the returned <code>scrapeId</code>.</span></div>
+            <div class="fc-arrow">→</div>
+            <div class="fc-step"><strong>Interact</strong><span>Prompt or run code to click, type, scroll, inspect, or navigate.</span></div>
+            <div class="fc-arrow">→</div>
+            <div class="fc-step"><strong>Extract</strong><span>Read output, screenshot, live view, stdout, result, or error fields.</span></div>
+            <div class="fc-arrow">→</div>
+            <div class="fc-step"><strong>Stop</strong><span>End the browser session when acquisition is done.</span></div>
+          </div>
+          <p class="footnote">
+            Browser sessions are powerful, but they are slower and more operationally sensitive than static acquisition.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Structured extraction</p>
+          <h2>Choose extraction by URL uncertainty</h2>
+          <table class="fc-matrix">
+            <thead>
+              <tr>
+                <th>Need</th>
+                <th>Likely choice</th>
+                <th>Why</th>
+                <th>Watch out</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>One known page</td>
+                <td><code>scrape</code> JSON mode</td>
+                <td>Controlled, synchronous, predictable.</td>
+                <td>Still validate extracted fields.</td>
+              </tr>
+              <tr>
+                <td>Many known pages</td>
+                <td><code>batch scrape</code> or constrained <code>agent</code></td>
+                <td>Good for lists of product pages, docs, or known companies.</td>
+                <td>Needs job ledger and dedupe.</td>
+              </tr>
+              <tr>
+                <td>Unknown sources</td>
+                <td><code>agent</code> or <code>search</code></td>
+                <td>Discovery is part of the task.</td>
+                <td>Costs and repeatability need guardrails.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Running example</p>
+          <h2>Build a competitor-docs assistant</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Question</h3>
+              <p>What changed in a competitor's API, pricing, and integration docs this week, and how should our product team react?</p>
+            </div>
+            <div class="panel">
+              <h3>System responsibilities</h3>
+              <ul>
+                <li>Discover and classify documentation URLs.</li>
+                <li>Acquire current content and track changes.</li>
+                <li>Store source lineage, chunks, and embeddings.</li>
+                <li>Answer with citations and freshness.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Architecture</p>
+          <h2>The pipeline is bigger than the scrape call</h2>
+          <div class="fc-visual fc-pipeline" data-visual="ingestion architecture">
+            <div class="fc-step"><strong>Source policy</strong><span>Owners, allowed paths, freshness SLA, robots and compliance notes.</span></div>
+            <div class="fc-step"><strong>Firecrawl</strong><span>Map, crawl, scrape, search, interact, monitor.</span></div>
+            <div class="fc-step"><strong>Normalize</strong><span>Clean content, extract fields, hash versions, split documents.</span></div>
+            <div class="fc-step"><strong>Database</strong><span>Jobs, sources, raw archive, documents, chunks, vectors, evals.</span></div>
+            <div class="fc-step"><strong>Retriever</strong><span>Vector, text, hybrid search, filters, reranking.</span></div>
+            <div class="fc-step"><strong>Product</strong><span>Answers, alerts, dashboards, decisions, audits.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Database roles</p>
+          <h2>Name the storage job before choosing the product</h2>
+          <div class="fc-visual fc-row" data-visual="database role map">
+            <div class="fc-card"><strong>Source inventory</strong><span>Which sites, paths, owners, policies, and refresh rules exist?</span></div>
+            <div class="fc-card"><strong>Job ledger</strong><span>What ran, failed, retried, cost credits, or needs replay?</span></div>
+            <div class="fc-card"><strong>Raw archive</strong><span>What evidence was captured at a point in time?</span></div>
+            <div class="fc-card"><strong>Documents</strong><span>What cleaned content and extracted fields power the app?</span></div>
+            <div class="fc-card"><strong>Chunks and vectors</strong><span>What text units are embedded and searchable?</span></div>
+            <div class="fc-card"><strong>Evals and audit</strong><span>What did the system retrieve, answer, cite, approve, and change?</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Job ledger</p>
+          <h2>Async acquisition needs local truth</h2>
+          <div class="fc-visual fc-state" data-visual="job ledger state">
+            <div class="fc-node"><strong>Requested</strong><span>Source id, endpoint, options, schema version, requested URL.</span></div>
+            <div class="fc-node"><strong>Submitted</strong><span>Firecrawl job id, created time, expected delivery path.</span></div>
+            <div class="fc-node"><strong>Page received</strong><span>Source URL, final URL, status code, page hash, metadata.</span></div>
+            <div class="fc-node"><strong>Normalized</strong><span>Cleaned document, extraction output, lineage, policy checks.</span></div>
+            <div class="fc-node"><strong>Indexed</strong><span>Chunks, embeddings, vector index, text index, filter metadata.</span></div>
+            <div class="fc-node"><strong>Retry or dead letter</strong><span>Retryable status, backoff time, permanent reason, operator note.</span></div>
+          </div>
+          <p class="footnote">
+            Webhooks and polling should converge on the same idempotent records.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Raw archive</p>
+          <h2>Keep the evidence that produced the answer</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Immutable versions</h3>
+              <p>Store content hash, acquired time, Firecrawl options, source URL, final URL, and parser settings.</p>
+            </div>
+            <div class="panel">
+              <h3>Replayability</h3>
+              <p>When extraction rules improve, reprocess old evidence without pretending it was newly acquired.</p>
+            </div>
+            <div class="panel">
+              <h3>Auditability</h3>
+              <p>When an answer is challenged, trace it back to the exact page version and retrieval context.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Normalized documents</p>
+          <h2>Turn acquired pages into application records</h2>
+          <pre><code class="language-json fc-code-tight">{
+  "_id": "doc_competitor_pricing_2026_05_31",
+  "source": {
+    "sourceUrl": "https://example.com/pricing",
+    "finalUrl": "https://www.example.com/pricing",
+    "crawlId": "fc_crawl_123",
+    "contentHash": "sha256:..."
+  },
+  "content": {
+    "title": "Pricing",
+    "markdown": "# Pricing...",
+    "summary": "Public pricing tiers and add-on limits."
+  },
+  "freshness": {
+    "acquiredAt": "2026-05-31T14:05:00Z",
+    "status": "changed"
+  },
+  "policy": {
+    "allowedForRag": true,
+    "retentionClass": "public-web"
+  }
+}</code></pre>
+        </section>
+
+        <section>
+          <p class="kicker">Retrieval prep</p>
+          <h2>RAG adds chunk and embedding state</h2>
+          <div class="fc-visual fc-pipeline" data-visual="chunk flow">
+            <div class="fc-step"><strong>Document</strong><span>Normalized markdown plus source lineage.</span></div>
+            <div class="fc-arrow">→</div>
+            <div class="fc-step"><strong>Chunks</strong><span>Stable positions, headings, token counts, parent document id.</span></div>
+            <div class="fc-arrow">→</div>
+            <div class="fc-step"><strong>Embeddings</strong><span>Vector field, model name, model version, dimensions.</span></div>
+            <div class="fc-arrow">→</div>
+            <div class="fc-step"><strong>Retriever</strong><span>Vector similarity, text search, filters, reranking, citations.</span></div>
+          </div>
+          <p class="lead">A chunk without provenance is just text with amnesia.</p>
+        </section>
+
+        <section>
+          <p class="kicker">MongoDB fit</p>
+          <h2>MongoDB is strong when content and metadata belong together</h2>
+          <table class="fc-matrix" data-visual="mongodb fit matrix">
+            <thead>
+              <tr>
+                <th>Role</th>
+                <th>MongoDB fit</th>
+                <th>Why</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Normalized documents</td>
+                <td class="fc-good">Strong</td>
+                <td>Scraped pages, metadata, extracted fields, lineage, and policy data are naturally document-shaped.</td>
+              </tr>
+              <tr>
+                <td>Chunks with vectors</td>
+                <td class="fc-good">Strong</td>
+                <td>Vector fields, metadata filters, and application fields can live in one collection model.</td>
+              </tr>
+              <tr>
+                <td>Job ledger</td>
+                <td class="fc-good">Strong</td>
+                <td>Flexible records work well for endpoint-specific options, page events, retries, and per-source state.</td>
+              </tr>
+              <tr>
+                <td>Raw binary archive</td>
+                <td class="fc-watch">Possible</td>
+                <td>Often better in object storage, with MongoDB storing pointers and metadata.</td>
+              </tr>
+              <tr>
+                <td>Graph reasoning</td>
+                <td class="fc-alt">Depends</td>
+                <td>Entity graphs may justify a graph database when relationship traversal is the core workload.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Document shape</p>
+          <h2>MongoDB can keep source lineage beside retrieval data</h2>
+          <pre><code class="language-json fc-code-tight">{
+  "_id": "chunk_doc123_0007",
+  "docId": "doc_competitor_pricing_2026_05_31",
+  "sourceUrl": "https://www.example.com/pricing",
+  "headingPath": ["Pricing", "Enterprise"],
+  "text": "Enterprise customers can request custom limits...",
+  "embedding": [0.012, -0.034, 0.091],
+  "metadata": {
+    "company": "ExampleCo",
+    "pageType": "pricing",
+    "acquiredAt": "2026-05-31T14:05:00Z",
+    "contentHash": "sha256:..."
+  }
+}</code></pre>
+          <p class="footnote">
+            The useful MongoDB pattern is not only vector storage. It is vector storage plus product metadata and lineage.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">MongoDB retrieval</p>
+          <h2>Use semantic, full-text, and hybrid retrieval deliberately</h2>
+          <div class="fc-visual fc-pipeline" data-visual="mongodb retrieval">
+            <div class="fc-step"><strong>Chunk documents</strong><span>Text, embedding, source metadata, policy fields, timestamps.</span></div>
+            <div class="fc-step"><strong>Vector search</strong><span>Semantic similarity over embedding fields with optional pre-filters.</span></div>
+            <div class="fc-step"><strong>Full-text search</strong><span>Exact terms, product names, API names, errors, and phrase matching.</span></div>
+            <div class="fc-step"><strong>Hybrid fusion</strong><span>Combine vector and text results when both meaning and exact language matter.</span></div>
+            <div class="fc-step"><strong>Answer layer</strong><span>Retrieve, cite, summarize, compare, and log feedback.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Freshness</p>
+          <h2>Monitoring turns crawling into a delta system</h2>
+          <div class="fc-visual fc-state" data-visual="change loop">
+            <div class="fc-node"><strong>Same</strong><span>No downstream reprocessing unless freshness metadata needs update.</span></div>
+            <div class="fc-node"><strong>New</strong><span>Create document, chunk, embed, index, and alert if relevant.</span></div>
+            <div class="fc-node"><strong>Changed</strong><span>Version content, diff, re-extract fields, refresh affected chunks.</span></div>
+            <div class="fc-node"><strong>Removed</strong><span>Tombstone or de-rank stale chunks instead of silently deleting evidence.</span></div>
+            <div class="fc-node"><strong>Error</strong><span>Retry, escalate, or mark source health degraded.</span></div>
+          </div>
+          <p class="lead">
+            Freshness is a data lifecycle, not a cron job pasted onto ingestion.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Quality loop</p>
+          <h2>Successful API calls are not the same as useful answers</h2>
+          <div class="fc-visual fc-row" data-visual="quality scorecard">
+            <div class="fc-card"><strong>Coverage</strong><span>Did we acquire the pages that matter?</span></div>
+            <div class="fc-card"><strong>Cleanliness</strong><span>Did boilerplate, nav, and duplicate content stay out?</span></div>
+            <div class="fc-card"><strong>Extraction</strong><span>Do structured fields match human-reviewed truth?</span></div>
+            <div class="fc-card"><strong>Retrieval</strong><span>Do relevant chunks appear in top results with good filters?</span></div>
+            <div class="fc-card"><strong>Citations</strong><span>Can each answer point to current source evidence?</span></div>
+            <div class="fc-card"><strong>Cost</strong><span>What is cost per useful document and per useful answer?</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Governance</p>
+          <h2>Web acquisition has policy surfaces</h2>
+          <div class="grid-3" data-visual="governance taxonomy">
+            <div class="panel">
+              <h3>Source policy</h3>
+              <p>Allowed paths, blocked paths, owners, robots posture, legal notes, and retention class.</p>
+            </div>
+            <div class="panel">
+              <h3>Credential boundary</h3>
+              <p>Headers, cookies, authenticated sessions, and browser profiles should be scoped and auditable.</p>
+            </div>
+            <div class="panel">
+              <h3>Data retention</h3>
+              <p>Decide what raw content, extracted data, screenshots, and traces are retained or discarded.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Reliability</p>
+          <h2>Rate limits and retries belong in the runtime</h2>
+          <div class="fc-visual fc-state" data-visual="reliability state">
+            <div class="fc-node"><strong>429</strong><span>Honor <code>Retry-After</code> and reduce concurrency pressure.</span></div>
+            <div class="fc-node"><strong>408 or 504</strong><span>Use async endpoints, longer timeout, or smaller acquisition scope.</span></div>
+            <div class="fc-node"><strong>500 class</strong><span>Retry with exponential backoff and request identifiers.</span></div>
+            <div class="fc-node"><strong>400 class</strong><span>Fix schema, URL, permissions, credits, or feature access instead of retrying blindly.</span></div>
+            <div class="fc-node"><strong>Dead letter</strong><span>Persist the failed request and operator reason for later replay.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Cost model</p>
+          <h2>Cost lives across the whole pipeline</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Before acquisition</h3>
+              <ul>
+                <li>Map and filter candidate URLs.</li>
+                <li>Use include/exclude rules and depth limits.</li>
+                <li>Choose cache freshness deliberately.</li>
+                <li>Set concurrency and timeouts intentionally.</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>After acquisition</h3>
+              <ul>
+                <li>Dedupe by normalized URL and content hash.</li>
+                <li>Embed changed chunks, not every chunk.</li>
+                <li>Track cost by source and useful output.</li>
+                <li>Archive raw evidence separately from hot retrieval data.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Strategy</p>
+          <h2>Build, buy, or blend based on the real bottleneck</h2>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Decision</th>
+                <th>Good signal</th>
+                <th>Risk to validate</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Use Firecrawl</td>
+                <td>Rendering, crawling, parsing, and web drift are infrastructure problems.</td>
+                <td>Limits, cost, feature coverage, and vendor dependency.</td>
+              </tr>
+              <tr>
+                <td>Build custom</td>
+                <td>Sources require domain-specific browser logic or strict control.</td>
+                <td>Maintenance burden and hidden crawler complexity.</td>
+              </tr>
+              <tr>
+                <td>Blend</td>
+                <td>Most sources are standard, but a few need custom extractors.</td>
+                <td>Inconsistent provenance and evaluation across paths.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Database alternatives</p>
+          <h2>MongoDB can own several roles, but not every role must live there</h2>
+          <table class="fc-matrix">
+            <thead>
+              <tr>
+                <th>Need</th>
+                <th>Likely store</th>
+                <th>MongoDB position</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Application documents and metadata</td>
+                <td>Document database</td>
+                <td class="fc-good">Strong primary store.</td>
+              </tr>
+              <tr>
+                <td>Vector and hybrid retrieval</td>
+                <td>MongoDB Vector Search or vector-first store</td>
+                <td class="fc-good">Strong when filters and documents matter.</td>
+              </tr>
+              <tr>
+                <td>Large immutable binaries</td>
+                <td>Object storage</td>
+                <td class="fc-watch">Store pointers and metadata.</td>
+              </tr>
+              <tr>
+                <td>Event streaming</td>
+                <td>Queue or log</td>
+                <td class="fc-watch">Useful for state, not a replacement for stream transport.</td>
+              </tr>
+              <tr>
+                <td>BI reporting</td>
+                <td>Warehouse or lakehouse</td>
+                <td class="fc-alt">Export summarized facts when analytics dominate.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Adoption path</p>
+          <h2>Pilot the full data loop</h2>
+          <div class="fc-visual fc-pipeline" data-visual="adoption path">
+            <div class="fc-step"><strong>1. Source set</strong><span>Pick one domain and define allowed paths.</span></div>
+            <div class="fc-step"><strong>2. Acquisition</strong><span>Map, filter, crawl, and store job/page events.</span></div>
+            <div class="fc-step"><strong>3. Storage</strong><span>Persist raw evidence, normalized docs, chunks, vectors.</span></div>
+            <div class="fc-step"><strong>4. Retrieval</strong><span>Implement vector plus text or hybrid search with filters.</span></div>
+            <div class="fc-step"><strong>5. Evaluation</strong><span>Measure answer quality, source freshness, failures, and costs.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Anti-patterns</p>
+          <h2>Most bad RAG starts as bad ingestion</h2>
+          <div class="grid-2" data-visual="anti-patterns">
+            <div class="panel">
+              <h3>Technical mistakes</h3>
+              <ul>
+                <li>Crawl every page before looking at the URL map.</li>
+                <li>Embed boilerplate, navigation, duplicate pages, and stale chunks.</li>
+                <li>Skip content hashes and source versioning.</li>
+                <li>Treat parseable JSON as verified truth.</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>Strategic mistakes</h3>
+              <ul>
+                <li>Compare vendors without a source-quality test set.</li>
+                <li>Ignore refresh costs until the corpus is large.</li>
+                <li>Choose a vector store before defining metadata filters.</li>
+                <li>Forget who owns source policy and retention.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Blueprint</p>
+          <h2>A narrow first project can still be production-shaped</h2>
+          <div class="fc-visual fc-row" data-visual="adoption blueprint">
+            <div class="fc-card"><strong>Source inventory</strong><span><code>sources</code>: domain, owner, allowed paths, freshness SLA.</span></div>
+            <div class="fc-card"><strong>Job ledger</strong><span><code>crawl_jobs</code>: endpoint, options, status, credits, retries.</span></div>
+            <div class="fc-card"><strong>Documents</strong><span><code>web_docs</code>: normalized markdown, metadata, hash, policy.</span></div>
+            <div class="fc-card"><strong>Chunks</strong><span><code>web_chunks</code>: text, vector, parent id, filters, model version.</span></div>
+            <div class="fc-card"><strong>Retriever</strong><span>MongoDB vector search plus text search and source filters.</span></div>
+            <div class="fc-card"><strong>Eval set</strong><span>Questions, expected sources, accepted answers, freshness checks.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Decision checklist</p>
+          <h2>Ask these before scaling</h2>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Question</th>
+                <th>Evidence you want</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Can Firecrawl acquire the source reliably?</td><td>Success rate, page errors, queue time, retry profile.</td></tr>
+              <tr><td>Is the content useful after cleaning?</td><td>Human review, duplicate rate, boilerplate rate, extraction accuracy.</td></tr>
+              <tr><td>Does MongoDB match the query shape?</td><td>Metadata filters, vector recall, full-text needs, hybrid ranking evidence.</td></tr>
+              <tr><td>Is freshness affordable?</td><td>Changed-page rate, cost per refresh, selective re-embedding plan.</td></tr>
+              <tr><td>Can the system explain itself?</td><td>Source lineage, citations, job ledger, audit trace, eval history.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Recap</p>
+          <h2>The mental model</h2>
+          <div class="grid-3">
+            <div class="callout">
+              <h3>Firecrawl acquires</h3>
+              <p>It discovers, scrapes, crawls, searches, interacts, monitors, and converts web surfaces into usable artifacts.</p>
+            </div>
+            <div class="callout">
+              <h3>Databases operate</h3>
+              <p>They make ingestion durable, observable, governable, queryable, replayable, and evaluable.</p>
+            </div>
+            <div class="callout">
+              <h3>MongoDB fits</h3>
+              <p>It is compelling when document-shaped content, metadata, vectors, filters, hybrid search, and app state belong together.</p>
+            </div>
+          </div>
+          <p class="lead">
+            The goal is not to scrape a page into a prompt. The goal is a controlled data supply chain for AI features.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">References</p>
+          <h2>Follow-up reading by concept</h2>
+          <div class="reference-list">
+            <h3>Firecrawl API and product surface</h3>
+            <ul>
+              <li><a href="https://docs.firecrawl.dev/api-reference/v2-introduction">Firecrawl API Reference: Introduction</a></li>
+              <li><a href="https://docs.firecrawl.dev/api-reference/endpoint/scrape">Firecrawl API Reference: Scrape</a></li>
+              <li><a href="https://docs.firecrawl.dev/api-reference/endpoint/map">Firecrawl API Reference: Map</a></li>
+              <li><a href="https://docs.firecrawl.dev/api-reference/endpoint/crawl-post">Firecrawl API Reference: Crawl</a></li>
+              <li><a href="https://docs.firecrawl.dev/api-reference/endpoint/search">Firecrawl API Reference: Search</a></li>
+              <li><a href="https://docs.firecrawl.dev/api-reference/endpoint/batch-scrape">Firecrawl API Reference: Batch Scrape</a></li>
+              <li><a href="https://firecrawl.dev/playground">Firecrawl Playground</a></li>
+            </ul>
+            <h3>Extraction, interaction, operations</h3>
+            <ul>
+              <li><a href="https://docs.firecrawl.dev/developer-guides/usage-guides/choosing-the-data-extractor">Firecrawl Guide: Choosing the Data Extractor</a></li>
+              <li><a href="https://docs.firecrawl.dev/features/interact">Firecrawl Features: Interact after scraping</a></li>
+              <li><a href="https://docs.firecrawl.dev/features/monitoring">Firecrawl Features: Monitoring</a></li>
+              <li><a href="https://docs.firecrawl.dev/api-reference/errors">Firecrawl API Reference: Errors</a></li>
+              <li><a href="https://docs.firecrawl.dev/rate-limits">Firecrawl Docs: Rate Limits</a></li>
+              <li><a href="https://github.com/firecrawl/firecrawl">firecrawl/firecrawl GitHub repository</a></li>
+            </ul>
+            <h3>AI integration and MongoDB</h3>
+            <ul>
+              <li><a href="https://docs.firecrawl.dev/developer-guides/llm-sdks-and-frameworks/langchain">Firecrawl Developer Guide: LangChain</a></li>
+              <li><a href="https://www.mongodb.com/docs/vector-search/">MongoDB Vector Search Overview</a></li>
+              <li><a href="https://www.mongodb.com/docs/atlas/ai-integrations/langchain/">MongoDB Atlas: Integrate with LangChain</a></li>
+              <li><a href="https://www.mongodb.com/docs/vector-search/hybrid-search/hybrid-search/">MongoDB Vector Search: Hybrid Search</a></li>
+            </ul>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script src="../../../assets/vendor/reveal/dist/reveal.js"></script>
+    <script src="../../../assets/vendor/reveal/dist/plugin/highlight.js"></script>
+    <script>
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        hash: true,
+        slideNumber: true,
+        transition: "slide",
+        backgroundTransition: "fade",
+        plugins: [RevealHighlight],
+      });
+    </script>
+  </body>
+</html>

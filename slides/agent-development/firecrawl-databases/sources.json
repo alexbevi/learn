@@ -1,0 +1,200 @@
+[
+  {
+    "id": "firecrawl-v2-intro",
+    "title": "Firecrawl API Reference: Introduction",
+    "url": "https://docs.firecrawl.dev/api-reference/v2-introduction",
+    "sourceType": "primary",
+    "publisher": "Firecrawl",
+    "retrieved": "2026-05-31",
+    "concepts": ["api surface", "authentication", "response model"],
+    "confidence": "high",
+    "notes": "Defines v2 API base URL, authentication, core endpoints, and response-code model."
+  },
+  {
+    "id": "firecrawl-scrape",
+    "title": "Firecrawl API Reference: Scrape",
+    "url": "https://docs.firecrawl.dev/api-reference/endpoint/scrape",
+    "sourceType": "primary",
+    "publisher": "Firecrawl",
+    "retrieved": "2026-05-31",
+    "concepts": ["scrape", "formats", "cache", "main content", "timeouts"],
+    "confidence": "high",
+    "notes": "Describes single-URL scraping, formats, content cleaning, cache controls, waits, timeouts, and browser interaction handoff."
+  },
+  {
+    "id": "firecrawl-crawl",
+    "title": "Firecrawl API Reference: Crawl",
+    "url": "https://docs.firecrawl.dev/api-reference/endpoint/crawl-post",
+    "sourceType": "primary",
+    "publisher": "Firecrawl",
+    "retrieved": "2026-05-31",
+    "concepts": ["crawl", "site discovery", "webhooks", "concurrency"],
+    "confidence": "high",
+    "notes": "Defines site crawling options: include/exclude paths, sitemap mode, depth, limit, external links, subdomains, webhooks, and scrape options."
+  },
+  {
+    "id": "firecrawl-crawl-status",
+    "title": "Firecrawl API Reference: Get Crawl Status",
+    "url": "https://docs.firecrawl.dev/api-reference/endpoint/crawl-get",
+    "sourceType": "primary",
+    "publisher": "Firecrawl",
+    "retrieved": "2026-05-31",
+    "concepts": ["crawl status", "pagination", "credits", "metadata", "errors"],
+    "confidence": "high",
+    "notes": "Defines crawl job status fields, result pagination, page metadata, credits used, and per-page errors."
+  },
+  {
+    "id": "firecrawl-map",
+    "title": "Firecrawl API Reference: Map",
+    "url": "https://docs.firecrawl.dev/api-reference/endpoint/map",
+    "sourceType": "primary",
+    "publisher": "Firecrawl",
+    "retrieved": "2026-05-31",
+    "concepts": ["url discovery", "sitemap", "site map", "preflight"],
+    "confidence": "high",
+    "notes": "Defines URL mapping, sitemap behavior, query-parameter handling, subdomain inclusion, limits, and URL metadata."
+  },
+  {
+    "id": "firecrawl-search",
+    "title": "Firecrawl API Reference: Search",
+    "url": "https://docs.firecrawl.dev/api-reference/endpoint/search",
+    "sourceType": "primary",
+    "publisher": "Firecrawl",
+    "retrieved": "2026-05-31",
+    "concepts": ["web search", "scrape search results", "operators", "domain filters"],
+    "confidence": "high",
+    "notes": "Documents web search, optional scraping of results, search operators, categories, time filters, and domain filters."
+  },
+  {
+    "id": "firecrawl-batch",
+    "title": "Firecrawl API Reference: Batch Scrape",
+    "url": "https://docs.firecrawl.dev/api-reference/endpoint/batch-scrape",
+    "sourceType": "primary",
+    "publisher": "Firecrawl",
+    "retrieved": "2026-05-31",
+    "concepts": ["batch scrape", "known URL lists", "webhooks", "concurrency"],
+    "confidence": "high",
+    "notes": "Defines multi-URL batch scraping, invalid URL handling, max concurrency, and webhook events."
+  },
+  {
+    "id": "firecrawl-extractor-guide",
+    "title": "Firecrawl Guide: Choosing the Data Extractor",
+    "url": "https://docs.firecrawl.dev/developer-guides/usage-guides/choosing-the-data-extractor",
+    "sourceType": "primary",
+    "publisher": "Firecrawl",
+    "retrieved": "2026-05-31",
+    "concepts": ["agent", "extract", "json mode", "structured extraction", "pricing tradeoffs"],
+    "confidence": "high",
+    "notes": "Compares /agent, /extract, and /scrape JSON mode by URL knowledge, scope, sync/async behavior, cost model, and recommended scenarios."
+  },
+  {
+    "id": "firecrawl-monitoring",
+    "title": "Firecrawl Features: Monitoring",
+    "url": "https://docs.firecrawl.dev/features/monitoring",
+    "sourceType": "primary",
+    "publisher": "Firecrawl",
+    "retrieved": "2026-05-31",
+    "concepts": ["monitoring", "change detection", "scheduled crawls", "webhooks"],
+    "confidence": "high",
+    "notes": "Describes recurring scrape/crawl monitors, page-level change states, webhook/email notifications, schedules, and estimated credits."
+  },
+  {
+    "id": "firecrawl-interact",
+    "title": "Firecrawl Features: Interact after scraping",
+    "url": "https://docs.firecrawl.dev/features/interact",
+    "sourceType": "primary",
+    "publisher": "Firecrawl",
+    "retrieved": "2026-05-31",
+    "concepts": ["browser sessions", "dynamic pages", "Playwright", "live view"],
+    "confidence": "high",
+    "notes": "Explains scrape-to-interact flow, scrapeId, prompt/code execution, live view URLs, and session stop behavior."
+  },
+  {
+    "id": "firecrawl-errors",
+    "title": "Firecrawl API Reference: Errors",
+    "url": "https://docs.firecrawl.dev/api-reference/errors",
+    "sourceType": "primary",
+    "publisher": "Firecrawl",
+    "retrieved": "2026-05-31",
+    "concepts": ["error handling", "retry", "429", "backoff"],
+    "confidence": "high",
+    "notes": "Defines error response shape, retryable statuses, Retry-After handling, and exponential backoff guidance."
+  },
+  {
+    "id": "firecrawl-rate-limits",
+    "title": "Firecrawl Docs: Rate Limits",
+    "url": "https://docs.firecrawl.dev/rate-limits",
+    "sourceType": "primary",
+    "publisher": "Firecrawl",
+    "retrieved": "2026-05-31",
+    "concepts": ["rate limits", "concurrency", "queueing", "billing"],
+    "confidence": "high",
+    "notes": "Documents per-plan concurrent browser limits, max queued jobs, API rate limits, and queue timeout implications."
+  },
+  {
+    "id": "firecrawl-langchain",
+    "title": "Firecrawl Developer Guide: LangChain",
+    "url": "https://docs.firecrawl.dev/developer-guides/llm-sdks-and-frameworks/langchain",
+    "sourceType": "primary",
+    "publisher": "Firecrawl",
+    "retrieved": "2026-05-31",
+    "concepts": ["LangChain", "tool calling", "structured output", "AI workflows"],
+    "confidence": "high",
+    "notes": "Shows scrape + chat, chains, tool calling, and structured data extraction patterns."
+  },
+  {
+    "id": "firecrawl-github",
+    "title": "firecrawl/firecrawl GitHub Repository",
+    "url": "https://github.com/firecrawl/firecrawl",
+    "sourceType": "primary",
+    "publisher": "Firecrawl",
+    "retrieved": "2026-05-31",
+    "concepts": ["open source", "license", "SDKs", "cloud vs self-host"],
+    "confidence": "medium",
+    "notes": "Documents repository positioning, SDK examples, AGPL-3.0 licensing, cloud resources, and self-hosting links."
+  },
+  {
+    "id": "mongodb-vector-search",
+    "title": "MongoDB Vector Search Overview",
+    "url": "https://www.mongodb.com/docs/vector-search/",
+    "sourceType": "primary",
+    "publisher": "MongoDB",
+    "retrieved": "2026-05-31",
+    "concepts": ["vector search", "embeddings", "RAG", "ANN", "metadata filters"],
+    "confidence": "high",
+    "notes": "Defines semantic, hybrid, and generative search use cases; embedding storage; vector indexes; ANN/ENN; pre-filtering; and Automated Embedding."
+  },
+  {
+    "id": "mongodb-langchain",
+    "title": "Integrate MongoDB with LangChain",
+    "url": "https://www.mongodb.com/docs/atlas/ai-integrations/langchain/",
+    "sourceType": "primary",
+    "publisher": "MongoDB",
+    "retrieved": "2026-05-31",
+    "concepts": ["LangChain", "MongoDBAtlasVectorSearch", "RAG", "retriever"],
+    "confidence": "high",
+    "notes": "Shows MongoDBAtlasVectorSearch setup, connection-string and collection patterns, automated embedding option, and retriever usage."
+  },
+  {
+    "id": "mongodb-hybrid-search",
+    "title": "MongoDB Vector Search: How to Perform Hybrid Search",
+    "url": "https://www.mongodb.com/docs/vector-search/hybrid-search/hybrid-search/",
+    "sourceType": "primary",
+    "publisher": "MongoDB",
+    "retrieved": "2026-05-31",
+    "concepts": ["hybrid search", "rank fusion", "score fusion", "full-text search"],
+    "confidence": "high",
+    "notes": "Documents combining vector and full-text results with $rankFusion and $scoreFusion, limitations, and version requirements."
+  },
+  {
+    "id": "firecrawl-playground",
+    "title": "Firecrawl Playground",
+    "url": "https://firecrawl.dev/playground",
+    "sourceType": "primary",
+    "publisher": "Firecrawl",
+    "retrieved": "2026-05-31",
+    "concepts": ["playground", "UI", "endpoint discovery"],
+    "confidence": "medium",
+    "notes": "Public UI screenshot captured locally for slide illustration."
+  }
+]
