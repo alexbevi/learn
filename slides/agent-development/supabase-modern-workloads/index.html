@@ -1,0 +1,1317 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Why Supabase Is Popular for Modern Workloads</title>
+    <link rel="stylesheet" href="../../../assets/vendor/reveal/dist/reveal.css" />
+    <link
+      rel="stylesheet"
+      href="../../../assets/vendor/reveal/dist/plugin/highlight/monokai.css"
+    />
+    <link rel="stylesheet" href="../../../assets/css/deck.css" />
+    <style>
+      .sb-grid {
+        display: grid;
+        gap: 14px;
+        margin-top: 22px;
+      }
+
+      .cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .cols-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .sb-card,
+      .lane,
+      .node,
+      .matrix-head,
+      .matrix-cell,
+      .decision {
+        border: 1px solid var(--deck-line);
+        border-radius: 8px;
+        background: linear-gradient(180deg, var(--deck-panel-2), var(--deck-panel));
+        padding: 14px;
+      }
+
+      .sb-card strong,
+      .lane strong,
+      .node strong,
+      .matrix-cell strong,
+      .decision strong {
+        display: block;
+        color: var(--deck-text);
+        font-size: 0.54em;
+        line-height: 1.16;
+      }
+
+      .sb-card span,
+      .lane span,
+      .node span,
+      .matrix-cell span,
+      .decision span {
+        display: block;
+        margin-top: 7px;
+        color: var(--deck-muted);
+        font-size: 0.43em;
+        line-height: 1.32;
+      }
+
+      .sb-card h3,
+      .lane h3 {
+        margin-bottom: 10px;
+        color: var(--deck-accent);
+        font-size: 0.72em;
+      }
+
+      .visual {
+        width: min(100%, 1080px);
+        margin: 20px auto 0;
+      }
+
+      .flow {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .flow .node {
+        position: relative;
+        min-height: 150px;
+      }
+
+      .flow .node:not(:last-child)::after {
+        content: ">";
+        position: absolute;
+        top: 58px;
+        right: -14px;
+        z-index: 2;
+        color: var(--deck-accent);
+        font-size: 0.9em;
+        font-weight: 900;
+      }
+
+      .stack-map {
+        display: grid;
+        grid-template-columns: 0.95fr 1.25fr 0.95fr;
+        gap: 14px;
+        align-items: stretch;
+      }
+
+      .stack-col {
+        display: grid;
+        gap: 10px;
+      }
+
+      .core {
+        border-color: rgb(33 199 168 / 58%);
+        box-shadow: inset 0 0 0 1px rgb(33 199 168 / 18%);
+      }
+
+      .amber {
+        border-color: rgb(255 184 77 / 48%);
+      }
+
+      .blue {
+        border-color: rgb(122 168 255 / 45%);
+      }
+
+      .red {
+        border-color: rgb(242 109 109 / 45%);
+      }
+
+      .tag-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin-top: 10px;
+      }
+
+      .tag {
+        display: inline-flex;
+        padding: 5px 8px;
+        border: 1px solid rgb(255 255 255 / 12%);
+        border-radius: 999px;
+        color: var(--deck-muted);
+        font-size: 0.4em;
+        font-weight: 760;
+      }
+
+      .note {
+        margin-top: 12px;
+        color: var(--deck-amber);
+        font-size: 0.48em;
+        font-weight: 760;
+        line-height: 1.28;
+      }
+
+      .matrix {
+        display: grid;
+        grid-template-columns: 0.82fr repeat(4, 1fr);
+        gap: 8px;
+        margin-top: 20px;
+      }
+
+      .matrix.compact {
+        grid-template-columns: 0.9fr repeat(3, 1fr);
+      }
+
+      .matrix-head {
+        color: var(--deck-accent);
+        font-size: 0.42em;
+        font-weight: 860;
+      }
+
+      .matrix-cell {
+        min-height: 90px;
+      }
+
+      .axis {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-top: 22px;
+      }
+
+      .axis .lane {
+        min-height: 430px;
+      }
+
+      .timeline {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 22px;
+      }
+
+      .timeline .node {
+        min-height: 128px;
+      }
+
+      .rail {
+        display: grid;
+        grid-template-columns: 220px minmax(0, 1fr) 260px;
+        gap: 14px;
+        align-items: start;
+        margin-top: 14px;
+      }
+
+      .rail + .rail {
+        margin-top: 10px;
+      }
+
+      .rail .node {
+        min-height: 95px;
+      }
+
+      .code-tight {
+        font-size: 0.78em;
+        line-height: 1.22;
+      }
+
+      .reveal pre code {
+        max-height: 440px;
+      }
+
+      .small-table {
+        margin-top: 20px;
+        font-size: 0.58em;
+      }
+
+      .small-table th,
+      .small-table td {
+        padding: 9px 10px;
+      }
+
+      .reference-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+        margin-top: 20px;
+      }
+
+      .reference-list h3 {
+        color: var(--deck-accent);
+        font-size: 0.62em;
+      }
+
+      .reference-list ul {
+        margin: 8px 0 0;
+        padding-left: 1.1em;
+      }
+
+      .reference-list li {
+        font-size: 0.45em;
+      }
+    </style>
+  </head>
+  <body class="has-deck-topbar">
+    <header class="deck-topbar">
+      <a class="deck-nav-link" href="../../../">Learn</a>
+      <div class="deck-title">
+        <span>Why Supabase Is Popular for Modern Workloads</span>
+        <small>Developer Experience, Agents, Competition, and MongoDB's Response</small>
+      </div>
+      <a class="deck-nav-link" href="../../../topics/agent-development/">Agent Development</a>
+    </header>
+
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <p class="kicker">Platform Strategy</p>
+          <h1>Why Supabase Is Popular for Modern Workloads</h1>
+          <p class="lead">
+            A deep technical and competitive view of the product surface developers reach for,
+            why AI agents often recommend it, where it differs from Firebase, Appwrite, Neon,
+            PlanetScale, and MongoDB Atlas, and what MongoDB would need to adapt.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Learning Goals</p>
+          <h2>What this deck should make clear</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Developer demand</h3>
+              <p>Identify the features developers actually reach for when choosing Supabase for new apps and AI workloads.</p>
+            </div>
+            <div class="panel">
+              <h3>Agent visibility</h3>
+              <p>Explain why coding agents can discover, reason about, and scaffold Supabase projects with unusually low friction.</p>
+            </div>
+            <div class="panel">
+              <h3>Competitive response</h3>
+              <p>Translate the threat into concrete MongoDB product, platform, documentation, and ecosystem moves.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Thesis</p>
+          <h2>Supabase wins when the database becomes the app backend</h2>
+          <p class="lead">
+            Supabase is popular because it compresses the path from data model to usable product:
+            Postgres is the durable source of truth, while Auth, Row Level Security, generated APIs,
+            Realtime, Storage, Edge Functions, local development, and AI tooling form the backend
+            surface around it.
+          </p>
+          <div class="sb-grid cols-3">
+            <div class="sb-card core">
+              <strong>Not only DBaaS</strong>
+              <span>The appeal is not just hosted Postgres. It is Postgres exposed through product primitives that frontend and full-stack developers can use directly.</span>
+            </div>
+            <div class="sb-card amber">
+              <strong>Not only Firebase alternative</strong>
+              <span>The differentiator is relational, SQL-native, portable infrastructure with an integrated app platform around it.</span>
+            </div>
+            <div class="sb-card blue">
+              <strong>Not only AI hype</strong>
+              <span>AI agents amplify Supabase because the platform has legible docs, predictable SDKs, MCP access, and common scaffold patterns.</span>
+            </div>
+          </div>
+        </section>
+
+        <section data-visual>
+          <p class="kicker">Before State</p>
+          <h2>The modern app backend problem</h2>
+          <div class="visual flow">
+            <div class="node red">
+              <strong>Start with a product idea</strong>
+              <span>The team needs user accounts, private data, file uploads, realtime updates, background logic, and now AI features.</span>
+            </div>
+            <div class="node red">
+              <strong>Assemble services</strong>
+              <span>Database, auth provider, object store, API layer, websocket service, functions runtime, migrations, and observability each have separate contracts.</span>
+            </div>
+            <div class="node red">
+              <strong>Rebuild policy glue</strong>
+              <span>Authorization often lives partly in API handlers, partly in middleware, partly in database filters, and partly in frontend assumptions.</span>
+            </div>
+            <div class="node red">
+              <strong>Teach tools the stack</strong>
+              <span>Agents must infer conventions, environment variables, schema changes, security rules, and deployment steps across many vendors.</span>
+            </div>
+            <div class="node red">
+              <strong>Ship slower</strong>
+              <span>The first feature becomes a distributed systems integration project before the product has evidence of demand.</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Workload Shape</p>
+          <h2>Why this matters more now</h2>
+          <div class="sb-grid cols-2">
+            <div class="sb-card">
+              <h3>Modern products are data products</h3>
+              <span>Even small apps need relational records, identity, permissions, files, notifications, search, analytics events, and integrations. The database is no longer hidden behind a large backend team in many early-stage products.</span>
+            </div>
+            <div class="sb-card">
+              <h3>Agentic apps raise the baseline</h3>
+              <span>Agents need durable task state, memory, retrieval, audit trails, user authorization, webhook ingress, tool APIs, and human-visible realtime progress. That rewards platforms with clear primitives.</span>
+            </div>
+            <div class="sb-card">
+              <h3>Full-stack teams want fewer seams</h3>
+              <span>A React, Next.js, Expo, Flutter, or Svelte team can move faster when auth, database access, generated types, functions, and local dev share one project model.</span>
+            </div>
+            <div class="sb-card">
+              <h3>AI coding changes vendor discovery</h3>
+              <span>Agents recommend what they can explain, scaffold, validate, and repair. Clear docs and common templates become distribution channels.</span>
+            </div>
+          </div>
+        </section>
+
+        <section data-visual>
+          <p class="kicker">Stack Map</p>
+          <h2>Supabase as an integrated backend surface</h2>
+          <div class="visual stack-map">
+            <div class="stack-col">
+              <div class="node blue">
+                <strong>Client SDKs</strong>
+                <span>JavaScript, Flutter, Swift, Kotlin, Python, REST, GraphQL, and framework starters.</span>
+              </div>
+              <div class="node blue">
+                <strong>Frontend apps</strong>
+                <span>Browser, mobile, server components, edge routes, and server-rendered apps.</span>
+              </div>
+              <div class="node blue">
+                <strong>AI tools</strong>
+                <span>MCP server, CLI, generated types, prompts, docs, logs, and migrations.</span>
+              </div>
+            </div>
+            <div class="stack-col">
+              <div class="node core">
+                <strong>Postgres database</strong>
+                <span>Tables, SQL, views, functions, extensions, transactions, indexes, roles, grants, and Row Level Security.</span>
+              </div>
+              <div class="node core">
+                <strong>Product primitives</strong>
+                <span>Auth, generated REST API, GraphQL API, Realtime, Storage, Edge Functions, Vault, backups, branches, and logs.</span>
+              </div>
+              <div class="node core">
+                <strong>Platform workflow</strong>
+                <span>Local stack, migrations, seed data, type generation, dashboard, project settings, and deployment commands.</span>
+              </div>
+            </div>
+            <div class="stack-col">
+              <div class="node amber">
+                <strong>Security boundary</strong>
+                <span>JWTs feed Postgres policies so authorization can execute close to the data.</span>
+              </div>
+              <div class="node amber">
+                <strong>Event boundary</strong>
+                <span>Postgres changes and broadcasts travel over WebSockets to subscribed clients.</span>
+              </div>
+              <div class="node amber">
+                <strong>Extension boundary</strong>
+                <span>pgvector, PostGIS, pg_graphql, pg_net, pgcrypto, and other extensions expand one database.</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Feature Taxonomy</p>
+          <h2>The features developers reach for</h2>
+          <div class="sb-grid cols-4">
+            <div class="sb-card"><strong>Postgres</strong><span>Portable relational database, SQL, constraints, indexes, transactions, JSON, extensions, and direct database access.</span></div>
+            <div class="sb-card"><strong>Auth</strong><span>Email, passwordless, OAuth, SSO, JWTs, user management, and tight integration with database authorization.</span></div>
+            <div class="sb-card"><strong>RLS</strong><span>Policy-based row access that works through browser clients, REST, GraphQL, and direct Postgres surfaces.</span></div>
+            <div class="sb-card"><strong>Generated APIs</strong><span>REST through PostgREST and GraphQL through pg_graphql reflected from the schema.</span></div>
+            <div class="sb-card"><strong>Realtime</strong><span>Broadcast, Presence, and Postgres Changes over WebSockets for collaboration and live data.</span></div>
+            <div class="sb-card"><strong>Storage</strong><span>S3-compatible file storage, resumable uploads, CDN delivery, image transforms, and RLS-backed object metadata.</span></div>
+            <div class="sb-card"><strong>Edge Functions</strong><span>Deno-compatible TypeScript functions for webhooks, private logic, model calls, and low-latency endpoints.</span></div>
+            <div class="sb-card"><strong>AI and vectors</strong><span>pgvector and Postgres data together, making RAG schemas ordinary application schemas.</span></div>
+          </div>
+        </section>
+
+        <section data-visual>
+          <p class="kicker">Adoption Loop</p>
+          <h2>The product flywheel</h2>
+          <div class="visual flow">
+            <div class="node core">
+              <strong>Readable primitive</strong>
+              <span>SQL tables, policies, SDK calls, and functions are easy for humans and agents to inspect.</span>
+            </div>
+            <div class="node core">
+              <strong>Scaffoldable pattern</strong>
+              <span>Starter templates can encode auth, queries, storage, and realtime in a small amount of code.</span>
+            </div>
+            <div class="node core">
+              <strong>Immediate feedback</strong>
+              <span>Dashboard, local Studio, generated docs, logs, and type generation close the development loop.</span>
+            </div>
+            <div class="node core">
+              <strong>Shareable example</strong>
+              <span>Examples spread through docs, GitHub, agents, framework guides, and community posts.</span>
+            </div>
+            <div class="node core">
+              <strong>Default recommendation</strong>
+              <span>More examples make it easier for agents and developers to choose the same path next time.</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Postgres Gravity</p>
+          <h2>Postgres is a strategic asset, not a commodity detail</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Portable core</h3>
+              <p>Developers can reason in SQL, connect with normal Postgres tooling, and avoid a wholly proprietary data model.</p>
+            </div>
+            <div class="panel">
+              <h3>Relational truth</h3>
+              <p>Accounts, orgs, memberships, billing, permissions, tasks, files, embeddings, and audit trails fit naturally into relational constraints.</p>
+            </div>
+            <div class="panel">
+              <h3>Extension ecosystem</h3>
+              <p>Supabase packages extensions so vector search, geospatial data, graph-shaped APIs, HTTP calls, encryption, and full-text search stay close to data.</p>
+            </div>
+          </div>
+          <p class="note">Competitive implication: a platform can be "easy like BaaS" while still feeling like serious infrastructure.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Concrete Model</p>
+          <h2>A typical Supabase data shape</h2>
+          <pre><code class="language-sql code-tight">create table public.projects (
+  id uuid primary key default gen_random_uuid(),
+  owner_id uuid not null references auth.users(id),
+  name text not null,
+  created_at timestamptz not null default now()
+);
+
+create table public.agent_runs (
+  id uuid primary key default gen_random_uuid(),
+  project_id uuid not null references public.projects(id),
+  status text not null check (status in ('queued', 'running', 'done', 'failed')),
+  prompt text not null,
+  answer text,
+  embedding vector(1536),
+  created_at timestamptz not null default now()
+);</code></pre>
+          <p class="lead">
+            The same database can hold product state, identity-linked ownership, agent execution history,
+            retrieval vectors, audit fields, and policy-enforced access.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Generated APIs</p>
+          <h2>Schema becomes a usable interface</h2>
+          <div class="sb-grid cols-3">
+            <div class="sb-card core">
+              <strong>REST</strong>
+              <span>PostgREST reflects tables, views, filters, ranges, inserts, updates, deletes, and RPC calls from the Postgres schema.</span>
+            </div>
+            <div class="sb-card core">
+              <strong>GraphQL</strong>
+              <span>pg_graphql reflects tables, columns, relationships, primary keys, computed fields, and Postgres security into a GraphQL schema.</span>
+            </div>
+            <div class="sb-card amber">
+              <strong>Types and docs</strong>
+              <span>Generated API docs and TypeScript types let humans and agents line up code with schema changes.</span>
+            </div>
+          </div>
+          <p class="note">The important point is not "no backend ever." It is that basic CRUD, policy, and query surfaces are available before a custom API is justified.</p>
+        </section>
+
+        <section data-visual>
+          <p class="kicker">Authorization</p>
+          <h2>Auth and RLS collapse a lot of backend glue</h2>
+          <div class="visual rail">
+            <div class="node blue">
+              <strong>Client signs in</strong>
+              <span>Supabase Auth issues a JWT for an authenticated user.</span>
+            </div>
+            <div class="node core">
+              <strong>Request hits generated API</strong>
+              <span>The browser can call Supabase APIs directly with an anon key plus the user's authorization token.</span>
+            </div>
+            <div class="node amber">
+              <strong>Postgres enforces policy</strong>
+              <span>RLS policies inspect claims through helper functions such as <code>auth.uid()</code>.</span>
+            </div>
+          </div>
+          <div class="visual rail">
+            <div class="node blue">
+              <strong>Agent or server uses service role</strong>
+              <span>Privileged automation can bypass user policies only in trusted server-side contexts.</span>
+            </div>
+            <div class="node core">
+              <strong>Policy stays centralized</strong>
+              <span>Application handlers, REST clients, GraphQL clients, and direct SQL all share the same authorization source.</span>
+            </div>
+            <div class="node amber">
+              <strong>Security is visible</strong>
+              <span>The policy is SQL, so it is inspectable by reviewers, linters, migration diffs, and coding agents.</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">RLS Example</p>
+          <h2>Policy is the product contract</h2>
+          <pre><code class="language-sql code-tight">alter table public.projects enable row level security;
+alter table public.agent_runs enable row level security;
+
+create policy "members can read projects"
+on public.projects
+for select
+using (
+  exists (
+    select 1
+    from public.project_memberships m
+    where m.project_id = projects.id
+      and m.user_id = auth.uid()
+  )
+);
+
+create policy "members can read runs"
+on public.agent_runs
+for select
+using (
+  exists (
+    select 1
+    from public.project_memberships m
+    where m.project_id = agent_runs.project_id
+      and m.user_id = auth.uid()
+  )
+);</code></pre>
+          <p class="lead">
+            This is why RLS is so central to the Supabase story: the database can enforce multi-tenant
+            product rules before every client path has a bespoke backend.
+          </p>
+        </section>
+
+        <section data-visual>
+          <p class="kicker">Realtime</p>
+          <h2>Realtime turns Postgres into a product event source</h2>
+          <div class="visual stack-map">
+            <div class="stack-col">
+              <div class="node blue"><strong>Clients</strong><span>Web and mobile clients subscribe to channels, topics, or table changes over WebSockets.</span></div>
+              <div class="node blue"><strong>Presence</strong><span>Track user state such as online status, cursor position, or active participants.</span></div>
+            </div>
+            <div class="stack-col">
+              <div class="node core"><strong>Realtime service</strong><span>Elixir/Phoenix service routes Broadcast, Presence, and Postgres Changes.</span></div>
+              <div class="node core"><strong>Authorization</strong><span>Broadcast uses Realtime Authorization and can test messages against RLS policies.</span></div>
+            </div>
+            <div class="stack-col">
+              <div class="node amber"><strong>Postgres WAL</strong><span>Database changes can be read through logical replication and delivered as JSON payloads.</span></div>
+              <div class="node amber"><strong>Trigger broadcast</strong><span>Database functions can emit topic-based messages for scalable, secure subscriptions.</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Realtime Tradeoffs</p>
+          <h2>Realtime is powerful, but not magic</h2>
+          <table class="small-table">
+            <thead>
+              <tr>
+                <th>Mode</th>
+                <th>Best fit</th>
+                <th>Design constraint</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Broadcast</td>
+                <td>Topic-oriented collaboration, notifications, cursor updates, activity feeds.</td>
+                <td>Requires explicit topic design and authorization policies.</td>
+              </tr>
+              <tr>
+                <td>Presence</td>
+                <td>Who is online, who is typing, shared ephemeral state.</td>
+                <td>Do not treat presence as durable product state.</td>
+              </tr>
+              <tr>
+                <td>Postgres Changes</td>
+                <td>Simple database change subscriptions and prototypes.</td>
+                <td>Supabase recommends Broadcast for most scalable and secure production cases.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Storage</p>
+          <h2>Files are brought into the same policy model</h2>
+          <div class="sb-grid cols-3">
+            <div class="sb-card core">
+              <strong>Object storage</strong>
+              <span>Files, images, videos, documents, resumable uploads, S3-compatible access, and global CDN delivery.</span>
+            </div>
+            <div class="sb-card core">
+              <strong>Database metadata</strong>
+              <span>Objects are represented through Postgres metadata tables, so access can use SQL policies.</span>
+            </div>
+            <div class="sb-card amber">
+              <strong>Product patterns</strong>
+              <span>Avatars, attachments, generated files, exports, invoices, and AI-produced artifacts can inherit product ownership rules.</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Edge Functions</p>
+          <h2>Custom backend logic without leaving the project</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>What goes here</h3>
+              <p>Webhooks, private API calls, Stripe integration, email dispatch, small AI orchestration, token exchange, service-role operations, and custom endpoints.</p>
+            </div>
+            <div class="panel">
+              <h3>What to watch</h3>
+              <p>Cold starts, short-lived execution, database connection pooling, secrets, idempotency, retry behavior, observability, and moving heavy jobs to workers.</p>
+            </div>
+          </div>
+          <pre><code class="language-ts code-tight">Deno.serve(async (req) =&gt; {
+  const authHeader = req.headers.get("Authorization");
+  const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, {
+    global: { headers: { Authorization: authHeader ?? "" } },
+  });
+
+  const { data: userResult } = await supabase.auth.getUser();
+  if (!userResult.user) return new Response("Unauthorized", { status: 401 });
+
+  // Do private integration work here, then write through Supabase.
+  return Response.json({ ok: true });
+});</code></pre>
+        </section>
+
+        <section data-visual>
+          <p class="kicker">Workflow</p>
+          <h2>The CLI makes Supabase agent-friendly</h2>
+          <div class="timeline">
+            <div class="node core"><strong><code>supabase init</code></strong><span>Creates project config in the repository.</span></div>
+            <div class="node core"><strong><code>supabase start</code></strong><span>Runs a local stack with database, Auth, Storage, APIs, and Studio.</span></div>
+            <div class="node core"><strong><code>migration new</code></strong><span>Captures schema changes as SQL files.</span></div>
+            <div class="node core"><strong><code>db reset</code></strong><span>Rebuilds local state from migrations and seed data.</span></div>
+            <div class="node core"><strong><code>gen types</code></strong><span>Produces TypeScript contracts from the live schema.</span></div>
+            <div class="node core"><strong><code>db push</code></strong><span>Deploys database changes to a linked project.</span></div>
+          </div>
+          <p class="note">This is a major reason agents can work with Supabase: the platform has command-line handles for schema, data, functions, types, logs, and project configuration.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Operations</p>
+          <h2>Supabase has been expanding beyond prototype DX</h2>
+          <div class="sb-grid cols-3">
+            <div class="sb-card"><strong>Backups and PITR</strong><span>Daily backups are built into projects, with plan-dependent retention and Point-in-Time Recovery options.</span></div>
+            <div class="sb-card"><strong>Branches</strong><span>Branches let teams test and preview changes against isolated project environments.</span></div>
+            <div class="sb-card"><strong>Read replicas</strong><span>Replicas help reduce read latency and isolate read-heavy workloads.</span></div>
+            <div class="sb-card"><strong>Network controls</strong><span>SSL enforcement, network restrictions, custom domains, and operational settings matter for serious deployments.</span></div>
+            <div class="sb-card"><strong>Logs and drains</strong><span>Debugging and external log export are part of the platform story.</span></div>
+            <div class="sb-card"><strong>Terraform</strong><span>Infrastructure as code support helps teams manage Supabase alongside the rest of their cloud estate.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">AI Workloads</p>
+          <h2>For RAG, application data and vector data can live together</h2>
+          <div class="sb-grid cols-3">
+            <div class="sb-card core">
+              <strong>One schema</strong>
+              <span>Documents, chunks, embeddings, permissions, projects, runs, feedback, and citations can share relational constraints.</span>
+            </div>
+            <div class="sb-card core">
+              <strong>One policy layer</strong>
+              <span>RLS can restrict retrieval candidates to records the current user or tenant is allowed to see.</span>
+            </div>
+            <div class="sb-card amber">
+              <strong>One operational loop</strong>
+              <span>Ingestion jobs, Edge Functions, vector extensions, generated APIs, and logs are part of the same project.</span>
+            </div>
+          </div>
+          <p class="note">This is especially attractive for early AI products: the first RAG system does not require a separate vector database, auth system, object store, and API service.</p>
+        </section>
+
+        <section data-visual>
+          <p class="kicker">Agent Visibility</p>
+          <h2>Why coding agents often surface Supabase</h2>
+          <div class="visual flow">
+            <div class="node blue">
+              <strong>Clear public docs</strong>
+              <span>Feature docs, API references, guides, CLI docs, examples, and generated project docs create a dense retrieval surface.</span>
+            </div>
+            <div class="node blue">
+              <strong>Small code snippets</strong>
+              <span>Most actions fit in recognizable SDK calls, SQL migrations, or CLI commands.</span>
+            </div>
+            <div class="node blue">
+              <strong>Inspectable state</strong>
+              <span>Schema, migrations, policies, generated types, and functions live in files or standard database objects.</span>
+            </div>
+            <div class="node blue">
+              <strong>MCP access</strong>
+              <span>The official MCP server lets agents manage projects, schema, SQL, logs, branches, and configuration in development contexts.</span>
+            </div>
+            <div class="node blue">
+              <strong>Repeatable scaffolds</strong>
+              <span>Agents learn the same stack repeatedly across Next.js, React, Expo, Flutter, and serverless examples.</span>
+            </div>
+          </div>
+        </section>
+
+        <section data-visual>
+          <p class="kicker">Agent Loop</p>
+          <h2>Agent-assisted Supabase work has a tight control loop</h2>
+          <div class="visual stack-map">
+            <div class="stack-col">
+              <div class="node blue"><strong>Intent</strong><span>"Add organizations, memberships, private files, and a RAG answer endpoint."</span></div>
+              <div class="node blue"><strong>Repository</strong><span>Reads frontend code, migrations, env examples, and generated types.</span></div>
+            </div>
+            <div class="stack-col">
+              <div class="node core"><strong>MCP or CLI</strong><span>Create migrations, inspect schema, query dev data, retrieve logs, and generate types.</span></div>
+              <div class="node core"><strong>Supabase project</strong><span>Database, Auth, Storage, Realtime, Edge Functions, and policies are addressable from one platform.</span></div>
+            </div>
+            <div class="stack-col">
+              <div class="node amber"><strong>Verification</strong><span>Run local stack, apply migrations, call generated APIs, and fix policy errors from logs.</span></div>
+              <div class="node amber"><strong>Patch</strong><span>Update code, SQL, function files, tests, docs, and environment instructions.</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Important Caveat</p>
+          <h2>"Agents recommend it" is a distribution effect, not proof of universal fit</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>What agents optimize for</h3>
+              <p>Agents often prefer tools with stable docs, SDK examples, CLI commands, starter templates, common Stack Overflow/GitHub patterns, and easy local validation.</p>
+            </div>
+            <div class="panel">
+              <h3>What architects must still decide</h3>
+              <p>Data model fit, scale envelope, operational controls, cost profile, team skills, compliance, multi-region needs, failure modes, and long-term ownership.</p>
+            </div>
+          </div>
+          <p class="note">The practical lesson: vendor documentation and agent tooling are now part of the product surface, not just marketing.</p>
+        </section>
+
+        <section data-visual>
+          <p class="kicker">Competitive Map</p>
+          <h2>Supabase competes as a platform, not a single product</h2>
+          <div class="matrix">
+            <div class="matrix-head">Dimension</div>
+            <div class="matrix-head">Supabase</div>
+            <div class="matrix-head">Firebase</div>
+            <div class="matrix-head">Neon / PlanetScale</div>
+            <div class="matrix-head">MongoDB Atlas</div>
+            <div class="matrix-cell"><strong>Primary center</strong></div>
+            <div class="matrix-cell core"><strong>Postgres app backend</strong><span>Database plus Auth, APIs, Realtime, Storage, Functions.</span></div>
+            <div class="matrix-cell"><strong>Mobile/web app platform</strong><span>Firestore, Realtime Database, Auth, Functions, hosting, analytics ecosystem.</span></div>
+            <div class="matrix-cell"><strong>Managed database DX</strong><span>Serverless Postgres or Vitess/Postgres workflows, branching, scale, migrations.</span></div>
+            <div class="matrix-cell"><strong>Managed document database</strong><span>Atlas database, Search, Vector Search, drivers, change streams, enterprise operations.</span></div>
+            <div class="matrix-cell"><strong>Main wedge</strong></div>
+            <div class="matrix-cell core"><strong>Integrated speed plus SQL</strong><span>Fast app backend without leaving relational semantics.</span></div>
+            <div class="matrix-cell"><strong>Google-backed BaaS</strong><span>Realtime mobile/web SDKs and broad app services.</span></div>
+            <div class="matrix-cell"><strong>Database workflow</strong><span>Branching, serverless scale, performance, database operations.</span></div>
+            <div class="matrix-cell"><strong>Operational database depth</strong><span>Flexible documents, global scale patterns, search/vector, mature drivers.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Versus Firebase</p>
+          <h2>Supabase's strongest comparison is "Firebase, but Postgres"</h2>
+          <table class="small-table">
+            <thead>
+              <tr><th>Area</th><th>Firebase strength</th><th>Supabase differentiation</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Data model</td>
+                <td>Firestore and Realtime Database optimize document/JSON sync patterns.</td>
+                <td>SQL, relations, joins, transactions, constraints, views, functions, and standard Postgres tooling.</td>
+              </tr>
+              <tr>
+                <td>Authorization</td>
+                <td>Security Rules are a first-class app platform primitive.</td>
+                <td>RLS is a database primitive, so policies travel with Postgres access paths.</td>
+              </tr>
+              <tr>
+                <td>Portability</td>
+                <td>Strong managed ecosystem, but many services are Firebase-specific.</td>
+                <td>Postgres and open-source components reduce perceived lock-in for teams that value exit paths.</td>
+              </tr>
+              <tr>
+                <td>Best fit</td>
+                <td>Mobile-first realtime apps, Google ecosystem, simple client sync.</td>
+                <td>Relational SaaS, dashboards, B2B apps, AI apps with relational permissions, SQL-heavy teams.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Versus Appwrite</p>
+          <h2>Appwrite competes on open-source BaaS breadth</h2>
+          <div class="sb-grid cols-3">
+            <div class="sb-card">
+              <strong>Where Appwrite is similar</strong>
+              <span>Auth, Databases, Storage, Functions, Realtime, Messaging, hosting, SDKs, docs, MCP, and self-hosting.</span>
+            </div>
+            <div class="sb-card core">
+              <strong>Where Supabase differs</strong>
+              <span>Supabase makes standard Postgres the visible center. Appwrite presents a BaaS API whose storage backend can vary.</span>
+            </div>
+            <div class="sb-card amber">
+              <strong>Decision lens</strong>
+              <span>Choose Appwrite for a cohesive BaaS abstraction; choose Supabase when SQL/Postgres compatibility and ecosystem depth are strategic.</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Versus Neon</p>
+          <h2>Neon is Postgres infrastructure; Supabase is Postgres app platform</h2>
+          <div class="axis">
+            <div class="lane">
+              <h3>Neon wedge</h3>
+              <p>Serverless Postgres, separation of storage and compute, autoscaling posture, copy-on-write branching, instant database environments, and deep database workflow integration.</p>
+              <div class="tag-row">
+                <span class="tag">Postgres</span>
+                <span class="tag">Branching</span>
+                <span class="tag">Serverless</span>
+                <span class="tag">Database workflow</span>
+              </div>
+            </div>
+            <div class="lane">
+              <h3>Supabase wedge</h3>
+              <p>Postgres plus Auth, RLS-first API access, Realtime, Storage, Edge Functions, local stack, dashboard, MCP, and app patterns. It trades narrower database-infra specialization for broader backend completeness.</p>
+              <div class="tag-row">
+                <span class="tag">Auth</span>
+                <span class="tag">RLS</span>
+                <span class="tag">Generated APIs</span>
+                <span class="tag">App backend</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Versus PlanetScale</p>
+          <h2>PlanetScale competes through database workflow and scale</h2>
+          <div class="sb-grid cols-3">
+            <div class="sb-card">
+              <strong>PlanetScale Vitess</strong>
+              <span>MySQL-compatible Vitess, horizontal sharding, online schema changes, branching workflow, deploy requests, and connection pooling.</span>
+            </div>
+            <div class="sb-card">
+              <strong>PlanetScale Postgres</strong>
+              <span>Managed Postgres with branches as isolated deployments for development, testing, and restore workflows.</span>
+            </div>
+            <div class="sb-card core">
+              <strong>Supabase distinction</strong>
+              <span>Supabase optimizes for full application backend velocity rather than only database scaling and schema workflow.</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">MongoDB Strengths</p>
+          <h2>MongoDB is still formidable, but on a different axis</h2>
+          <div class="sb-grid cols-3">
+            <div class="sb-card core"><strong>Document model</strong><span>Deep fit for nested, polymorphic, rapidly evolving product data and high-write operational systems.</span></div>
+            <div class="sb-card core"><strong>Atlas operations</strong><span>Managed clusters, backups, scaling, multi-cloud, global deployment patterns, observability, and security controls.</span></div>
+            <div class="sb-card core"><strong>Drivers and ecosystem</strong><span>Mature language drivers, wire protocol ecosystem, aggregation pipeline, change streams, and broad enterprise adoption.</span></div>
+            <div class="sb-card core"><strong>Search and vector</strong><span>Atlas Search and Vector Search combine lexical, semantic, and filtered retrieval over application documents.</span></div>
+            <div class="sb-card core"><strong>Change streams</strong><span>Database-native change notifications for collections, databases, or deployments, with resumable cursors and aggregation filtering.</span></div>
+            <div class="sb-card core"><strong>Enterprise trust</strong><span>MongoDB has strong mindshare for operational data platforms, compliance-sensitive environments, and teams already standardized on documents.</span></div>
+          </div>
+        </section>
+
+        <section data-visual>
+          <p class="kicker">MongoDB Gap</p>
+          <h2>The competitive issue is not database capability; it is app-backend completeness</h2>
+          <div class="matrix compact">
+            <div class="matrix-head">Need</div>
+            <div class="matrix-head">Supabase answer</div>
+            <div class="matrix-head">MongoDB Atlas answer today</div>
+            <div class="matrix-head">Competitive implication</div>
+            <div class="matrix-cell"><strong>Browser-safe data access</strong></div>
+            <div class="matrix-cell core"><strong>Generated APIs plus RLS</strong><span>Direct client access can be made safe with policies.</span></div>
+            <div class="matrix-cell amber"><strong>Usually custom API</strong><span>Drivers are server-side; Data API reached EOL with App Services.</span></div>
+            <div class="matrix-cell red"><strong>More glue</strong><span>Early apps need an API, auth integration, and authorization layer.</span></div>
+            <div class="matrix-cell"><strong>Integrated auth</strong></div>
+            <div class="matrix-cell core"><strong>Auth plus database policies</strong><span>Identity and row authorization are designed together.</span></div>
+            <div class="matrix-cell amber"><strong>External identity</strong><span>Atlas is strong as database infra, less complete as a modern BaaS surface.</span></div>
+            <div class="matrix-cell red"><strong>Fragmented DX</strong><span>More choices, more implementation burden.</span></div>
+            <div class="matrix-cell"><strong>Agent scaffoldability</strong></div>
+            <div class="matrix-cell core"><strong>CLI, MCP, SQL, examples</strong><span>Agents can inspect, change, and validate common project state.</span></div>
+            <div class="matrix-cell amber"><strong>Strong docs, fewer app primitives</strong><span>Atlas docs are deep, but the app-backend loop is less packaged.</span></div>
+            <div class="matrix-cell red"><strong>Lower defaultability</strong><span>Agents may choose stacks with fewer decisions to make.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">EOL Context</p>
+          <h2>App Services deprecations changed MongoDB's posture</h2>
+          <p class="lead">
+            As of June 1, 2026, MongoDB's docs state that Atlas App Services reached end-of-life
+            status. Atlas Device Sync, SDKs, Data API, GraphQL, Static Hosting, and HTTPS Endpoints
+            reached EOL on September 30, 2025. Database Triggers remain available.
+          </p>
+          <div class="sb-grid cols-3">
+            <div class="sb-card red">
+              <strong>Lost wedge</strong>
+              <span>The retired surface overlapped directly with what modern BaaS buyers want: auth, generated API access, sync, functions, and client-facing data rules.</span>
+            </div>
+            <div class="sb-card amber">
+              <strong>Current strength</strong>
+              <span>Atlas remains a strong operational database and search/vector platform.</span>
+            </div>
+            <div class="sb-card core">
+              <strong>Strategic choice</strong>
+              <span>MongoDB can compete by rebuilding an app platform around documents, or by partnering and becoming the best database behind other app platforms.</span>
+            </div>
+          </div>
+        </section>
+
+        <section data-visual>
+          <p class="kicker">Security Models</p>
+          <h2>RLS is a major reason Supabase feels simpler</h2>
+          <div class="axis">
+            <div class="lane">
+              <h3>Supabase-style path</h3>
+              <div class="sb-grid">
+                <div class="node core"><strong>JWT claims</strong><span>Auth identity enters the request as a token.</span></div>
+                <div class="node core"><strong>Postgres policy</strong><span>SQL policy checks tenant, user, role, record ownership, or membership.</span></div>
+                <div class="node core"><strong>Generated API</strong><span>REST, GraphQL, or SDK request gets only rows the database permits.</span></div>
+              </div>
+            </div>
+            <div class="lane">
+              <h3>Common MongoDB path</h3>
+              <div class="sb-grid">
+                <div class="node amber"><strong>JWT claims</strong><span>External auth validates the user.</span></div>
+                <div class="node amber"><strong>Application middleware</strong><span>Server code translates identity into filters and permission checks.</span></div>
+                <div class="node amber"><strong>Driver operation</strong><span>MongoDB receives a query already constrained by application code.</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Realtime Comparison</p>
+          <h2>Supabase Realtime and MongoDB change streams solve adjacent problems</h2>
+          <table class="small-table">
+            <thead>
+              <tr><th>Dimension</th><th>Supabase Realtime</th><th>MongoDB change streams</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Audience</td>
+                <td>Client-facing product realtime over WebSockets, including Broadcast and Presence.</td>
+                <td>Application/backend consumers reacting to database changes through driver APIs.</td>
+              </tr>
+              <tr>
+                <td>Source</td>
+                <td>Postgres changes via logical replication, explicit Broadcast messages, and channel state.</td>
+                <td>Change stream cursors over collection, database, or deployment changes.</td>
+              </tr>
+              <tr>
+                <td>Authorization posture</td>
+                <td>Can integrate with RLS and Realtime Authorization for client subscriptions.</td>
+                <td>Uses MongoDB privileges; app still usually owns end-user subscription authorization.</td>
+              </tr>
+              <tr>
+                <td>MongoDB opportunity</td>
+                <td colspan="2">Package change streams as a browser-safe, auth-aware, topic-oriented realtime product, not only a driver primitive.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Vector Comparison</p>
+          <h2>MongoDB can win AI retrieval if it connects product primitives</h2>
+          <div class="sb-grid cols-2">
+            <div class="sb-card core">
+              <h3>Supabase vector story</h3>
+              <span>pgvector sits in the same Postgres schema as product data. This is excellent when relational constraints, RLS, joins, and app state matter more than specialized vector operations.</span>
+            </div>
+            <div class="sb-card core">
+              <h3>MongoDB vector story</h3>
+              <span>Atlas Vector Search indexes vectors alongside JSON documents, combines semantic search with full-text search and filters, and maps naturally to document-rich AI memory and RAG workloads.</span>
+            </div>
+            <div class="sb-card amber">
+              <h3>Supabase advantage</h3>
+              <span>The AI feature is wrapped in a complete app backend story: auth, policies, APIs, functions, files, and local dev.</span>
+            </div>
+            <div class="sb-card amber">
+              <h3>MongoDB advantage</h3>
+              <span>The document model can store complex agent memory, tool traces, multimodal metadata, retrieved chunks, and operational state without forcing premature normalization.</span>
+            </div>
+          </div>
+        </section>
+
+        <section data-visual>
+          <p class="kicker">Decision Framework</p>
+          <h2>When Supabase is the right default</h2>
+          <div class="sb-grid cols-3">
+            <div class="decision core">
+              <strong>Choose Supabase when...</strong>
+              <span>You need relational SaaS data, auth, row policies, file storage, realtime UI, generated APIs, local dev, and fast full-stack scaffolding.</span>
+            </div>
+            <div class="decision amber">
+              <strong>Choose MongoDB when...</strong>
+              <span>Your core state is document-shaped, high-volume operational data, nested entity graphs, flexible schemas, search/vector over documents, or global operational systems.</span>
+            </div>
+            <div class="decision blue">
+              <strong>Choose Firebase when...</strong>
+              <span>You prioritize mobile/web sync, Google ecosystem, Firebase services, and document-oriented client SDK workflows.</span>
+            </div>
+            <div class="decision">
+              <strong>Choose Neon when...</strong>
+              <span>You want serverless Postgres infrastructure, database branching, and will assemble your own app platform.</span>
+            </div>
+            <div class="decision">
+              <strong>Choose PlanetScale when...</strong>
+              <span>You need MySQL/Vitess scale, online schema workflows, database branching, or PlanetScale's managed Postgres model.</span>
+            </div>
+            <div class="decision">
+              <strong>Choose Appwrite when...</strong>
+              <span>You want a broad open-source BaaS abstraction with Auth, Databases, Storage, Functions, Messaging, Realtime, and hosting.</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Practical Example</p>
+          <h2>Build a tenant-scoped AI workspace in Supabase</h2>
+          <div class="timeline">
+            <div class="node core"><strong>Schema</strong><span>Organizations, memberships, projects, documents, chunks, agent runs, feedback.</span></div>
+            <div class="node core"><strong>Auth</strong><span>Email/OAuth users and JWTs.</span></div>
+            <div class="node core"><strong>RLS</strong><span>Policies restrict rows by membership.</span></div>
+            <div class="node core"><strong>Storage</strong><span>Documents and generated artifacts in tenant-aware buckets.</span></div>
+            <div class="node core"><strong>Edge Function</strong><span>Webhook or answer endpoint embeds, retrieves, calls model, writes run state.</span></div>
+            <div class="node core"><strong>Realtime</strong><span>UI subscribes to agent run progress and collaboration events.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Code</p>
+          <h2>Supabase client path</h2>
+          <pre><code class="language-ts code-tight">import { createClient } from "@supabase/supabase-js";
+import type { Database } from "./database.types";
+
+const supabase = createClient&lt;Database&gt;(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+);
+
+export async function listRuns(projectId: string) {
+  const { data, error } = await supabase
+    .from("agent_runs")
+    .select("id,status,prompt,answer,created_at")
+    .eq("project_id", projectId)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return data;
+}</code></pre>
+          <p class="lead">
+            The query looks under-secured only if you ignore RLS. The actual security contract is
+            database policy plus JWT identity, not the frontend filter alone.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Code</p>
+          <h2>A MongoDB equivalent usually needs more explicit backend code</h2>
+          <pre><code class="language-ts code-tight">app.get("/api/projects/:projectId/runs", requireUser, async (req, res) =&gt; {
+  const userId = req.user.sub;
+  const projectId = new ObjectId(req.params.projectId);
+
+  const membership = await db.collection("project_memberships").findOne({
+    projectId,
+    userId,
+  });
+  if (!membership) return res.status(403).json({ error: "Forbidden" });
+
+  const runs = await db.collection("agent_runs")
+    .find({ projectId })
+    .sort({ createdAt: -1 })
+    .project({ prompt: 1, answer: 1, status: 1, createdAt: 1 })
+    .toArray();
+
+  res.json({ runs });
+});</code></pre>
+          <p class="lead">
+            This is not a MongoDB flaw. It is a product packaging gap: application authorization,
+            API shape, and browser-safe access are typically assembled outside Atlas.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">MongoDB Adaptation</p>
+          <h2>MongoDB needs an app-backend surface that is document-native</h2>
+          <div class="sb-grid cols-3">
+            <div class="sb-card core"><strong>First-party auth integration</strong><span>Make Auth0, Clerk, Okta, Cognito, custom JWT, and passkeys easy to connect to Atlas data policies.</span></div>
+            <div class="sb-card core"><strong>Document-level policy engine</strong><span>Offer declarative, testable, versioned end-user authorization tied to collection access, not only server-side app code.</span></div>
+            <div class="sb-card core"><strong>Generated API layer</strong><span>Provide browser-safe REST/GraphQL/SDK endpoints with policy enforcement, rate limits, audit logs, and typed contracts.</span></div>
+            <div class="sb-card core"><strong>Realtime gateway</strong><span>Expose change streams as authorized topics for web/mobile clients, including presence and durable event patterns.</span></div>
+            <div class="sb-card core"><strong>Edge/workflow runtime</strong><span>Replace the App Services gap with functions, scheduled jobs, webhooks, queues, and integration templates.</span></div>
+            <div class="sb-card core"><strong>Agent tooling</strong><span>MCP, local emulator, schema introspection, generated types, policy tests, logs, and examples designed for coding agents.</span></div>
+          </div>
+        </section>
+
+        <section data-visual>
+          <p class="kicker">Roadmap Shape</p>
+          <h2>A plausible MongoDB "App Backend 2.0"</h2>
+          <div class="visual stack-map">
+            <div class="stack-col">
+              <div class="node blue"><strong>Client contracts</strong><span>Typed SDK, REST, GraphQL, realtime topics, MCP tools, framework adapters.</span></div>
+              <div class="node blue"><strong>Identity adapters</strong><span>OIDC/JWT mapping, org membership, roles, tenant claims, service principals.</span></div>
+            </div>
+            <div class="stack-col">
+              <div class="node core"><strong>Atlas data plane</strong><span>MongoDB documents, Atlas Search, Vector Search, change streams, transactions, aggregation, timeseries.</span></div>
+              <div class="node core"><strong>Policy plane</strong><span>Declarative end-user rules, field redaction, query constraints, test harnesses, explainable denial reasons.</span></div>
+              <div class="node core"><strong>Runtime plane</strong><span>Functions, webhooks, queues, scheduled jobs, triggers, logs, secrets, deployment history.</span></div>
+            </div>
+            <div class="stack-col">
+              <div class="node amber"><strong>Local dev</strong><span>Docker/local Atlas mode, seed data, policy tests, generated types, deterministic CI.</span></div>
+              <div class="node amber"><strong>Agent development</strong><span>Project scaffolds for RAG, memory, workflows, realtime dashboards, and tenant-scoped copilots.</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Surpass Strategy</p>
+          <h2>MongoDB can beat Supabase where documents, search, and agents converge</h2>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Do not copy Postgres</h3>
+              <p>MongoDB should not try to make documents look relational. It should make document-native app development feel as complete and safe as Supabase makes Postgres-backed app development.</p>
+            </div>
+            <div class="panel">
+              <h3>Exploit document-native AI state</h3>
+              <p>Agent traces, tool calls, memory snapshots, retrieved chunks, citations, evaluations, and user context are naturally document-shaped. Atlas Search and Vector Search can be the retrieval center.</p>
+            </div>
+            <div class="panel">
+              <h3>Close the DX gap</h3>
+              <p>Package auth, policy, generated APIs, realtime, local dev, and agent tooling as one developer journey, not as architecture decisions left to the user.</p>
+            </div>
+            <div class="panel">
+              <h3>Win enterprise modernization</h3>
+              <p>Offer a faster path for enterprise teams that want agentic workloads near operational data, with governance, auditability, compliance, and flexible data models.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Risks</p>
+          <h2>Supabase is not the right answer for every workload</h2>
+          <div class="sb-grid cols-3">
+            <div class="sb-card amber"><strong>RLS complexity</strong><span>Policies can become subtle, slow, or difficult to debug if teams treat them as magic instead of critical code.</span></div>
+            <div class="sb-card amber"><strong>Postgres scaling shape</strong><span>Postgres can scale far, but write-heavy, multi-region, tenant-heavy, or hot-row workloads still need careful architecture.</span></div>
+            <div class="sb-card amber"><strong>Backend escape hatches</strong><span>Serious apps still need queues, workers, caching, observability, billing systems, search design, and operational discipline.</span></div>
+            <div class="sb-card amber"><strong>Agent overconfidence</strong><span>Agents can generate plausible but insecure policies, missing indexes, unsafe service-role usage, or brittle migrations.</span></div>
+            <div class="sb-card amber"><strong>Platform maturity variance</strong><span>Some features are newer or have plan-specific limits. Teams must verify current limits before architecture commitments.</span></div>
+            <div class="sb-card amber"><strong>Lock-in is nuanced</strong><span>Postgres helps portability, but Auth, Realtime, Storage APIs, Edge Functions, and operational workflows still create platform coupling.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">What To Watch</p>
+          <h2>The future competition is about default workflows</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Agent-native docs</h3>
+              <p>Docs, llms.txt files, MCP servers, policy examples, local test recipes, and generated types will increasingly influence vendor selection.</p>
+            </div>
+            <div class="panel">
+              <h3>End-user authorization</h3>
+              <p>Platforms that make multi-tenant authorization inspectable, testable, and close to data will feel safer for AI-generated code.</p>
+            </div>
+            <div class="panel">
+              <h3>Integrated retrieval</h3>
+              <p>Databases that combine product data, permissions, vector search, full-text search, and audit trails will be favored for agentic workloads.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Recap</p>
+          <h2>The practical mental model</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Why Supabase is popular</h3>
+              <p>It turns Postgres into a complete app backend with Auth, RLS, APIs, Realtime, Storage, Functions, local dev, and AI-friendly tooling.</p>
+            </div>
+            <div class="panel">
+              <h3>Why agents surface it</h3>
+              <p>Its primitives are legible, scaffoldable, documented, testable, common in templates, and increasingly accessible through MCP and CLI workflows.</p>
+            </div>
+            <div class="panel">
+              <h3>How MongoDB competes</h3>
+              <p>MongoDB must connect its database, search, vector, change streams, and document strengths to a first-class app platform and agent workflow.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">References</p>
+          <h2>Follow-up reading</h2>
+          <div class="reference-list">
+            <div>
+              <h3>Supabase platform</h3>
+              <ul>
+                <li><a href="https://supabase.com/docs/">Supabase Documentation</a></li>
+                <li><a href="https://supabase.com/docs/guides/database/overview">Supabase Database Overview</a></li>
+                <li><a href="https://supabase.com/docs/guides/api">Supabase Data REST API</a></li>
+                <li><a href="https://supabase.com/docs/guides/graphql">Supabase GraphQL API</a></li>
+                <li><a href="https://supabase.com/docs/learn/auth-deep-dive/auth-row-level-security">Supabase Row Level Security</a></li>
+                <li><a href="https://supabase.com/docs/guides/auth/">Supabase Auth</a></li>
+                <li><a href="https://supabase.com/docs/guides/realtime">Supabase Realtime</a></li>
+                <li><a href="https://supabase.com/docs/guides/storage">Supabase Storage</a></li>
+                <li><a href="https://supabase.com/docs/guides/functions">Supabase Edge Functions</a></li>
+                <li><a href="https://supabase.com/docs/guides/local-development">Supabase Local Development and CLI</a></li>
+                <li><a href="https://supabase.com/docs/guides/ai">Supabase AI and Vectors</a></li>
+                <li><a href="https://supabase.com/docs/guides/getting-started/mcp">Supabase MCP Server</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3>Competitors and MongoDB</h3>
+              <ul>
+                <li><a href="https://firebase.google.com/docs/build">Firebase Build Documentation</a></li>
+                <li><a href="https://appwrite.io/docs">Appwrite Documentation</a></li>
+                <li><a href="https://neon.com/docs/conceptual-guides/branching/">Neon Branching</a></li>
+                <li><a href="https://planetscale.com/docs/what-is-planetscale">PlanetScale Documentation</a></li>
+                <li><a href="https://www.mongodb.com/docs/atlas/app-services/">MongoDB Atlas App Services</a></li>
+                <li><a href="https://www.mongodb.com/docs/api/doc/atlas-app-services-admin-api-v3/">MongoDB Atlas App Services Admin API EOL Notice</a></li>
+                <li><a href="https://www.mongodb.com/docs/atlas/api/data-api/">MongoDB Atlas Data API Historical Reference</a></li>
+                <li><a href="https://www.mongodb.com/docs/manual/changestreams/">MongoDB Change Streams</a></li>
+                <li><a href="https://www.mongodb.com/docs/atlas/atlas-vector-search/vector-search-overview/">MongoDB Vector Search Overview</a></li>
+                <li><a href="https://www.mongodb.com/docs/atlas/atlas-vector-search/tutorials/">MongoDB Vector Search Use Cases and Patterns</a></li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script src="../../../assets/vendor/reveal/dist/reveal.js"></script>
+    <script src="../../../assets/vendor/reveal/dist/plugin/highlight.js"></script>
+    <script>
+      Reveal.initialize({
+        hash: true,
+        controls: true,
+        progress: true,
+        center: false,
+        width: 1280,
+        height: 720,
+        margin: 0.04,
+        plugins: [RevealHighlight],
+      });
+    </script>
+  </body>
+</html>

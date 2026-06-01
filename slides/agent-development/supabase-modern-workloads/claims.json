@@ -1,0 +1,407 @@
+[
+  {
+    "slide": 1,
+    "title": "Why Supabase Is Popular for Modern Workloads",
+    "objective": "Set the technical and competitive frame.",
+    "coreClaim": "Supabase is popular because it combines a Postgres-centered backend with product primitives that accelerate modern full-stack and agentic workloads.",
+    "sourceIds": ["supabase-docs", "supabase-features"],
+    "visual": "none",
+    "practicalTakeaway": "Evaluate Supabase as an app-backend platform, not only as hosted Postgres."
+  },
+  {
+    "slide": 2,
+    "title": "Learning Goals",
+    "objective": "Define the deck outcomes.",
+    "coreClaim": "Understanding Supabase requires product, technical, agent-distribution, and competitive strategy lenses.",
+    "sourceIds": ["supabase-docs", "supabase-mcp", "mongodb-vector-search"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "Use the deck to connect developer behavior to platform architecture and MongoDB strategy."
+  },
+  {
+    "slide": 3,
+    "title": "Supabase Wins When the Database Becomes the App Backend",
+    "objective": "State the central thesis.",
+    "coreClaim": "The value proposition is Postgres plus Auth, RLS, APIs, Realtime, Storage, Functions, local development, and AI tooling.",
+    "sourceIds": ["supabase-docs", "supabase-features", "supabase-rls"],
+    "visual": "comparison",
+    "practicalTakeaway": "Look for platform completeness around the database."
+  },
+  {
+    "slide": 4,
+    "title": "The Modern App Backend Problem",
+    "objective": "Explain the before state Supabase addresses.",
+    "coreClaim": "Teams often lose time integrating database, auth, object storage, API, realtime, functions, migrations, and observability before product work begins.",
+    "sourceIds": ["supabase-docs", "firebase-build", "appwrite-docs"],
+    "visual": "flow",
+    "practicalTakeaway": "A strong BaaS value prop is reducing integration surface area."
+  },
+  {
+    "slide": 5,
+    "title": "Why This Matters More Now",
+    "objective": "Connect Supabase demand to modern workload shape.",
+    "coreClaim": "Modern apps and agentic systems need durable state, identity, permissions, files, realtime progress, retrieval, and auditability early.",
+    "sourceIds": ["supabase-ai-vectors", "mongodb-vector-patterns"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "Agentic workloads raise the baseline backend requirements."
+  },
+  {
+    "slide": 6,
+    "title": "Supabase as an Integrated Backend Surface",
+    "objective": "Map the platform layers.",
+    "coreClaim": "Supabase combines client SDKs, AI tooling, Postgres, app primitives, and policy/event/extension boundaries in one project model.",
+    "sourceIds": ["supabase-docs", "supabase-features", "supabase-mcp"],
+    "visual": "architecture",
+    "practicalTakeaway": "The integration is the product."
+  },
+  {
+    "slide": 7,
+    "title": "The Features Developers Reach For",
+    "objective": "Inventory the main product features.",
+    "coreClaim": "Developers reach for Postgres, Auth, RLS, generated APIs, Realtime, Storage, Edge Functions, AI vectors, and local tooling.",
+    "sourceIds": ["supabase-docs", "supabase-features"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "Supabase adoption is usually multi-feature, not one feature."
+  },
+  {
+    "slide": 8,
+    "title": "The Product Flywheel",
+    "objective": "Explain adoption compounding.",
+    "coreClaim": "Readable primitives, scaffolds, fast feedback, examples, and recommendations reinforce Supabase adoption.",
+    "sourceIds": ["supabase-local-dev", "supabase-mcp"],
+    "visual": "flow",
+    "practicalTakeaway": "Developer experience creates distribution."
+  },
+  {
+    "slide": 9,
+    "title": "Postgres Is a Strategic Asset",
+    "objective": "Explain why Postgres matters.",
+    "coreClaim": "Postgres gives Supabase SQL, portability, relational modeling, transactions, indexes, and extension gravity.",
+    "sourceIds": ["supabase-database", "supabase-features"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "Postgres makes the easy path feel credible for serious systems."
+  },
+  {
+    "slide": 10,
+    "title": "A Typical Supabase Data Shape",
+    "objective": "Ground the discussion in schema design.",
+    "coreClaim": "Supabase can store product state, identity-linked ownership, agent runs, retrieval vectors, and audit fields in one Postgres schema.",
+    "sourceIds": ["supabase-database", "supabase-ai-vectors", "supabase-rls"],
+    "visual": "code",
+    "practicalTakeaway": "Model AI workload state as first-class application data."
+  },
+  {
+    "slide": 11,
+    "title": "Schema Becomes a Usable Interface",
+    "objective": "Explain generated API value.",
+    "coreClaim": "Supabase turns Postgres schema into REST and GraphQL APIs, with generated docs and types supporting development loops.",
+    "sourceIds": ["supabase-rest-api", "supabase-graphql"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "Generated APIs shorten the path from schema to product."
+  },
+  {
+    "slide": 12,
+    "title": "Auth and RLS Collapse Backend Glue",
+    "objective": "Explain the authorization architecture.",
+    "coreClaim": "Auth JWTs and Postgres RLS allow generated APIs to be used safely from clients when policies are correct.",
+    "sourceIds": ["supabase-auth", "supabase-rls"],
+    "visual": "request-flow",
+    "practicalTakeaway": "Centralize policy near the data instead of duplicating it in every API route."
+  },
+  {
+    "slide": 13,
+    "title": "Policy Is the Product Contract",
+    "objective": "Show a concrete RLS policy.",
+    "coreClaim": "RLS policies make tenant membership and row access an explicit database contract.",
+    "sourceIds": ["supabase-rls"],
+    "visual": "code",
+    "practicalTakeaway": "Review and test RLS as critical application logic."
+  },
+  {
+    "slide": 14,
+    "title": "Realtime Turns Postgres Into a Product Event Source",
+    "objective": "Explain Supabase Realtime internals.",
+    "coreClaim": "Supabase Realtime uses Broadcast, Presence, and Postgres Changes to deliver product events over WebSockets.",
+    "sourceIds": ["supabase-realtime", "supabase-realtime-architecture"],
+    "visual": "architecture",
+    "practicalTakeaway": "Realtime is a product primitive around database and channel events."
+  },
+  {
+    "slide": 15,
+    "title": "Realtime Is Powerful, But Not Magic",
+    "objective": "Clarify Realtime modes and tradeoffs.",
+    "coreClaim": "Broadcast, Presence, and Postgres Changes fit different use cases and have different scalability and security considerations.",
+    "sourceIds": ["supabase-realtime", "supabase-realtime-architecture"],
+    "visual": "comparison",
+    "practicalTakeaway": "Choose the realtime mode deliberately."
+  },
+  {
+    "slide": 16,
+    "title": "Files Are Brought Into the Same Policy Model",
+    "objective": "Explain Storage's role.",
+    "coreClaim": "Supabase Storage becomes more valuable because object access can connect to Postgres metadata and policies.",
+    "sourceIds": ["supabase-storage", "supabase-rls"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "Treat files as governed application resources, not separate blobs."
+  },
+  {
+    "slide": 17,
+    "title": "Custom Backend Logic Without Leaving the Project",
+    "objective": "Explain Edge Functions.",
+    "coreClaim": "Edge Functions provide the server-side escape hatch for private integrations, webhooks, service-role work, and model calls.",
+    "sourceIds": ["supabase-edge-functions"],
+    "visual": "code",
+    "practicalTakeaway": "Use functions for privileged logic, not browser clients."
+  },
+  {
+    "slide": 18,
+    "title": "The CLI Makes Supabase Agent-Friendly",
+    "objective": "Show the local workflow.",
+    "coreClaim": "Supabase's CLI, local stack, migrations, seed data, type generation, and deploy commands create a tight automation loop.",
+    "sourceIds": ["supabase-local-dev"],
+    "visual": "timeline",
+    "practicalTakeaway": "Local, file-backed workflows improve agent and human reliability."
+  },
+  {
+    "slide": 19,
+    "title": "Supabase Has Been Expanding Beyond Prototype DX",
+    "objective": "Cover operational maturity features.",
+    "coreClaim": "Backups, PITR, branches, replicas, network controls, logs, drains, and Terraform support move Supabase toward production platform expectations.",
+    "sourceIds": ["supabase-features"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "Do not evaluate Supabase only through old prototype assumptions."
+  },
+  {
+    "slide": 20,
+    "title": "For RAG, Application Data and Vector Data Can Live Together",
+    "objective": "Explain the AI workload fit.",
+    "coreClaim": "Supabase can colocate product data, permissions, chunks, embeddings, runs, feedback, and citations in Postgres.",
+    "sourceIds": ["supabase-ai-vectors", "supabase-rls"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "Early RAG systems benefit from keeping retrieval close to product data and policy."
+  },
+  {
+    "slide": 21,
+    "title": "Why Coding Agents Often Surface Supabase",
+    "objective": "Explain the agent recommendation mechanism.",
+    "coreClaim": "Agents favor Supabase because docs, snippets, migrations, types, local validation, MCP, and common scaffolds make it easy to propose and repair.",
+    "sourceIds": ["supabase-mcp", "supabase-local-dev"],
+    "visual": "flow",
+    "practicalTakeaway": "Agent recommendation frequency is partly an affordance and documentation effect."
+  },
+  {
+    "slide": 22,
+    "title": "Agent-Assisted Supabase Work Has a Tight Control Loop",
+    "objective": "Map the agent workflow.",
+    "coreClaim": "Agents can inspect repository state, use MCP or CLI, modify schema and code, and verify behavior against Supabase logs and local state.",
+    "sourceIds": ["supabase-mcp", "supabase-local-dev"],
+    "visual": "architecture",
+    "practicalTakeaway": "Make platform state inspectable if you want agents to use it well."
+  },
+  {
+    "slide": 23,
+    "title": "Agents Recommend It Is a Distribution Effect",
+    "objective": "Add caveat and discipline.",
+    "coreClaim": "Agent recommendations are not proof of universal fit; architects still own data model, scale, cost, compliance, and operations decisions.",
+    "sourceIds": ["supabase-mcp", "mongodb-vector-search"],
+    "visual": "comparison",
+    "practicalTakeaway": "Separate scaffoldability from long-term architectural fit."
+  },
+  {
+    "slide": 24,
+    "title": "Supabase Competes as a Platform",
+    "objective": "Introduce competitive positioning.",
+    "coreClaim": "Supabase competes against BaaS platforms, database workflow platforms, and operational database platforms at the same time.",
+    "sourceIds": ["firebase-build", "appwrite-docs", "neon-branching", "planetscale-docs", "mongodb-vector-search"],
+    "visual": "matrix",
+    "practicalTakeaway": "Compare platforms by the workflow they make default."
+  },
+  {
+    "slide": 25,
+    "title": "Supabase's Strongest Comparison Is Firebase, But Postgres",
+    "objective": "Compare Supabase and Firebase.",
+    "coreClaim": "Firebase is strong for mobile/web app services; Supabase differentiates through SQL, relational modeling, RLS, portability, and Postgres tooling.",
+    "sourceIds": ["firebase-build", "supabase-database", "supabase-rls"],
+    "visual": "comparison",
+    "practicalTakeaway": "Use Firebase for its app ecosystem and Supabase for relational app-backend workflows."
+  },
+  {
+    "slide": 26,
+    "title": "Appwrite Competes on Open-Source BaaS Breadth",
+    "objective": "Compare Supabase and Appwrite.",
+    "coreClaim": "Appwrite offers broad BaaS primitives; Supabase differentiates by making standard Postgres the visible platform center.",
+    "sourceIds": ["appwrite-docs", "supabase-database"],
+    "visual": "comparison",
+    "practicalTakeaway": "Choose based on whether BaaS abstraction or Postgres compatibility is more strategic."
+  },
+  {
+    "slide": 27,
+    "title": "Neon Is Postgres Infrastructure; Supabase Is Postgres App Platform",
+    "objective": "Compare Supabase and Neon.",
+    "coreClaim": "Neon specializes in Postgres infrastructure and branching, while Supabase adds app-backend primitives around Postgres.",
+    "sourceIds": ["neon-branching", "supabase-features"],
+    "visual": "comparison",
+    "practicalTakeaway": "Choose Neon when you want to assemble the app platform yourself."
+  },
+  {
+    "slide": 28,
+    "title": "PlanetScale Competes Through Database Workflow and Scale",
+    "objective": "Compare Supabase and PlanetScale.",
+    "coreClaim": "PlanetScale focuses on managed relational database workflow and scale; Supabase focuses on complete app-backend velocity.",
+    "sourceIds": ["planetscale-docs", "supabase-features"],
+    "visual": "comparison",
+    "practicalTakeaway": "Database workflow and application backend workflow are different buying centers."
+  },
+  {
+    "slide": 29,
+    "title": "MongoDB Is Still Formidable",
+    "objective": "Establish MongoDB strengths.",
+    "coreClaim": "MongoDB is strong in document modeling, Atlas operations, mature drivers, Search, Vector Search, change streams, and enterprise adoption.",
+    "sourceIds": ["mongodb-change-streams", "mongodb-vector-search", "mongodb-vector-patterns"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "The competitive question is packaging, not core database capability."
+  },
+  {
+    "slide": 30,
+    "title": "The Issue Is App-Backend Completeness",
+    "objective": "Name the MongoDB gap.",
+    "coreClaim": "Compared with Supabase, MongoDB Atlas commonly leaves browser-safe APIs, integrated end-user auth, authorization, and agent-scaffoldable workflows to custom application code.",
+    "sourceIds": ["mongodb-data-api", "mongodb-app-services-admin-api", "supabase-rest-api", "supabase-rls"],
+    "visual": "matrix",
+    "practicalTakeaway": "A database can be excellent and still lose default app-backend workflows."
+  },
+  {
+    "slide": 31,
+    "title": "App Services Deprecations Changed MongoDB's Posture",
+    "objective": "Document the EOL context.",
+    "coreClaim": "As of June 1, 2026, MongoDB docs state Atlas App Services reached EOL, and several app-backend capabilities reached EOL on September 30, 2025.",
+    "sourceIds": ["mongodb-app-services", "mongodb-app-services-admin-api", "mongodb-data-api"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "MongoDB must decide whether to rebuild or partner for the app-backend surface."
+  },
+  {
+    "slide": 32,
+    "title": "RLS Is a Major Reason Supabase Feels Simpler",
+    "objective": "Compare security models.",
+    "coreClaim": "Supabase can enforce end-user row access at the database, while MongoDB applications often enforce end-user authorization in application middleware.",
+    "sourceIds": ["supabase-rls", "mongodb-app-services-admin-api"],
+    "visual": "side-by-side-flow",
+    "practicalTakeaway": "MongoDB needs a document-native policy answer to compete directly."
+  },
+  {
+    "slide": 33,
+    "title": "Realtime and Change Streams Solve Adjacent Problems",
+    "objective": "Compare realtime primitives.",
+    "coreClaim": "Supabase Realtime is a client-facing product primitive; MongoDB change streams are a powerful backend-facing database primitive.",
+    "sourceIds": ["supabase-realtime", "supabase-realtime-architecture", "mongodb-change-streams"],
+    "visual": "comparison",
+    "practicalTakeaway": "MongoDB can package change streams into an auth-aware realtime product."
+  },
+  {
+    "slide": 34,
+    "title": "MongoDB Can Win AI Retrieval If It Connects Product Primitives",
+    "objective": "Compare vector strategies.",
+    "coreClaim": "Supabase benefits from app-backend integration; MongoDB benefits from document-native Search and Vector Search over complex operational data.",
+    "sourceIds": ["supabase-ai-vectors", "mongodb-vector-search", "mongodb-vector-patterns"],
+    "visual": "comparison",
+    "practicalTakeaway": "The winner will connect retrieval to product data, permissions, and workflow."
+  },
+  {
+    "slide": 35,
+    "title": "When Supabase Is the Right Default",
+    "objective": "Provide a decision framework.",
+    "coreClaim": "Platform fit depends on data model, app primitives, database workflow, mobile sync, scale, and operating model.",
+    "sourceIds": ["supabase-features", "firebase-build", "appwrite-docs", "neon-branching", "planetscale-docs", "mongodb-vector-search"],
+    "visual": "decision-framework",
+    "practicalTakeaway": "Choose based on the hardest boundary, not brand familiarity."
+  },
+  {
+    "slide": 36,
+    "title": "Build a Tenant-Scoped AI Workspace in Supabase",
+    "objective": "Show a practical Supabase architecture.",
+    "coreClaim": "A tenant-scoped AI workspace can be assembled from schema, Auth, RLS, Storage, Edge Functions, and Realtime.",
+    "sourceIds": ["supabase-auth", "supabase-rls", "supabase-storage", "supabase-edge-functions", "supabase-realtime", "supabase-ai-vectors"],
+    "visual": "timeline",
+    "practicalTakeaway": "Supabase's value is the composition of primitives."
+  },
+  {
+    "slide": 37,
+    "title": "Supabase Client Path",
+    "objective": "Show code-level ergonomics.",
+    "coreClaim": "Supabase client code can be concise because database policy carries much of the authorization responsibility.",
+    "sourceIds": ["supabase-rest-api", "supabase-rls"],
+    "visual": "code",
+    "practicalTakeaway": "Do not confuse short client code with absent security logic."
+  },
+  {
+    "slide": 38,
+    "title": "A MongoDB Equivalent Usually Needs More Explicit Backend Code",
+    "objective": "Show implementation contrast.",
+    "coreClaim": "MongoDB applications commonly implement auth checks, membership lookups, and constrained queries in backend code.",
+    "sourceIds": ["mongodb-data-api", "mongodb-app-services-admin-api"],
+    "visual": "code",
+    "practicalTakeaway": "This is a product packaging gap, not an indictment of MongoDB's data model."
+  },
+  {
+    "slide": 39,
+    "title": "MongoDB Needs a Document-Native App-Backend Surface",
+    "objective": "Define adaptation requirements.",
+    "coreClaim": "MongoDB should add auth integration, declarative document policies, generated APIs, realtime gateways, runtime services, and agent tooling.",
+    "sourceIds": ["mongodb-change-streams", "mongodb-vector-search", "supabase-rls", "supabase-mcp"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "Compete by making document-native apps as complete as Supabase makes Postgres apps."
+  },
+  {
+    "slide": 40,
+    "title": "A Plausible MongoDB App Backend 2.0",
+    "objective": "Propose a target architecture.",
+    "coreClaim": "A MongoDB app backend should connect client contracts, identity, Atlas data plane, policy plane, runtime plane, local dev, and agent development.",
+    "sourceIds": ["mongodb-change-streams", "mongodb-vector-search", "mongodb-vector-patterns"],
+    "visual": "architecture",
+    "practicalTakeaway": "Package the workflow as a platform, not a collection of primitives."
+  },
+  {
+    "slide": 41,
+    "title": "MongoDB Can Beat Supabase Where Documents, Search, and Agents Converge",
+    "objective": "Explain surpass strategy.",
+    "coreClaim": "MongoDB can surpass Supabase in document-native agent state, retrieval, operational data, governance, and enterprise modernization if it closes the DX gap.",
+    "sourceIds": ["mongodb-vector-search", "mongodb-vector-patterns", "mongodb-change-streams"],
+    "visual": "strategy-map",
+    "practicalTakeaway": "Do not copy Postgres; exploit document-native AI and operations strengths."
+  },
+  {
+    "slide": 42,
+    "title": "Supabase Is Not the Right Answer for Every Workload",
+    "objective": "Balance the analysis.",
+    "coreClaim": "Supabase carries risks around RLS complexity, Postgres scaling shape, service-role safety, platform coupling, and agent overconfidence.",
+    "sourceIds": ["supabase-rls", "supabase-edge-functions", "supabase-features"],
+    "visual": "risk-taxonomy",
+    "practicalTakeaway": "Fast defaults still need architecture review."
+  },
+  {
+    "slide": 43,
+    "title": "The Future Competition Is About Default Workflows",
+    "objective": "Name future watch areas.",
+    "coreClaim": "Agent-native docs, end-user authorization, and integrated retrieval will increasingly shape database and backend platform selection.",
+    "sourceIds": ["supabase-mcp", "supabase-rls", "mongodb-vector-search"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "Treat agent tooling and documentation as product strategy."
+  },
+  {
+    "slide": 44,
+    "title": "The Practical Mental Model",
+    "objective": "Recap the deck.",
+    "coreClaim": "Supabase wins through integrated Postgres app-backend DX; agents amplify it; MongoDB competes by connecting document, search, vector, realtime, auth, and app workflows.",
+    "sourceIds": ["supabase-docs", "supabase-mcp", "mongodb-vector-search"],
+    "visual": "summary",
+    "practicalTakeaway": "The platform with the clearest default workflow has an adoption advantage."
+  },
+  {
+    "slide": 45,
+    "title": "Follow-up Reading",
+    "objective": "Provide grouped references.",
+    "coreClaim": "Primary docs from Supabase, competitors, and MongoDB provide the factual basis for the deck.",
+    "sourceIds": ["supabase-docs", "firebase-build", "appwrite-docs", "neon-branching", "planetscale-docs", "mongodb-app-services", "mongodb-vector-search"],
+    "visual": "references",
+    "practicalTakeaway": "Use source docs to verify current limits and feature stages before architecture commitments."
+  }
+]
