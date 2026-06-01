@@ -1,0 +1,951 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Practical RAG Systems</title>
+    <script src="../../../assets/js/theme.js"></script>
+    <link rel="stylesheet" href="../../../assets/vendor/reveal/dist/reveal.css" />
+    <link
+      rel="stylesheet"
+      href="../../../assets/vendor/reveal/dist/plugin/highlight/monokai.css"
+    />
+    <link rel="stylesheet" href="../../../assets/css/deck.css" />
+    <style>
+      .rag-grid,
+      .card-grid,
+      .flow,
+      .loop,
+      .architecture,
+      .decision-map,
+      .matrix-grid,
+      .pyramid {
+        display: grid;
+        gap: 14px;
+        margin-top: 24px;
+      }
+
+      .rag-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .card-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .card-grid.two,
+      .decision-map {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .flow {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+
+      .architecture {
+        grid-template-columns: 0.95fr 1.2fr 0.95fr;
+        align-items: stretch;
+      }
+
+      .architecture.four {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .lane {
+        display: grid;
+        gap: 12px;
+      }
+
+      .mini,
+      .flow-step,
+      .arch-node,
+      .decision,
+      .state,
+      .signal,
+      .matrix-cell,
+      .pyramid-row {
+        border: 1px solid var(--deck-line);
+        border-radius: 8px;
+        background: linear-gradient(180deg, var(--deck-panel-2), var(--deck-panel));
+        padding: 14px 16px;
+      }
+
+      .mini strong,
+      .flow-step strong,
+      .arch-node strong,
+      .decision strong,
+      .state strong,
+      .signal strong,
+      .matrix-cell strong,
+      .pyramid-row strong {
+        display: block;
+        color: var(--deck-text);
+        font-size: 0.56em;
+        line-height: 1.15;
+      }
+
+      .mini span,
+      .flow-step span,
+      .arch-node span,
+      .decision span,
+      .state span,
+      .signal span,
+      .matrix-cell span,
+      .pyramid-row span {
+        display: block;
+        margin-top: 8px;
+        color: var(--deck-muted);
+        font-size: 0.45em;
+        line-height: 1.28;
+      }
+
+      .mini.accent,
+      .arch-node.accent,
+      .decision.accent,
+      .state.accent {
+        border-color: rgb(33 199 168 / 58%);
+      }
+
+      .mini.warn,
+      .state.warn {
+        border-color: rgb(255 184 77 / 58%);
+      }
+
+      .flow-step {
+        position: relative;
+        min-height: 132px;
+      }
+
+      .flow-step:not(:last-child)::after {
+        content: ">";
+        position: absolute;
+        top: 50%;
+        right: -12px;
+        z-index: 2;
+        color: var(--deck-accent);
+        font-size: 0.62em;
+        font-weight: 900;
+        transform: translateY(-50%);
+      }
+
+      .loop {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+
+      .loop .state {
+        min-height: 118px;
+      }
+
+      .signal-table {
+        width: 100%;
+        margin-top: 22px;
+        border-collapse: collapse;
+        font-size: 0.42em;
+      }
+
+      .signal-table th,
+      .signal-table td {
+        padding: 9px 10px;
+        border: 1px solid var(--deck-line);
+        vertical-align: top;
+      }
+
+      .signal-table th {
+        color: var(--deck-text);
+        background: var(--deck-panel-2);
+        font-size: 1em;
+      }
+
+      .signal-table td {
+        color: var(--deck-muted);
+        line-height: 1.28;
+      }
+
+      .matrix-grid {
+        grid-template-columns: 1fr 1.1fr 1.1fr 1.1fr 1fr;
+      }
+
+      .matrix-cell.header {
+        border-color: rgb(33 199 168 / 52%);
+      }
+
+      .code-tight {
+        font-size: 0.42em;
+        line-height: 1.22;
+      }
+
+      .reference-list {
+        columns: 3;
+        column-gap: 28px;
+      }
+
+      .reference-list h3 {
+        break-after: avoid;
+        margin-top: 0;
+      }
+
+      .reference-list li {
+        font-size: 0.43em;
+        overflow-wrap: anywhere;
+      }
+
+      .small-note {
+        margin-top: 18px;
+        color: var(--deck-footnote);
+        font-size: 0.48em;
+      }
+
+      .pyramid {
+        grid-template-columns: 1fr;
+        max-width: 880px;
+      }
+
+      .pyramid-row {
+        margin-inline: auto;
+        text-align: center;
+      }
+
+      .pyramid-row:nth-child(1) {
+        width: 44%;
+      }
+
+      .pyramid-row:nth-child(2) {
+        width: 56%;
+      }
+
+      .pyramid-row:nth-child(3) {
+        width: 68%;
+      }
+
+      .pyramid-row:nth-child(4) {
+        width: 80%;
+      }
+
+      .pyramid-row:nth-child(5) {
+        width: 92%;
+      }
+
+      @media (max-width: 1000px) {
+        .rag-grid,
+        .card-grid,
+        .card-grid.two,
+        .flow,
+        .loop,
+        .architecture,
+        .architecture.four,
+        .decision-map,
+        .matrix-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .flow-step:not(:last-child)::after {
+          content: "";
+        }
+
+        .reference-list {
+          columns: 1;
+        }
+
+        .pyramid-row,
+        .pyramid-row:nth-child(n) {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body class="has-deck-topbar">
+    <header class="deck-topbar" aria-label="Presentation navigation">
+      <a class="deck-nav-link" href="../../../">Main menu</a>
+      <div class="deck-title">
+        <span>Practical RAG Systems</span>
+        <small>Use cases, architecture, evaluation, and database tradeoffs</small>
+      </div>
+      <a class="deck-nav-link" href="../../../topics/agent-development/">Topic</a>
+    </header>
+
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <p class="kicker">Agent Development</p>
+          <h1>Practical RAG Systems</h1>
+          <p class="lead">
+            A technical product and solutions guide to retrieval-augmented
+            generation: two production use cases, system diagrams, evaluation
+            loops, and a database compare/contrast across MongoDB, pgvector,
+            vector-first stores, and search platforms.
+          </p>
+          <p class="footnote">80 minutes / 43 slides / Last updated 2026-06-01</p>
+        </section>
+
+        <section>
+          <p class="kicker">Learning goals</p>
+          <h2>Build the architecture conversation</h2>
+          <div class="rag-grid" data-visual="learning goals">
+            <div class="mini accent"><strong>System flow</strong><span>Trace ingestion, retrieval, reranking, generation, citation, and feedback.</span></div>
+            <div class="mini"><strong>Use cases</strong><span>Follow support escalation and proposal/compliance workflows end to end.</span></div>
+            <div class="mini"><strong>Database fit</strong><span>Compare MongoDB, pgvector, vector-first stores, and search engines by workload boundary.</span></div>
+            <div class="mini"><strong>Rollout</strong><span>Define evals, observability, risk controls, and adoption gates.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Practical promise</p>
+          <h2>RAG is a trust product, not an embedding feature</h2>
+          <div class="card-grid two" data-visual="promise comparison">
+            <div class="decision">
+              <strong>Demo promise</strong>
+              <span>Upload files, ask natural-language questions, and get fluent answers over a sample corpus.</span>
+            </div>
+            <div class="decision accent">
+              <strong>Production promise</strong>
+              <span>Answer with current, permissioned, source-cited evidence that fits a real operational workflow.</span>
+            </div>
+          </div>
+          <p class="lead">
+            The durable value is governed access to external knowledge: customer
+            context, product docs, tickets, policies, contracts, incidents, and
+            source systems that change after model training.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Boundary</p>
+          <h2>What RAG owns</h2>
+          <div class="rag-grid" data-visual="rag boundary">
+            <div class="mini"><strong>Find</strong><span>Identify sources, chunks, records, entities, and constraints relevant to a question.</span></div>
+            <div class="mini"><strong>Filter</strong><span>Apply tenant, role, product, version, date, region, and approval constraints.</span></div>
+            <div class="mini"><strong>Ground</strong><span>Pack evidence into a prompt so the model answers from cited context.</span></div>
+            <div class="mini"><strong>Improve</strong><span>Log misses, feedback, source drift, and eval failures back into the system.</span></div>
+          </div>
+          <p class="small-note">
+            RAG does not make source truth disappear. It makes source truth
+            queryable and usable by a model at runtime.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Reference architecture</p>
+          <h2>A production RAG system has loops</h2>
+          <div class="architecture" data-visual="reference architecture">
+            <div class="lane">
+              <div class="arch-node accent"><strong>Source systems</strong><span>Docs, tickets, CRM, contracts, policies, incidents, product telemetry.</span></div>
+              <div class="arch-node"><strong>Source ledger</strong><span>Owner, URL, version, effective date, permission scope, checksum.</span></div>
+            </div>
+            <div class="lane">
+              <div class="arch-node accent"><strong>Ingestion loop</strong><span>Parse, normalize, chunk, embed, index, validate freshness.</span></div>
+              <div class="arch-node"><strong>Query loop</strong><span>Classify intent, rewrite, filter, retrieve, fuse, rerank, pack context.</span></div>
+              <div class="arch-node"><strong>Answer loop</strong><span>Generate, cite, verify, refuse, route to human when needed.</span></div>
+            </div>
+            <div class="lane">
+              <div class="arch-node accent"><strong>Evaluation loop</strong><span>Gold set, trace review, retrieval metrics, answer faithfulness, outcomes.</span></div>
+              <div class="arch-node"><strong>Operations</strong><span>Latency, cost, index health, source drift, feedback, incident response.</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Use case anchors</p>
+          <h2>Two workflows that expose real constraints</h2>
+          <div class="card-grid two" data-visual="use case comparison">
+            <div class="decision accent">
+              <strong>Support escalation copilot</strong>
+              <span>High-severity issue triage over docs, incidents, resolved tickets, customer config, logs, and known bugs.</span>
+            </div>
+            <div class="decision accent">
+              <strong>Proposal and compliance engine</strong>
+              <span>RFP, security questionnaire, and compliance answers over approved claims, controls, policies, and clauses.</span>
+            </div>
+            <div class="decision"><strong>Shared pressure</strong><span>Exact identifiers, permissions, freshness, citations, evals, and human handoff.</span></div>
+            <div class="decision"><strong>Different risk</strong><span>Support optimizes time-to-resolution; proposal workflows optimize authority and liability control.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Use case 1</p>
+          <h2>Support escalation copilot</h2>
+          <div class="card-grid" data-visual="support problem map">
+            <div class="mini"><strong>User</strong><span>Support engineer handling a high-severity customer incident.</span></div>
+            <div class="mini"><strong>Question</strong><span>"Customer on version 7.1 sees E11000 after region failover. Known issue?"</span></div>
+            <div class="mini"><strong>Required context</strong><span>Product version, customer config, incidents, KB, tickets, release notes, bug status.</span></div>
+          </div>
+          <p class="lead">
+            A generic semantic-search demo fails here because the important
+            clues are mixed: exact error codes, versions, customer-specific
+            state, and natural-language symptoms.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Evidence model</p>
+          <h2>Metadata is product logic</h2>
+          <div class="architecture four" data-visual="support evidence model">
+            <div class="arch-node accent"><strong>Source</strong><span>KB, docs, incident, ticket, bug, runbook, customer config.</span></div>
+            <div class="arch-node"><strong>Scope</strong><span>Tenant, account, role, visibility, support tier, disclosure rule.</span></div>
+            <div class="arch-node"><strong>Product</strong><span>Component, version, cloud region, feature flag, deployment type.</span></div>
+            <div class="arch-node"><strong>Freshness</strong><span>Effective date, fix version, superseded-by, last verified, owner.</span></div>
+          </div>
+          <p class="small-note">
+            The database needs these fields because retrieval, authorization,
+            citations, and debugging all depend on them.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Ingestion flow</p>
+          <h2>Do not make the vector index the source ledger</h2>
+          <div class="flow" data-visual="support ingestion flow">
+            <div class="flow-step"><strong>Acquire</strong><span>Connectors pull docs, tickets, incidents, bugs, and config snapshots.</span></div>
+            <div class="flow-step"><strong>Normalize</strong><span>Parse, clean, classify, and attach owner, version, permission, and product metadata.</span></div>
+            <div class="flow-step"><strong>Chunk</strong><span>Split by symptom, cause, workaround, command, fix, caveat, and source boundary.</span></div>
+            <div class="flow-step"><strong>Embed + index</strong><span>Store vectors, full text, exact fields, filters, and source pointers.</span></div>
+            <div class="flow-step"><strong>Validate</strong><span>Check freshness, empty chunks, permission scope, and index availability.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Chunking</p>
+          <h2>Chunk around problem-solving units</h2>
+          <div class="rag-grid" data-visual="support chunking taxonomy">
+            <div class="mini"><strong>Symptom</strong><span>Observed behavior, error message, log signature, customer wording.</span></div>
+            <div class="mini"><strong>Diagnosis</strong><span>Likely cause, affected versions, preconditions, excluded causes.</span></div>
+            <div class="mini"><strong>Action</strong><span>Verification command, workaround, rollback, fix, escalation path.</span></div>
+            <div class="mini"><strong>Caveat</strong><span>Risk, support tier, region, version exception, deprecation, supersession.</span></div>
+          </div>
+          <p class="lead">
+            Good chunks carry enough local context to be useful after retrieval.
+            Tiny fragments lose meaning; giant chunks drown the answer prompt.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Query planning</p>
+          <h2>Preserve exact clues before semantic retrieval</h2>
+          <div class="flow" data-visual="support query planning">
+            <div class="flow-step"><strong>Parse</strong><span>Extract product, version, error code, tenant, region, date, urgency.</span></div>
+            <div class="flow-step"><strong>Authorize</strong><span>Resolve account, role, visibility, and source access.</span></div>
+            <div class="flow-step"><strong>Rewrite</strong><span>Add synonyms and diagnostics without dropping original identifiers.</span></div>
+            <div class="flow-step"><strong>Route</strong><span>Choose docs, tickets, incidents, bugs, config, or all-of-the-above retrieval.</span></div>
+            <div class="flow-step"><strong>Plan</strong><span>Set filters, candidate counts, reranking, and citation requirements.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Support retrieval</p>
+          <h2>Hybrid retrieval mirrors the real question</h2>
+          <div class="flow" data-visual="support hybrid retrieval">
+            <div class="flow-step"><strong>Filters</strong><span>Tenant, role, product, version, date, region, visibility.</span></div>
+            <div class="flow-step"><strong>Lexical</strong><span>Error codes, command names, SKUs, flags, exact phrases.</span></div>
+            <div class="flow-step"><strong>Vector</strong><span>Symptoms, paraphrases, concept matches, related incidents.</span></div>
+            <div class="flow-step"><strong>Rerank</strong><span>Score query-document pairs for top-k precision.</span></div>
+            <div class="flow-step"><strong>Pack</strong><span>Diverse, authoritative, fresh evidence with citations.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Answer contract</p>
+          <h2>The output shape is part of the product</h2>
+          <pre><code class="language-json code-tight">{
+  "diagnosis": "Likely duplicate-key behavior after regional failover.",
+  "evidence": ["KB-1842", "INC-2026-0417", "BUG-91833"],
+  "next_checks": ["Confirm version", "Check failover timestamp", "Inspect unique index state"],
+  "recommended_action": "Apply workaround only if the customer matches the affected version range.",
+  "confidence": "medium",
+  "escalate_if": ["data loss suspected", "unsupported version", "evidence conflicts"]
+}</code></pre>
+          <p class="small-note">
+            The schema gives support engineers, auditors, and eval jobs the same
+            fields to inspect.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Operations loop</p>
+          <h2>Every bad answer should produce a fixable artifact</h2>
+          <div class="loop" data-visual="support operations loop">
+            <div class="state warn"><strong>Miss</strong><span>Relevant source was absent, stale, hidden, or badly chunked.</span></div>
+            <div class="state"><strong>Diagnose</strong><span>Inspect trace: query, filters, candidates, scores, rerank, prompt.</span></div>
+            <div class="state"><strong>Fix</strong><span>Update source, metadata, chunking, index, prompt, or answer policy.</span></div>
+            <div class="state"><strong>Benchmark</strong><span>Add or update gold query, expected evidence, and acceptance metric.</span></div>
+            <div class="state accent"><strong>Redeploy</strong><span>Measure quality, latency, cost, and user outcome after change.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Support decision</p>
+          <h2>Choose the platform by the hardest boundary</h2>
+          <div class="decision-map" data-visual="support database decision">
+            <div class="decision accent"><strong>MongoDB</strong><span>Strong if tickets, docs, customer config, chunks, metadata, and workflow state are document-shaped or already MongoDB-backed.</span></div>
+            <div class="decision accent"><strong>pgvector</strong><span>Strong if support data lives in Postgres and SQL joins, ACID, backups, and governance are the central boundary.</span></div>
+            <div class="decision"><strong>Vector-first</strong><span>Strong if vector serving scale, ANN operations, multi-vector retrieval, or managed vector performance dominates.</span></div>
+            <div class="decision"><strong>Search engine</strong><span>Strong if exact tokens, analyzers, synonyms, enterprise search operations, and hybrid rank pipelines dominate.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Use case 2</p>
+          <h2>Proposal, security, and compliance answer engine</h2>
+          <div class="card-grid" data-visual="proposal problem map">
+            <div class="mini"><strong>User</strong><span>Solution architect, security reviewer, seller, legal reviewer, or partner engineer.</span></div>
+            <div class="mini"><strong>Question</strong><span>"Do we support customer-managed keys in EU regions for regulated workloads?"</span></div>
+            <div class="mini"><strong>Required context</strong><span>Approved answer library, policies, SOC reports, product docs, roadmap rules, clauses.</span></div>
+          </div>
+          <p class="lead">
+            The risk is not just a wrong answer. It is an unauthorized answer,
+            an outdated answer, or an answer that cites the wrong authority.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Authority model</p>
+          <h2>Not every relevant source is usable</h2>
+          <div class="loop" data-visual="source authority states">
+            <div class="state"><strong>Draft</strong><span>Useful evidence, not approved for customer-facing use.</span></div>
+            <div class="state warn"><strong>Internal</strong><span>Reviewer guidance only; do not quote externally.</span></div>
+            <div class="state accent"><strong>Approved</strong><span>Safe for specified segments, regions, products, and dates.</span></div>
+            <div class="state warn"><strong>Exception</strong><span>Customer-specific answer with explicit owner and expiry.</span></div>
+            <div class="state"><strong>Expired</strong><span>Retained for audit, blocked from auto-answer retrieval.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Proposal ingestion</p>
+          <h2>Chunk by evidence unit, not page length</h2>
+          <div class="flow" data-visual="proposal ingestion flow">
+            <div class="flow-step"><strong>Controlled sources</strong><span>Policies, controls, clauses, public docs, answer library, SOC reports.</span></div>
+            <div class="flow-step"><strong>Evidence units</strong><span>Question-answer pair, control, clause, policy section, exception note.</span></div>
+            <div class="flow-step"><strong>Authority metadata</strong><span>Owner, approval state, disclosure level, effective date, expiry.</span></div>
+            <div class="flow-step"><strong>Indexes</strong><span>Text, vector, filters, product tags, compliance framework tags.</span></div>
+            <div class="flow-step"><strong>Audit trail</strong><span>Source version, reviewer, answer reuse, customer-specific exceptions.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Question classification</p>
+          <h2>Route before retrieval</h2>
+          <div class="card-grid" data-visual="proposal query routing">
+            <div class="mini accent"><strong>Product fact</strong><span>Retrieve approved docs and answer library entries.</span></div>
+            <div class="mini"><strong>Security control</strong><span>Retrieve mapped controls, evidence, reports, and reviewer notes.</span></div>
+            <div class="mini"><strong>Contract clause</strong><span>Retrieve legal templates, fallbacks, and customer exceptions.</span></div>
+            <div class="mini warn"><strong>Roadmap claim</strong><span>Route through explicit policy; often requires human review.</span></div>
+            <div class="mini warn"><strong>Ambiguous ask</strong><span>Ask a clarification or draft with lower confidence.</span></div>
+            <div class="mini warn"><strong>Conflict</strong><span>Surface disagreement and route to owner instead of choosing silently.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Governed retrieval</p>
+          <h2>Block unusable evidence before the prompt</h2>
+          <div class="flow" data-visual="governed retrieval flow">
+            <div class="flow-step"><strong>Identity</strong><span>User role, customer, partner, region, opportunity, disclosure level.</span></div>
+            <div class="flow-step"><strong>Policy filters</strong><span>Approved state, effective date, customer segment, product, geography.</span></div>
+            <div class="flow-step"><strong>Search</strong><span>Hybrid retrieval over approved answer units and supporting sources.</span></div>
+            <div class="flow-step"><strong>Review gate</strong><span>Require human approval for low confidence, conflict, exception, or roadmap.</span></div>
+            <div class="flow-step"><strong>Answer</strong><span>Draft with citations, owner, confidence, and review state.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Review workflow</p>
+          <h2>Human approval is part of the architecture</h2>
+          <div class="loop" data-visual="review workflow">
+            <div class="state"><strong>Draft</strong><span>Model proposes answer from approved evidence.</span></div>
+            <div class="state"><strong>Check</strong><span>System validates citations, conflicts, freshness, and policy.</span></div>
+            <div class="state warn"><strong>Review</strong><span>Owner handles sensitive, stale, conflicting, or low-confidence answers.</span></div>
+            <div class="state accent"><strong>Approve</strong><span>Answer becomes reusable for matching scope.</span></div>
+            <div class="state"><strong>Expire</strong><span>Review date or source drift removes auto-use.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Lifecycle</p>
+          <h2>The workflow creates new governed knowledge</h2>
+          <div class="flow" data-visual="answer lifecycle">
+            <div class="flow-step"><strong>Question</strong><span>Customer asks through RFP, security portal, email, or seller workflow.</span></div>
+            <div class="flow-step"><strong>Draft</strong><span>RAG answer cites source authority and flags risk.</span></div>
+            <div class="flow-step"><strong>Approve</strong><span>Human owner edits, accepts, limits, or rejects.</span></div>
+            <div class="flow-step"><strong>Reuse</strong><span>Approved answer becomes retrieval evidence with scope and expiry.</span></div>
+            <div class="flow-step"><strong>Audit</strong><span>Track source, reviewer, customer, version, and downstream usage.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Retrieval patterns</p>
+          <h2>Match the query shape</h2>
+          <div class="card-grid" data-visual="retrieval pattern map">
+            <div class="mini"><strong>Dense vector</strong><span>Paraphrase, concepts, symptoms, natural-language similarity.</span></div>
+            <div class="mini"><strong>Lexical</strong><span>Error codes, product names, legal terms, commands, identifiers.</span></div>
+            <div class="mini"><strong>Structured</strong><span>Tenant, role, region, date, product, version, approval state.</span></div>
+            <div class="mini accent"><strong>Hybrid</strong><span>Dense plus lexical candidates merged by score or rank fusion.</span></div>
+            <div class="mini"><strong>Graph or relational</strong><span>Dependencies, customers, entitlements, controls, product relationships.</span></div>
+            <div class="mini"><strong>Reranked</strong><span>Second-stage relevance over candidate chunks before context packing.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Signals</p>
+          <h2>Dense, lexical, and structured each catch different truth</h2>
+          <table class="signal-table" data-visual="signal comparison">
+            <thead>
+              <tr>
+                <th>Signal</th>
+                <th>Best at</th>
+                <th>Weak at</th>
+                <th>Production example</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Dense vector</td>
+                <td>Meaning, paraphrase, similar symptoms</td>
+                <td>Exact short tokens and hard constraints</td>
+                <td>"Failover duplicate writes" matching an incident summary</td>
+              </tr>
+              <tr>
+                <td>Lexical</td>
+                <td>Error codes, names, clauses, commands</td>
+                <td>Synonyms and implied intent</td>
+                <td><code>E11000</code>, <code>CMK</code>, "data residency"</td>
+              </tr>
+              <tr>
+                <td>Structured</td>
+                <td>Permissions, tenant, region, date, version</td>
+                <td>Open-ended semantic relevance</td>
+                <td>EU-only, product 7.1, approved external disclosure</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Hybrid search</p>
+          <h2>Fusion is where search becomes a system</h2>
+          <div class="architecture" data-visual="hybrid search fusion">
+            <div class="lane">
+              <div class="arch-node"><strong>Lexical candidates</strong><span>BM25, phrase, analyzer, exact-token or sparse-vector signals.</span></div>
+              <div class="arch-node"><strong>Vector candidates</strong><span>Dense similarity over semantically related chunks.</span></div>
+            </div>
+            <div class="lane">
+              <div class="arch-node accent"><strong>Merge</strong><span>Rank fusion or score normalization with system-specific tuning.</span></div>
+              <div class="arch-node"><strong>Deduplicate</strong><span>Collapse sibling chunks, source variants, and repeated answers.</span></div>
+            </div>
+            <div class="lane">
+              <div class="arch-node accent"><strong>Rerank</strong><span>Optional query-document scoring for precision.</span></div>
+              <div class="arch-node"><strong>Pack</strong><span>Context chosen by authority, diversity, recency, and token budget.</span></div>
+            </div>
+          </div>
+          <p class="small-note">
+            Do not compare raw scores across systems without understanding how
+            each system normalizes, fuses, and reports relevance.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Filters</p>
+          <h2>Permissions are retrieval constraints</h2>
+          <div class="architecture four" data-visual="filters permissions map">
+            <div class="arch-node accent"><strong>Security</strong><span>Tenant, role, source visibility, disclosure class, customer scope.</span></div>
+            <div class="arch-node"><strong>Business</strong><span>Product, tier, region, industry, customer segment, opportunity type.</span></div>
+            <div class="arch-node"><strong>Time</strong><span>Effective date, expiry, incident window, version range, last verified.</span></div>
+            <div class="arch-node warn"><strong>Risk</strong><span>Approval state, legal sensitivity, roadmap claim, exception-only evidence.</span></div>
+          </div>
+          <p class="lead">
+            Filtering after retrieval can expose the wrong evidence to ranking
+            logic and reduce recall. The safer default is to constrain candidate
+            generation as early as the store supports.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Reranking</p>
+          <h2>Use it when candidates are good but ordering is noisy</h2>
+          <div class="flow" data-visual="reranking flow">
+            <div class="flow-step"><strong>Retrieve broad</strong><span>Collect 25-200 candidates from hybrid or multi-query retrieval.</span></div>
+            <div class="flow-step"><strong>Score pairs</strong><span>Reranker evaluates query and candidate text together.</span></div>
+            <div class="flow-step"><strong>Sort</strong><span>Promote precise evidence and demote near misses.</span></div>
+            <div class="flow-step"><strong>Trim</strong><span>Keep top evidence that fits context budget and source diversity.</span></div>
+            <div class="flow-step"><strong>Measure</strong><span>Watch added latency, cost, and whether answer quality improves.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Context packing</p>
+          <h2>The prompt should receive evidence, not a junk drawer</h2>
+          <div class="rag-grid" data-visual="context packing map">
+            <div class="mini"><strong>Relevance</strong><span>Evidence directly addresses the specific question.</span></div>
+            <div class="mini"><strong>Authority</strong><span>Source has correct owner, approval, and disclosure state.</span></div>
+            <div class="mini"><strong>Diversity</strong><span>Avoid ten chunks that say the same thing.</span></div>
+            <div class="mini"><strong>Freshness</strong><span>Prefer current source versions and expose conflicts.</span></div>
+          </div>
+          <p class="lead">
+            Context packing is where retrieval becomes answer policy: what gets
+            included, excluded, summarized, quoted, cited, or escalated.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Failure modes</p>
+          <h2>Debug by pipeline stage</h2>
+          <table class="signal-table" data-visual="rag failure map">
+            <thead>
+              <tr>
+                <th>Symptom</th>
+                <th>Likely stage</th>
+                <th>Fix to test</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Relevant source never appears</td>
+                <td>Ingestion, chunking, metadata, filters, index freshness</td>
+                <td>Inspect source ledger, chunk text, filter fields, and index status</td>
+              </tr>
+              <tr>
+                <td>Exact code or clause is missed</td>
+                <td>Lexical retrieval or query planning</td>
+                <td>Add keyword path, preserve tokens, tune analyzers, add fielded search</td>
+              </tr>
+              <tr>
+                <td>Right evidence, wrong answer</td>
+                <td>Context packing, prompt, model, answer policy</td>
+                <td>Change answer contract, citation rules, refusal checks, or model</td>
+              </tr>
+              <tr>
+                <td>Answer leaks internal source</td>
+                <td>Authorization and pre-filtering</td>
+                <td>Move policy checks before retrieval and add trace assertions</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Database responsibilities</p>
+          <h2>Vector search is one job among many</h2>
+          <div class="card-grid" data-visual="database responsibilities">
+            <div class="mini"><strong>Source truth</strong><span>Raw documents, canonical records, source versions, provenance.</span></div>
+            <div class="mini"><strong>Retrieval index</strong><span>Vectors, text indexes, filters, chunks, scores, candidate ids.</span></div>
+            <div class="mini"><strong>Workflow state</strong><span>Jobs, approvals, drafts, reviews, escalation, user feedback.</span></div>
+            <div class="mini"><strong>Authorization</strong><span>Tenant, role, disclosure, customer, region, and document visibility.</span></div>
+            <div class="mini"><strong>Observability</strong><span>Queries, filters, candidates, context, citations, latency, cost.</span></div>
+            <div class="mini"><strong>Evaluation</strong><span>Gold sets, qrels, benchmark runs, answer ratings, regression history.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">MongoDB angle</p>
+          <h2>Document-shaped RAG applications</h2>
+          <div class="decision-map" data-visual="mongodb angle">
+            <div class="decision accent"><strong>Good fit</strong><span>Evidence, chunks, metadata, source lineage, workflow state, and product records are naturally documents.</span></div>
+            <div class="decision accent"><strong>Retrieval surface</strong><span>Atlas Vector Search for embeddings, Atlas Search for text, aggregation for app-side composition.</span></div>
+            <div class="decision"><strong>Why it matters</strong><span>One operational model can hold source records, metadata filters, vectors, traces, and answer workflows.</span></div>
+            <div class="decision warn"><strong>Watch</strong><span>Index/search-node sizing, query stage constraints, filtered query cost, index freshness, and benchmark evidence.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">pgvector angle</p>
+          <h2>Vector search inside Postgres</h2>
+          <div class="decision-map" data-visual="pgvector angle">
+            <div class="decision accent"><strong>Good fit</strong><span>Postgres already owns the application records, access model, reporting, and transactional workflow.</span></div>
+            <div class="decision accent"><strong>Retrieval surface</strong><span>Exact and approximate nearest-neighbor search with vector types, distance metrics, HNSW, and IVFFlat.</span></div>
+            <div class="decision"><strong>Why it matters</strong><span>SQL, joins, ACID, backups, row-level controls, and team familiarity stay in the center.</span></div>
+            <div class="decision warn"><strong>Watch</strong><span>ANN tuning, index memory, recall/latency tradeoffs, operational isolation, and workload contention.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Vector-first systems</p>
+          <h2>When retrieval serving deserves its own tier</h2>
+          <div class="card-grid" data-visual="vector first comparison">
+            <div class="mini accent"><strong>Pinecone</strong><span>Managed vector/search service with semantic, full-text, sparse, hybrid, metadata filtering, and production knobs.</span></div>
+            <div class="mini"><strong>Weaviate</strong><span>Object plus vector model with hybrid search, filters, named vectors, and integrated vectorization patterns.</span></div>
+            <div class="mini"><strong>Qdrant</strong><span>Payload metadata, payload indexes, filtering, and vector search engine focus.</span></div>
+            <div class="mini"><strong>Milvus</strong><span>Large-scale vector database with ANN and multi-vector hybrid retrieval patterns.</span></div>
+            <div class="mini warn"><strong>Architecture cost</strong><span>You still need source truth, permissions, workflow state, and evaluation somewhere.</span></div>
+            <div class="mini"><strong>Best pressure</strong><span>Vector scale, specialized retrieval ops, multi-vector search, or independent retrieval service ownership.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Search engines</p>
+          <h2>When lexical search and rank pipelines dominate</h2>
+          <div class="card-grid" data-visual="search engine comparison">
+            <div class="mini accent"><strong>OpenSearch</strong><span>Hybrid search pipelines combine keyword and semantic results with normalization or rank processors.</span></div>
+            <div class="mini accent"><strong>Azure AI Search</strong><span>Hybrid query and semantic ranker patterns for enterprise search plus vector retrieval.</span></div>
+            <div class="mini"><strong>Elasticsearch family</strong><span>Search-engine lineage: analyzers, synonyms, BM25, vector fields, and operational search tooling.</span></div>
+            <div class="mini"><strong>Strongest fit</strong><span>Existing enterprise search tier, exact matching, analyzers, document search operations, and hybrid ranking.</span></div>
+            <div class="mini warn"><strong>Watch</strong><span>Source-of-truth split, permissions, index sync, application state, and answer workflow ownership.</span></div>
+            <div class="mini"><strong>Product lens</strong><span>Often best when users already expect a search experience upgraded with generated answers.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Local stores</p>
+          <h2>Chroma and the prototype-to-production jump</h2>
+          <div class="decision-map" data-visual="local store fit">
+            <div class="decision accent"><strong>Useful for</strong><span>Local demos, embedded workflows, small self-hosted systems, eval harnesses, and fast iteration.</span></div>
+            <div class="decision"><strong>Retrieval surface</strong><span>Embeddings, metadata, dense and sparse search, filtering, and full-text or regex search patterns.</span></div>
+            <div class="decision warn"><strong>Production question</strong><span>Where do source truth, authorization, backups, approvals, traces, and regression history live?</span></div>
+            <div class="decision"><strong>Good path</strong><span>Use local stores to learn corpus behavior, then choose the durable operating boundary deliberately.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Database comparison</p>
+          <h2>Compare by workload boundary</h2>
+          <div class="matrix-grid" data-visual="database comparison matrix">
+            <div class="matrix-cell header"><strong>Family</strong><span>Core fit</span></div>
+            <div class="matrix-cell header"><strong>Source ownership</strong><span>Where truth lives</span></div>
+            <div class="matrix-cell header"><strong>Retrieval strengths</strong><span>Signals and filters</span></div>
+            <div class="matrix-cell header"><strong>Ops strengths</strong><span>How teams run it</span></div>
+            <div class="matrix-cell header"><strong>Watch</strong><span>Main risk</span></div>
+            <div class="matrix-cell"><strong>MongoDB</strong><span>Document RAG app</span></div>
+            <div class="matrix-cell"><strong>High</strong><span>Docs, chunks, metadata, state can share one model.</span></div>
+            <div class="matrix-cell"><strong>Vector + text</strong><span>Document filters, hybrid patterns, aggregation.</span></div>
+            <div class="matrix-cell"><strong>App database</strong><span>Backups, operational data, flexible schema.</span></div>
+            <div class="matrix-cell"><strong>Search sizing</strong><span>Index and filtered-query behavior.</span></div>
+            <div class="matrix-cell"><strong>pgvector</strong><span>Postgres extension</span></div>
+            <div class="matrix-cell"><strong>High</strong><span>Best if app truth is already relational.</span></div>
+            <div class="matrix-cell"><strong>SQL + vectors</strong><span>Joins, filters, HNSW, IVFFlat.</span></div>
+            <div class="matrix-cell"><strong>Postgres ops</strong><span>ACID, PITR, governance, familiarity.</span></div>
+            <div class="matrix-cell"><strong>Contention</strong><span>Vector workload inside OLTP system.</span></div>
+            <div class="matrix-cell"><strong>Vector-first</strong><span>Retrieval tier</span></div>
+            <div class="matrix-cell"><strong>Medium</strong><span>Usually separate from source truth.</span></div>
+            <div class="matrix-cell"><strong>ANN scale</strong><span>Vector operations, filters, rerank integrations.</span></div>
+            <div class="matrix-cell"><strong>Managed or specialized</strong><span>Scale retrieval independently.</span></div>
+            <div class="matrix-cell"><strong>Split plane</strong><span>Sync, permissions, and source governance.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Architecture choices</p>
+          <h2>Three common data-plane patterns</h2>
+          <div class="architecture" data-visual="rag data plane choices">
+            <div class="arch-node accent"><strong>One-store RAG</strong><span>Application data, chunks, vectors, filters, traces, and workflow state live together. Simpler ownership; watch retrieval scale.</span></div>
+            <div class="arch-node"><strong>App DB + search tier</strong><span>App database owns truth and workflow; search or vector tier owns retrieval serving. Strong separation; requires sync and policy alignment.</span></div>
+            <div class="arch-node"><strong>Search-first RAG</strong><span>Enterprise search platform owns discoverability and hybrid relevance; application layer owns answers, approvals, and telemetry.</span></div>
+          </div>
+          <p class="lead">
+            Splitting systems is justified when the split gives clear scale,
+            operations, or relevance value. Otherwise it adds governance and
+            freshness work.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Evaluation</p>
+          <h2>RAG quality is layered</h2>
+          <div class="pyramid" data-visual="evaluation pyramid">
+            <div class="pyramid-row accent"><strong>Business outcome</strong><span>Resolution time, answer reuse, review time, deflection, win support.</span></div>
+            <div class="pyramid-row"><strong>Answer quality</strong><span>Correctness, faithfulness, citation quality, refusal behavior.</span></div>
+            <div class="pyramid-row"><strong>Context quality</strong><span>Relevant, diverse, current, authorized, sufficient evidence.</span></div>
+            <div class="pyramid-row"><strong>Retrieval quality</strong><span>Recall@k, MRR, nDCG, exact-token recall, filter correctness.</span></div>
+            <div class="pyramid-row"><strong>System health</strong><span>Latency, cost, freshness, index status, failures, drift.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Metrics</p>
+          <h2>Measure the decision you are trying to make</h2>
+          <div class="card-grid" data-visual="rag metrics">
+            <div class="mini"><strong>Retriever</strong><span>Recall@k, nDCG, MRR, exact-token recall, filtered recall.</span></div>
+            <div class="mini"><strong>Reranker</strong><span>Top-5 precision, answerable-context rate, latency and cost delta.</span></div>
+            <div class="mini"><strong>Answer</strong><span>Faithfulness, citation support, refusal correctness, reviewer acceptance.</span></div>
+            <div class="mini"><strong>Workflow</strong><span>Time saved, escalation quality, review throughput, reuse rate.</span></div>
+            <div class="mini"><strong>Operations</strong><span>P95 latency, token cost, index lag, source failures, cache hit rate.</span></div>
+            <div class="mini"><strong>Risk</strong><span>Unauthorized source use, stale evidence, conflict handling, unsupported claims.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Observability</p>
+          <h2>A bad answer needs a replayable trace</h2>
+          <div class="flow" data-visual="rag observability trace">
+            <div class="flow-step"><strong>Request</strong><span>User, role, tenant, question, channel, workflow state.</span></div>
+            <div class="flow-step"><strong>Plan</strong><span>Intent, rewrites, filters, target collections, candidate counts.</span></div>
+            <div class="flow-step"><strong>Retrieve</strong><span>Hits, scores, source ids, rank fusion, rerank outputs.</span></div>
+            <div class="flow-step"><strong>Generate</strong><span>Context, prompt version, model, answer, citations, refusal checks.</span></div>
+            <div class="flow-step"><strong>Outcome</strong><span>Latency, cost, feedback, escalation, approval, benchmark label.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Rollout plan</p>
+          <h2>Ship trust gradually</h2>
+          <div class="flow" data-visual="rag rollout sequence">
+            <div class="flow-step"><strong>Scope corpus</strong><span>Pick one workflow, source set, owner map, and permission model.</span></div>
+            <div class="flow-step"><strong>Build gold set</strong><span>Real questions, expected evidence, expected answer behavior.</span></div>
+            <div class="flow-step"><strong>Benchmark offline</strong><span>Compare chunking, retrieval, database, rerank, and prompt variants.</span></div>
+            <div class="flow-step"><strong>Pilot with review</strong><span>Human approval, trace review, feedback capture, failure taxonomy.</span></div>
+            <div class="flow-step"><strong>Expand with gates</strong><span>Monitor quality, cost, latency, source drift, and user outcomes.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Recap</p>
+          <h2>Practical RAG is governed retrieval plus product workflow</h2>
+          <div class="rag-grid" data-visual="recap">
+            <div class="mini accent"><strong>Start with workflow</strong><span>Support, proposal, compliance, and field teams each need different answer contracts.</span></div>
+            <div class="mini"><strong>Model the evidence</strong><span>Source ownership, metadata, permissions, versioning, and freshness are core data design.</span></div>
+            <div class="mini"><strong>Choose the data plane</strong><span>MongoDB, pgvector, vector-first, and search engines win under different boundaries.</span></div>
+            <div class="mini"><strong>Operate the loop</strong><span>Trace, evaluate, review, and feed failures back into source and retrieval improvements.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">References</p>
+          <h2>Follow-up sources by concept</h2>
+          <div class="reference-list">
+            <h3>RAG architecture</h3>
+            <ul>
+              <li><a href="https://papers.neurips.cc/paper/2020/hash/6b493230205f780e1bc26945df7481e5-Abstract.html">Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks</a></li>
+              <li><a href="https://developers.openai.com/api/docs/guides/retrieval">OpenAI Retrieval</a></li>
+              <li><a href="https://docs.langchain.com/oss/python/langchain/retrieval">LangChain Retrieval</a></li>
+            </ul>
+            <h3>MongoDB and Postgres</h3>
+            <ul>
+              <li><a href="https://www.mongodb.com/docs/vector-search/query/aggregation-stages/vector-search-stage/">MongoDB Vector Search Queries</a></li>
+              <li><a href="https://www.mongodb.com/docs/atlas/atlas-search/tutorial/hybrid-search/">MongoDB Hybrid Search</a></li>
+              <li><a href="https://github.com/pgvector/pgvector">pgvector README</a></li>
+            </ul>
+            <h3>Vector-first and local stores</h3>
+            <ul>
+              <li><a href="https://docs.pinecone.io/guides/search/search-overview">Pinecone Search Overview</a></li>
+              <li><a href="https://docs.pinecone.io/guides/search/filter-by-metadata">Pinecone Metadata Filtering</a></li>
+              <li><a href="https://docs.weaviate.io/weaviate/search/hybrid">Weaviate Hybrid Search</a></li>
+              <li><a href="https://qdrant.tech/documentation/search/filtering/">Qdrant Filtering</a></li>
+              <li><a href="https://raw.githubusercontent.com/milvus-io/milvus-docs/v3.0.x/site/en/userGuide/search-query-get/multi-vector-search.md">Milvus Multi-Vector Hybrid Search</a></li>
+              <li><a href="https://docs.trychroma.com/docs/overview/introduction">Chroma Introduction</a></li>
+            </ul>
+            <h3>Search platforms</h3>
+            <ul>
+              <li><a href="https://docs.opensearch.org/3.3/vector-search/ai-search/hybrid-search/index/">OpenSearch Hybrid Search</a></li>
+              <li><a href="https://learn.microsoft.com/en-us/azure/search/semantic-search-overview">Azure AI Search Semantic Ranking</a></li>
+              <li><a href="https://learn.microsoft.com/en-us/azure/search/hybrid-search-how-to-query">Azure AI Search Hybrid Query</a></li>
+            </ul>
+            <h3>Evaluation and reranking</h3>
+            <ul>
+              <li><a href="https://docs.voyageai.com/docs/reranker">Voyage AI Rerankers</a></li>
+              <li><a href="https://arxiv.org/abs/2104.08663">BEIR Retrieval Benchmark</a></li>
+              <li><a href="https://arxiv.org/abs/2309.15217">RAGAS Evaluation</a></li>
+            </ul>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script src="../../../assets/vendor/reveal/dist/reveal.js"></script>
+    <script src="../../../assets/vendor/reveal/dist/plugin/highlight.js"></script>
+    <script>
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        hash: true,
+        slideNumber: true,
+        transition: "slide",
+        backgroundTransition: "fade",
+        plugins: [RevealHighlight],
+      });
+    </script>
+  </body>
+</html>

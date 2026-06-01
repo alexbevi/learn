@@ -1,0 +1,200 @@
+[
+  {
+    "id": "lewis-rag-2020",
+    "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+    "url": "https://papers.neurips.cc/paper/2020/hash/6b493230205f780e1bc26945df7481e5-Abstract.html",
+    "sourceType": "primary",
+    "publisher": "NeurIPS",
+    "retrieved": "2026-06-01",
+    "concepts": ["rag-foundations", "retrieval", "generation"],
+    "confidence": "high",
+    "notes": "Original RAG paper; useful for the parametric plus non-parametric memory framing."
+  },
+  {
+    "id": "openai-retrieval",
+    "title": "Retrieval",
+    "url": "https://developers.openai.com/api/docs/guides/retrieval",
+    "sourceType": "primary",
+    "publisher": "OpenAI",
+    "retrieved": "2026-06-01",
+    "concepts": ["retrieval-api", "vector-stores", "file-search"],
+    "confidence": "high",
+    "notes": "Official OpenAI retrieval guide for hosted semantic search and vector stores."
+  },
+  {
+    "id": "langchain-retrieval",
+    "title": "Retrieval",
+    "url": "https://docs.langchain.com/oss/python/langchain/retrieval",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-06-01",
+    "concepts": ["rag-architecture", "retrieval-pipelines", "knowledge-base"],
+    "confidence": "high",
+    "notes": "Official retrieval overview that separates knowledge bases, retrieval, and RAG architectures."
+  },
+  {
+    "id": "mongodb-vector-search",
+    "title": "Run Vector Search Queries",
+    "url": "https://www.mongodb.com/docs/vector-search/query/aggregation-stages/vector-search-stage/",
+    "sourceType": "primary",
+    "publisher": "MongoDB",
+    "retrieved": "2026-06-01",
+    "concepts": ["mongodb", "vector-search", "filters", "ann", "enn"],
+    "confidence": "high",
+    "notes": "Official MongoDB Vector Search query documentation."
+  },
+  {
+    "id": "mongodb-hybrid-search",
+    "title": "How to Perform Hybrid Search",
+    "url": "https://www.mongodb.com/docs/atlas/atlas-search/tutorial/hybrid-search/",
+    "sourceType": "primary",
+    "publisher": "MongoDB",
+    "retrieved": "2026-06-01",
+    "concepts": ["mongodb", "hybrid-search", "reciprocal-rank-fusion"],
+    "confidence": "high",
+    "notes": "Official tutorial combining Atlas Search and Vector Search with rank fusion."
+  },
+  {
+    "id": "pgvector-readme",
+    "title": "pgvector README",
+    "url": "https://github.com/pgvector/pgvector",
+    "sourceType": "primary",
+    "publisher": "pgvector",
+    "retrieved": "2026-06-01",
+    "concepts": ["postgres", "pgvector", "hnsw", "ivfflat", "sql"],
+    "confidence": "high",
+    "notes": "Project README for vector types, distance metrics, HNSW, IVFFlat, and Postgres integration."
+  },
+  {
+    "id": "pinecone-search-overview",
+    "title": "Search Overview",
+    "url": "https://docs.pinecone.io/guides/search/search-overview",
+    "sourceType": "primary",
+    "publisher": "Pinecone",
+    "retrieved": "2026-06-01",
+    "concepts": ["pinecone", "semantic-search", "hybrid-search", "full-text-search"],
+    "confidence": "high",
+    "notes": "Official Pinecone search overview and search approach decision tree."
+  },
+  {
+    "id": "pinecone-filtering",
+    "title": "Filter by Metadata",
+    "url": "https://docs.pinecone.io/guides/search/filter-by-metadata",
+    "sourceType": "primary",
+    "publisher": "Pinecone",
+    "retrieved": "2026-06-01",
+    "concepts": ["pinecone", "metadata-filtering", "tenant-filters"],
+    "confidence": "high",
+    "notes": "Official Pinecone metadata filtering documentation."
+  },
+  {
+    "id": "weaviate-hybrid",
+    "title": "Hybrid Search",
+    "url": "https://docs.weaviate.io/weaviate/search/hybrid",
+    "sourceType": "primary",
+    "publisher": "Weaviate",
+    "retrieved": "2026-06-01",
+    "concepts": ["weaviate", "hybrid-search", "bm25", "filters"],
+    "confidence": "high",
+    "notes": "Official Weaviate documentation for vector plus keyword hybrid search and filters."
+  },
+  {
+    "id": "qdrant-filtering",
+    "title": "Filtering",
+    "url": "https://qdrant.tech/documentation/search/filtering/",
+    "sourceType": "primary",
+    "publisher": "Qdrant",
+    "retrieved": "2026-06-01",
+    "concepts": ["qdrant", "payload", "filtering", "indexes"],
+    "confidence": "high",
+    "notes": "Official Qdrant filtering guide and payload index recommendation."
+  },
+  {
+    "id": "milvus-multivector-hybrid",
+    "title": "Multi-Vector Hybrid Search",
+    "url": "https://raw.githubusercontent.com/milvus-io/milvus-docs/v3.0.x/site/en/userGuide/search-query-get/multi-vector-search.md",
+    "sourceType": "primary",
+    "publisher": "Milvus",
+    "retrieved": "2026-06-01",
+    "concepts": ["milvus", "multi-vector", "hybrid-search", "ann"],
+    "confidence": "high",
+    "notes": "Official Milvus documentation for multi-vector hybrid search."
+  },
+  {
+    "id": "opensearch-hybrid",
+    "title": "Hybrid Search",
+    "url": "https://docs.opensearch.org/3.3/vector-search/ai-search/hybrid-search/index/",
+    "sourceType": "primary",
+    "publisher": "OpenSearch",
+    "retrieved": "2026-06-01",
+    "concepts": ["opensearch", "hybrid-search", "search-pipeline", "rank-fusion"],
+    "confidence": "high",
+    "notes": "Official OpenSearch documentation for hybrid search pipelines and processors."
+  },
+  {
+    "id": "azure-ai-search-semantic",
+    "title": "Semantic Ranking in Azure AI Search",
+    "url": "https://learn.microsoft.com/en-us/azure/search/semantic-search-overview",
+    "sourceType": "primary",
+    "publisher": "Microsoft",
+    "retrieved": "2026-06-01",
+    "concepts": ["azure-ai-search", "semantic-ranker", "hybrid-search", "rrf"],
+    "confidence": "high",
+    "notes": "Official Azure AI Search semantic ranker overview."
+  },
+  {
+    "id": "azure-ai-search-hybrid",
+    "title": "Create a Hybrid Query in Azure AI Search",
+    "url": "https://learn.microsoft.com/en-us/azure/search/hybrid-search-how-to-query",
+    "sourceType": "primary",
+    "publisher": "Microsoft",
+    "retrieved": "2026-06-01",
+    "concepts": ["azure-ai-search", "hybrid-search", "vector-search", "semantic-ranker"],
+    "confidence": "high",
+    "notes": "Official Azure AI Search hybrid query documentation."
+  },
+  {
+    "id": "chroma-introduction",
+    "title": "Chroma Introduction",
+    "url": "https://docs.trychroma.com/docs/overview/introduction",
+    "sourceType": "primary",
+    "publisher": "Chroma",
+    "retrieved": "2026-06-01",
+    "concepts": ["chroma", "local-development", "metadata-filtering", "hybrid-search"],
+    "confidence": "medium",
+    "notes": "Official Chroma overview for local and cloud retrieval capabilities."
+  },
+  {
+    "id": "voyage-reranker",
+    "title": "Rerankers",
+    "url": "https://docs.voyageai.com/docs/reranker",
+    "sourceType": "primary",
+    "publisher": "Voyage AI",
+    "retrieved": "2026-06-01",
+    "concepts": ["reranking", "retrieval-quality", "cross-encoder"],
+    "confidence": "high",
+    "notes": "Official Voyage AI reranker documentation."
+  },
+  {
+    "id": "beir-2021",
+    "title": "BEIR: A Heterogenous Benchmark for Zero-shot Evaluation of Information Retrieval Models",
+    "url": "https://arxiv.org/abs/2104.08663",
+    "sourceType": "primary",
+    "publisher": "arXiv",
+    "retrieved": "2026-06-01",
+    "concepts": ["retrieval-evaluation", "benchmarks", "ndcg"],
+    "confidence": "high",
+    "notes": "Retrieval benchmark paper used for evaluation framing."
+  },
+  {
+    "id": "ragas-2023",
+    "title": "RAGAS: Automated Evaluation of Retrieval Augmented Generation",
+    "url": "https://arxiv.org/abs/2309.15217",
+    "sourceType": "primary",
+    "publisher": "arXiv",
+    "retrieved": "2026-06-01",
+    "concepts": ["rag-evaluation", "faithfulness", "context-relevance"],
+    "confidence": "high",
+    "notes": "RAG evaluation paper used to separate retrieval quality, context use, and answer faithfulness."
+  }
+]

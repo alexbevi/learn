@@ -1,0 +1,404 @@
+[
+  {
+    "slide": 1,
+    "title": "Practical RAG Systems",
+    "objective": "Set the deck frame and audience.",
+    "coreClaim": "RAG is a production evidence-delivery architecture, not a vector database demo.",
+    "sourceIds": ["lewis-rag-2020", "langchain-retrieval"],
+    "visual": "none",
+    "practicalTakeaway": "Evaluate RAG by whether it delivers trusted evidence into a decision workflow."
+  },
+  {
+    "slide": 2,
+    "title": "Learning Goals",
+    "objective": "Define what learners should be able to do after the deck.",
+    "coreClaim": "Product and solutions teams need to reason about retrieval flow, data ownership, database fit, evaluation, and rollout risk.",
+    "sourceIds": ["langchain-retrieval", "ragas-2023"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "Use the deck as an architecture and discovery checklist."
+  },
+  {
+    "slide": 3,
+    "title": "The Practical Promise",
+    "objective": "Connect RAG to business value.",
+    "coreClaim": "The value of RAG is governed answers over proprietary, changing, permissioned knowledge.",
+    "sourceIds": ["lewis-rag-2020", "langchain-retrieval"],
+    "visual": "comparison",
+    "practicalTakeaway": "Sell outcomes such as answer quality, speed, citation, and governance, not embeddings."
+  },
+  {
+    "slide": 4,
+    "title": "What RAG Owns",
+    "objective": "Separate RAG from model-only and search-only thinking.",
+    "coreClaim": "RAG coordinates retrieval, evidence packing, generation, citation, and feedback around a user request.",
+    "sourceIds": ["langchain-retrieval", "openai-retrieval"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "Draw the system boundary before choosing tools."
+  },
+  {
+    "slide": 5,
+    "title": "Reference Architecture",
+    "objective": "Show the end-to-end system shape.",
+    "coreClaim": "A production RAG architecture has separate ingestion, index, query, answer, and evaluation loops.",
+    "sourceIds": ["langchain-retrieval", "ragas-2023"],
+    "visual": "architecture",
+    "practicalTakeaway": "Missing loops become production failure modes."
+  },
+  {
+    "slide": 6,
+    "title": "Two Use Cases",
+    "objective": "Introduce concrete anchors.",
+    "coreClaim": "Support escalation and proposal/compliance workflows expose the practical constraints generic demos hide.",
+    "sourceIds": ["langchain-retrieval"],
+    "visual": "comparison",
+    "practicalTakeaway": "Use cases should stress permissions, freshness, exact tokens, citations, and workflow handoff."
+  },
+  {
+    "slide": 7,
+    "title": "Support Copilot Problem",
+    "objective": "Frame the first production workload.",
+    "coreClaim": "Support RAG must combine symptoms, logs, versions, incidents, tickets, customer context, and docs.",
+    "sourceIds": ["langchain-retrieval"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "If the system cannot see customer and version context, it will overgeneralize."
+  },
+  {
+    "slide": 8,
+    "title": "Support Evidence Model",
+    "objective": "Map source data to retrieval objects.",
+    "coreClaim": "Support evidence needs source lineage, tenant visibility, product/version metadata, and operational semantics.",
+    "sourceIds": ["mongodb-vector-search", "pinecone-filtering", "qdrant-filtering"],
+    "visual": "architecture",
+    "practicalTakeaway": "Metadata is a retrieval feature and an access-control feature."
+  },
+  {
+    "slide": 9,
+    "title": "Support Ingestion Flow",
+    "objective": "Show how source systems become searchable evidence.",
+    "coreClaim": "RAG ingestion should preserve raw source, parsed text, chunk records, embeddings, index status, and source version.",
+    "sourceIds": ["langchain-retrieval", "openai-retrieval"],
+    "visual": "flow",
+    "practicalTakeaway": "Never make the vector index the only source ledger."
+  },
+  {
+    "slide": 10,
+    "title": "Support Chunking",
+    "objective": "Explain chunk design for operational content.",
+    "coreClaim": "Chunks should align to problem-solving units such as symptom, cause, workaround, fix version, command, and caveat.",
+    "sourceIds": ["langchain-retrieval"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "Chunking quality decides whether retrieval gives the model useful evidence."
+  },
+  {
+    "slide": 11,
+    "title": "Support Query Planning",
+    "objective": "Show how user questions become retrieval plans.",
+    "coreClaim": "Support questions need entity extraction, filters, query rewriting, and exact-token preservation before search.",
+    "sourceIds": ["pinecone-search-overview", "mongodb-hybrid-search"],
+    "visual": "sequence",
+    "practicalTakeaway": "Do not embed away error codes, SKUs, versions, and tenant identifiers."
+  },
+  {
+    "slide": 12,
+    "title": "Support Retrieval",
+    "objective": "Trace hybrid retrieval and reranking.",
+    "coreClaim": "Support RAG usually needs lexical, vector, structured filters, and reranking in one flow.",
+    "sourceIds": ["mongodb-hybrid-search", "weaviate-hybrid", "opensearch-hybrid", "voyage-reranker"],
+    "visual": "flow",
+    "practicalTakeaway": "Use vector search for meaning and lexical search for exact operational clues."
+  },
+  {
+    "slide": 13,
+    "title": "Support Answer Contract",
+    "objective": "Define the answer shape.",
+    "coreClaim": "The answer should include cited diagnosis, next checks, likely fix, confidence, and escalation triggers.",
+    "sourceIds": ["ragas-2023"],
+    "visual": "code",
+    "practicalTakeaway": "An answer contract makes quality observable and reviewable."
+  },
+  {
+    "slide": 14,
+    "title": "Support Ops Loop",
+    "objective": "Connect runtime failures back to content and retrieval fixes.",
+    "coreClaim": "Misses, stale evidence, conflicts, and user feedback should become source and eval backlog items.",
+    "sourceIds": ["ragas-2023", "beir-2021"],
+    "visual": "state-machine",
+    "practicalTakeaway": "Production RAG improves through measured loops, not prompt tweaks alone."
+  },
+  {
+    "slide": 15,
+    "title": "Support Architecture Decision",
+    "objective": "Summarize platform fit for the support use case.",
+    "coreClaim": "The right database depends on source ownership, filters, update path, joins, and vector-serving needs.",
+    "sourceIds": ["mongodb-vector-search", "pgvector-readme", "pinecone-search-overview", "qdrant-filtering"],
+    "visual": "comparison",
+    "practicalTakeaway": "Choose the store that owns the hardest operational boundary."
+  },
+  {
+    "slide": 16,
+    "title": "Proposal Engine Problem",
+    "objective": "Frame the second production workload.",
+    "coreClaim": "Proposal and compliance RAG is governed answer reuse over approved, sensitive, and versioned evidence.",
+    "sourceIds": ["langchain-retrieval", "ragas-2023"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "Correctness includes approval state and disclosure rules, not just semantic relevance."
+  },
+  {
+    "slide": 17,
+    "title": "Authority Model",
+    "objective": "Show source authority and approval states.",
+    "coreClaim": "Proposal RAG needs source authority, ownership, effective dates, disclosure level, and review state.",
+    "sourceIds": ["ragas-2023"],
+    "visual": "state-machine",
+    "practicalTakeaway": "The system must know which evidence can be used automatically."
+  },
+  {
+    "slide": 18,
+    "title": "Proposal Ingestion",
+    "objective": "Map controlled documents to retrieval units.",
+    "coreClaim": "Evidence units should map to clauses, controls, approved answers, policy sections, and exception notes.",
+    "sourceIds": ["langchain-retrieval", "mongodb-vector-search"],
+    "visual": "flow",
+    "practicalTakeaway": "Model source governance before embedding the corpus."
+  },
+  {
+    "slide": 19,
+    "title": "Question Classification",
+    "objective": "Explain query routing for proposal work.",
+    "coreClaim": "Incoming questions should route differently for factual answers, controls, clauses, roadmap claims, and human review.",
+    "sourceIds": ["langchain-retrieval"],
+    "visual": "sequence",
+    "practicalTakeaway": "A single retrieval strategy is too blunt for liability-sensitive workflows."
+  },
+  {
+    "slide": 20,
+    "title": "Governed Retrieval",
+    "objective": "Show retrieval with approval and disclosure constraints.",
+    "coreClaim": "Filters for approval state, disclosure level, customer segment, region, and source owner are core product logic.",
+    "sourceIds": ["mongodb-vector-search", "pinecone-filtering", "qdrant-filtering"],
+    "visual": "flow",
+    "practicalTakeaway": "Governed retrieval should prevent the wrong evidence from entering the prompt."
+  },
+  {
+    "slide": 21,
+    "title": "Review Workflow",
+    "objective": "Connect generation to human approval.",
+    "coreClaim": "Proposal RAG should produce draft answers with citations, confidence, and review routing rather than unconditional auto-send.",
+    "sourceIds": ["ragas-2023"],
+    "visual": "state-machine",
+    "practicalTakeaway": "Human approval is part of the product when liability is high."
+  },
+  {
+    "slide": 22,
+    "title": "Answer Lifecycle",
+    "objective": "Close the loop from approved answer to reusable evidence.",
+    "coreClaim": "Approved answers should flow back into the retrieval corpus with ownership, version, and expiry metadata.",
+    "sourceIds": ["ragas-2023", "langchain-retrieval"],
+    "visual": "flow",
+    "practicalTakeaway": "A RAG product creates governed knowledge assets as users work."
+  },
+  {
+    "slide": 23,
+    "title": "Retrieval Pattern Map",
+    "objective": "Build the taxonomy of retrieval patterns.",
+    "coreClaim": "Production RAG uses dense, lexical, structured, hybrid, graph, and reranked retrieval depending on question shape.",
+    "sourceIds": ["pinecone-search-overview", "weaviate-hybrid", "opensearch-hybrid"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "Match retrieval pattern to user intent."
+  },
+  {
+    "slide": 24,
+    "title": "Dense, Lexical, Structured",
+    "objective": "Contrast the main retrieval signals.",
+    "coreClaim": "Dense search captures meaning, lexical search captures tokens, and structured queries enforce exact business constraints.",
+    "sourceIds": ["pinecone-search-overview", "pgvector-readme"],
+    "visual": "comparison",
+    "practicalTakeaway": "Hybrid systems exist because real questions mix signals."
+  },
+  {
+    "slide": 25,
+    "title": "Hybrid Search",
+    "objective": "Explain rank fusion and score handling.",
+    "coreClaim": "Hybrid search combines multiple candidate lists; score normalization and rank fusion are implementation choices.",
+    "sourceIds": ["mongodb-hybrid-search", "weaviate-hybrid", "opensearch-hybrid", "azure-ai-search-hybrid"],
+    "visual": "flow",
+    "practicalTakeaway": "Treat scores as store-local ranking signals, not universal truth."
+  },
+  {
+    "slide": 26,
+    "title": "Filters and Permissions",
+    "objective": "Explain pre-filtering as correctness infrastructure.",
+    "coreClaim": "Tenant, role, region, date, product, version, and approval filters should constrain retrieval as early as possible.",
+    "sourceIds": ["mongodb-vector-search", "pinecone-filtering", "qdrant-filtering"],
+    "visual": "architecture",
+    "practicalTakeaway": "Post-filtering after retrieval can leak evidence and distort recall."
+  },
+  {
+    "slide": 27,
+    "title": "Reranking",
+    "objective": "Explain second-stage precision.",
+    "coreClaim": "Rerankers improve ordering by scoring query-document pairs after broad candidate retrieval.",
+    "sourceIds": ["voyage-reranker"],
+    "visual": "flow",
+    "practicalTakeaway": "Add reranking when recall is good but the top answer set is noisy."
+  },
+  {
+    "slide": 28,
+    "title": "Context Packing",
+    "objective": "Show how retrieved evidence becomes prompt context.",
+    "coreClaim": "Context packing must balance relevance, diversity, authority, recency, citation coverage, and token budget.",
+    "sourceIds": ["ragas-2023", "langchain-retrieval"],
+    "visual": "architecture",
+    "practicalTakeaway": "The LLM should receive compact evidence, not a heap of chunks."
+  },
+  {
+    "slide": 29,
+    "title": "Failure Modes",
+    "objective": "Give teams a diagnostic map.",
+    "coreClaim": "RAG failures can originate in source policy, parsing, chunking, embedding, filters, retrieval, reranking, prompting, or UX.",
+    "sourceIds": ["ragas-2023", "beir-2021"],
+    "visual": "metric-map",
+    "practicalTakeaway": "Debug the pipeline stage that actually failed."
+  },
+  {
+    "slide": 30,
+    "title": "Database Responsibilities",
+    "objective": "Clarify the database angle.",
+    "coreClaim": "Databases in RAG may own source truth, chunk metadata, vectors, lexical indexes, workflow state, traces, and eval datasets.",
+    "sourceIds": ["mongodb-vector-search", "pgvector-readme", "pinecone-search-overview"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "A vector index is only one database responsibility."
+  },
+  {
+    "slide": 31,
+    "title": "MongoDB Angle",
+    "objective": "Describe where MongoDB fits.",
+    "coreClaim": "MongoDB is strongest when RAG evidence, metadata, workflow state, and product records are document-shaped and operationally close.",
+    "sourceIds": ["mongodb-vector-search", "mongodb-hybrid-search"],
+    "visual": "architecture",
+    "practicalTakeaway": "Use MongoDB when retrieval should live beside document data and application workflow."
+  },
+  {
+    "slide": 32,
+    "title": "pgvector Angle",
+    "objective": "Describe where Postgres plus pgvector fits.",
+    "coreClaim": "pgvector is strongest when vector search extends an existing Postgres application with SQL, joins, ACID, and governance.",
+    "sourceIds": ["pgvector-readme"],
+    "visual": "architecture",
+    "practicalTakeaway": "Use pgvector when Postgres is already the durable product boundary."
+  },
+  {
+    "slide": 33,
+    "title": "Vector-First Systems",
+    "objective": "Describe Pinecone, Weaviate, Qdrant, and Milvus fit.",
+    "coreClaim": "Vector-first systems are strongest when retrieval serving deserves its own specialized tier.",
+    "sourceIds": ["pinecone-search-overview", "weaviate-hybrid", "qdrant-filtering", "milvus-multivector-hybrid"],
+    "visual": "comparison",
+    "practicalTakeaway": "Pair vector-first stores with a clear source-of-truth and governance model."
+  },
+  {
+    "slide": 34,
+    "title": "Search Engines",
+    "objective": "Describe OpenSearch, Elasticsearch, and Azure AI Search fit.",
+    "coreClaim": "Search-engine platforms are strong when lexical relevance, analyzers, semantic ranking, and enterprise search operations dominate.",
+    "sourceIds": ["opensearch-hybrid", "azure-ai-search-semantic", "azure-ai-search-hybrid"],
+    "visual": "comparison",
+    "practicalTakeaway": "Choose search-engine lineage when enterprise search is the core competency."
+  },
+  {
+    "slide": 35,
+    "title": "Chroma and Local Stores",
+    "objective": "Describe local/prototype fit.",
+    "coreClaim": "Local vector stores are excellent for prototyping and smaller self-hosted workflows but do not remove production governance needs.",
+    "sourceIds": ["chroma-introduction"],
+    "visual": "comparison",
+    "practicalTakeaway": "Prototype locally, then decide which production boundary the database must own."
+  },
+  {
+    "slide": 36,
+    "title": "Comparison Matrix",
+    "objective": "Compare systems on decision dimensions.",
+    "coreClaim": "The useful comparison dimensions are source ownership, filters, hybrid retrieval, update freshness, operations, and workflow fit.",
+    "sourceIds": ["mongodb-vector-search", "pgvector-readme", "pinecone-search-overview", "weaviate-hybrid", "qdrant-filtering", "opensearch-hybrid"],
+    "visual": "comparison",
+    "practicalTakeaway": "Start with workload constraints, then benchmark."
+  },
+  {
+    "slide": 37,
+    "title": "Architecture Choices",
+    "objective": "Turn comparison into a decision framework.",
+    "coreClaim": "Use one-store, app-db-plus-search, or vector-tier architecture based on ownership and operational boundaries.",
+    "sourceIds": ["mongodb-vector-search", "pgvector-readme", "pinecone-search-overview"],
+    "visual": "architecture",
+    "practicalTakeaway": "Do not split data planes unless the split solves a real operational problem."
+  },
+  {
+    "slide": 38,
+    "title": "Evaluation Pyramid",
+    "objective": "Show layered RAG evaluation.",
+    "coreClaim": "Evaluation should cover retrieval, context, answer, workflow outcome, and operational health.",
+    "sourceIds": ["beir-2021", "ragas-2023"],
+    "visual": "metric-map",
+    "practicalTakeaway": "A single answer-quality score is not enough."
+  },
+  {
+    "slide": 39,
+    "title": "Metrics That Matter",
+    "objective": "List practical metrics.",
+    "coreClaim": "RAG teams need offline retrieval metrics, answer faithfulness metrics, latency/cost metrics, and user outcome metrics.",
+    "sourceIds": ["beir-2021", "ragas-2023"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "Tie metrics to product decisions and release gates."
+  },
+  {
+    "slide": 40,
+    "title": "Observability",
+    "objective": "Show what must be logged.",
+    "coreClaim": "Useful RAG observability captures query, filters, candidates, scores, rerank, context, answer, citations, latency, cost, and feedback.",
+    "sourceIds": ["ragas-2023"],
+    "visual": "flow",
+    "practicalTakeaway": "If you cannot inspect a bad answer, you cannot improve it reliably."
+  },
+  {
+    "slide": 41,
+    "title": "Rollout Plan",
+    "objective": "Provide an implementation sequence.",
+    "coreClaim": "Production RAG should roll out through scoped corpus, gold set, offline benchmark, human-in-the-loop pilot, and monitored expansion.",
+    "sourceIds": ["beir-2021", "ragas-2023"],
+    "visual": "sequence",
+    "practicalTakeaway": "Ship trust gradually with evidence and controls."
+  },
+  {
+    "slide": 42,
+    "title": "Recap",
+    "objective": "Summarize the mental model.",
+    "coreClaim": "Practical RAG is a governed retrieval product with a database architecture decision inside it.",
+    "sourceIds": ["lewis-rag-2020", "langchain-retrieval"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "Design around source truth, retrieval quality, permissions, evaluation, and operational ownership."
+  },
+  {
+    "slide": 43,
+    "title": "References",
+    "objective": "Give grouped follow-up sources.",
+    "coreClaim": "Primary sources should be grouped by concept for follow-up reading.",
+    "sourceIds": [
+      "lewis-rag-2020",
+      "openai-retrieval",
+      "langchain-retrieval",
+      "mongodb-vector-search",
+      "mongodb-hybrid-search",
+      "pgvector-readme",
+      "pinecone-search-overview",
+      "weaviate-hybrid",
+      "qdrant-filtering",
+      "milvus-multivector-hybrid",
+      "opensearch-hybrid",
+      "azure-ai-search-semantic",
+      "ragas-2023",
+      "beir-2021"
+    ],
+    "visual": "none",
+    "practicalTakeaway": "Use current docs and workload evidence before making platform claims."
+  }
+]
