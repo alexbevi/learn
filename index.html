@@ -50,8 +50,38 @@
             <h2 id="presentations-heading">Presentations</h2>
             <p class="filter-label" data-filter-label>Showing all presentations</p>
           </div>
+          <div class="catalog-toolbar" data-catalog-controls>
+            <label class="catalog-field search-field">
+              <span>Search</span>
+              <input
+                type="search"
+                data-catalog-search
+                placeholder="Search titles, topics, tags, goals..."
+                autocomplete="off"
+              />
+            </label>
+            <label class="catalog-field">
+              <span>Sort</span>
+              <select data-catalog-sort>
+                <option value="updated-desc">Last updated, newest</option>
+                <option value="updated-asc">Last updated, oldest</option>
+                <option value="title-asc">Title, A-Z</option>
+                <option value="topic-asc">Topic, A-Z</option>
+                <option value="duration-desc">Duration, longest</option>
+              </select>
+            </label>
+            <label class="catalog-field compact-field">
+              <span>Per page</span>
+              <select data-catalog-page-size>
+                <option value="10">10</option>
+                <option value="20" selected>20</option>
+                <option value="50">50</option>
+              </select>
+            </label>
+          </div>
           <div class="tag-filter" data-tag-filter aria-label="Filter presentations by tag"></div>
           <div class="presentation-grid" data-presentation-list></div>
+          <nav class="pagination" data-pagination aria-label="Presentation pagination"></nav>
         </div>
       </section>
     </main>
