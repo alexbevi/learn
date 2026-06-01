@@ -1,0 +1,371 @@
+[
+  {
+    "slide": 1,
+    "title": "Low/No-Code AI Platforms and MongoDB Strategy",
+    "objective": "Frame the deck for MongoDB product and strategy teams.",
+    "coreClaim": "Low/no-code AI platforms are becoming a major surface where business users turn AI experimentation into operational workflows.",
+    "sourceIds": ["n8n-sap-partnership", "zapier-ai-orchestration", "make-ai-agents"],
+    "visual": "none",
+    "practicalTakeaway": "Treat these platforms as workload creation surfaces, not only integration checkboxes."
+  },
+  {
+    "slide": 2,
+    "title": "Learning Goals",
+    "objective": "Set the expected outcomes.",
+    "coreClaim": "A product strategy team needs to understand platform categories, use cases, commercial signals, technical architecture, and MongoDB positioning.",
+    "sourceIds": ["ibm-agentic-operations", "ibm-agentic-operations"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "Use the deck as a strategy map and product gap checklist."
+  },
+  {
+    "slide": 3,
+    "title": "Executive Thesis",
+    "objective": "State the strategic argument.",
+    "coreClaim": "The opportunity is governed AI workflow automation over business data, not another chatbot category.",
+    "sourceIds": ["ibm-agentic-operations", "ibm-agentic-operations"],
+    "visual": "comparison",
+    "practicalTakeaway": "Position MongoDB around durable workflow data, RAG, memory, audit, and safe actions."
+  },
+  {
+    "slide": 4,
+    "title": "Why Now",
+    "objective": "Explain market timing.",
+    "coreClaim": "AI orchestration is moving from maker experimentation into enterprise distribution and workflow-suite adoption.",
+    "sourceIds": ["n8n-series-c", "n8n-sap-partnership", "servicenow-ai-release"],
+    "visual": "metric-map",
+    "practicalTakeaway": "Invest before platform defaults harden around other data planes."
+  },
+  {
+    "slide": 5,
+    "title": "Platform Taxonomy",
+    "objective": "Categorize the market.",
+    "coreClaim": "The market is not one category; it spans automation-first, visual AI, internal-tool, enterprise-suite, record-native, and AI-native agent platforms.",
+    "sourceIds": ["n8n-ai-agents-docs", "langflow-docs", "retool-docs", "copilot-studio-docs", "gumloop-docs"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "MongoDB messaging must vary by platform center of gravity."
+  },
+  {
+    "slide": 6,
+    "title": "What They Are Used For",
+    "objective": "Map practical workloads.",
+    "coreClaim": "The common production use cases are GTM, support, finance, knowledge, data ops, internal tools, and IT workflows.",
+    "sourceIds": ["make-ai-agents", "retool-docs", "servicenow-ai-release", "ibm-agentic-operations"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "Prioritize use cases where workflow state and governed data become painful."
+  },
+  {
+    "slide": 7,
+    "title": "Workload Pattern",
+    "objective": "Show the shared architecture of AI workflows.",
+    "coreClaim": "High-value workflows combine deterministic process steps with AI judgement and human approval.",
+    "sourceIds": ["n8n-ai-agents-docs", "dify-agent-docs", "make-help-ai-agents"],
+    "visual": "flow",
+    "practicalTakeaway": "Agents are often embedded inside workflows, not replacements for workflow engines."
+  },
+  {
+    "slide": 8,
+    "title": "Automation-First Platforms",
+    "objective": "Explain n8n, Zapier, and Make.",
+    "coreClaim": "Automation-first platforms win through triggers, connectors, credentials, branching, retries, and business-process glue.",
+    "sourceIds": ["n8n-ai-agents-docs", "zapier-ai-actions", "make-ai-agents"],
+    "visual": "comparison",
+    "practicalTakeaway": "MongoDB should show up as state, data, search, and safe action layer."
+  },
+  {
+    "slide": 9,
+    "title": "n8n Deep Dive",
+    "objective": "Analyze n8n as a strategic platform.",
+    "coreClaim": "n8n is a high-leverage MongoDB target because it combines technical builders, AI agents, self-hosting, enterprise traction, and an existing MongoDB node.",
+    "sourceIds": ["n8n-ai-agents-docs", "n8n-mongodb-node", "n8n-series-c", "n8n-sap-partnership"],
+    "visual": "architecture",
+    "practicalTakeaway": "Make MongoDB the obvious production state and RAG layer for n8n workflows."
+  },
+  {
+    "slide": 10,
+    "title": "Zapier Deep Dive",
+    "objective": "Analyze Zapier's strategic role.",
+    "coreClaim": "Zapier is a distribution and action network for business users and AI systems.",
+    "sourceIds": ["zapier-ai-actions", "zapier-ai-orchestration"],
+    "visual": "comparison",
+    "practicalTakeaway": "MongoDB should focus on safe, schema-aware business actions rather than raw CRUD."
+  },
+  {
+    "slide": 11,
+    "title": "Make Deep Dive",
+    "objective": "Analyze Make's strategic role.",
+    "coreClaim": "Make brings AI agents into a transparent automation canvas that business technologists can inspect and modify.",
+    "sourceIds": ["make-ai-agents", "make-help-ai-agents"],
+    "visual": "comparison",
+    "practicalTakeaway": "MongoDB scenario templates should emphasize visible state, approvals, and durable history."
+  },
+  {
+    "slide": 12,
+    "title": "Visual AI Builders",
+    "objective": "Explain Langflow, Flowise, and Dify.",
+    "coreClaim": "Visual AI builders specialize in RAG, agent, prompt, tool, and knowledge-base composition.",
+    "sourceIds": ["langflow-docs", "flowise-docs", "dify-agent-docs"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "MongoDB should be first-class as vector store, document store, memory, and tool source."
+  },
+  {
+    "slide": 13,
+    "title": "Langflow and DataStax Signal",
+    "objective": "Use Langflow to show database-platform strategy.",
+    "coreClaim": "DataStax acquiring Langflow shows that database vendors view visual GenAI builders as strategic demand surfaces.",
+    "sourceIds": ["langflow-docs", "datastax-langflow-acquisition"],
+    "visual": "metric-map",
+    "practicalTakeaway": "MongoDB should not leave visual RAG builder defaults to database competitors."
+  },
+  {
+    "slide": 14,
+    "title": "Flowise and Dify",
+    "objective": "Show open-source AI app builder patterns.",
+    "coreClaim": "Flowise and Dify expose the retrieval, tool, workflow, and knowledge primitives that production AI apps need.",
+    "sourceIds": ["flowise-docs", "dify-agent-docs", "dify-knowledge"],
+    "visual": "architecture",
+    "practicalTakeaway": "A MongoDB integration should include RAG-ready defaults, not just connection strings."
+  },
+  {
+    "slide": 15,
+    "title": "Internal Tool Builders",
+    "objective": "Analyze Retool and adjacent internal app builders.",
+    "coreClaim": "Internal tool builders sit close to operational data, admin apps, saved queries, and governed tools.",
+    "sourceIds": ["retool-docs", "retool-ai-agents"],
+    "visual": "architecture",
+    "practicalTakeaway": "MongoDB can win as the database behind internal AI tools and review queues."
+  },
+  {
+    "slide": 16,
+    "title": "Enterprise Suites",
+    "objective": "Compare Microsoft, Salesforce, and ServiceNow.",
+    "coreClaim": "Enterprise suites win through installed data, identity, governance, and workflow ownership.",
+    "sourceIds": ["copilot-studio-docs", "salesforce-agentforce-builder", "servicenow-agent-studio"],
+    "visual": "comparison",
+    "practicalTakeaway": "MongoDB should complement, not replace, suite-native systems of record."
+  },
+  {
+    "slide": 17,
+    "title": "Microsoft Copilot Studio",
+    "objective": "Analyze Microsoft as distribution channel.",
+    "coreClaim": "Copilot Studio and Power Platform give MongoDB a connector-led path into enterprise agents and workflows.",
+    "sourceIds": ["copilot-studio-docs", "copilot-studio-connectors", "microsoft-mongodb-connector"],
+    "visual": "architecture",
+    "practicalTakeaway": "Improve MongoDB connector quality, identity patterns, and agent-safe action templates."
+  },
+  {
+    "slide": 18,
+    "title": "Salesforce and ServiceNow",
+    "objective": "Analyze system-of-record-native agent suites.",
+    "coreClaim": "Salesforce and ServiceNow use agents to deepen their process and data gravity inside CRM, IT, HR, and service workflows.",
+    "sourceIds": ["salesforce-agentforce-architecture", "servicenow-ai-release"],
+    "visual": "comparison",
+    "practicalTakeaway": "MongoDB should target extensions, custom apps, telemetry, and external operational data around these suites."
+  },
+  {
+    "slide": 19,
+    "title": "Record-Native and AI-Native Platforms",
+    "objective": "Cover Airtable, Gumloop, Relevance AI, and Lindy.",
+    "coreClaim": "Newer platforms compress the path from prompt to workflow, often creating hidden data-plane choices.",
+    "sourceIds": ["airtable-ai-agents", "airtable-field-agents", "gumloop-docs", "relevance-docs", "lindy-docs"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "MongoDB can influence defaults through early templates and ecosystem partnerships."
+  },
+  {
+    "slide": 20,
+    "title": "Platform Comparison Matrix",
+    "objective": "Compare platform families by strategic fit.",
+    "coreClaim": "Each platform family creates different MongoDB entry points: connector, vector store, app database, audit ledger, or external system of record.",
+    "sourceIds": ["n8n-mongodb-node", "microsoft-mongodb-connector", "mongodb-atlas-vector-search"],
+    "visual": "comparison",
+    "practicalTakeaway": "Choose partner investments by workload capture, not logos alone."
+  },
+  {
+    "slide": 21,
+    "title": "Runtime Architecture",
+    "objective": "Show the canonical AI workflow runtime.",
+    "coreClaim": "Low/no-code AI workflows usually run trigger, normalize, decide, retrieve, act, observe, and improve loops.",
+    "sourceIds": ["n8n-ai-agents-docs", "dify-agent-docs", "retool-docs"],
+    "visual": "flow",
+    "practicalTakeaway": "Map MongoDB to concrete runtime responsibilities."
+  },
+  {
+    "slide": 22,
+    "title": "Data Objects",
+    "objective": "Identify persistent data created by these workflows.",
+    "coreClaim": "AI workflow platforms generate durable data needs around state, runs, credentials, actions, memory, documents, approvals, audits, and evals.",
+    "sourceIds": ["n8n-ai-agents-docs", "retool-docs", "dify-agent-docs"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "These are MongoDB workloads when workflows become production systems."
+  },
+  {
+    "slide": 23,
+    "title": "Failure Modes",
+    "objective": "Explain why production workflows need a real data layer.",
+    "coreClaim": "The common failures are stateless workflows, unsafe writes, weak RAG provenance, opaque execution history, and platform data lock-in.",
+    "sourceIds": ["ibm-agentic-operations", "mongodb-atlas-vector-search"],
+    "visual": "metric-map",
+    "practicalTakeaway": "MongoDB should sell reliability, governance, and observability, not only storage."
+  },
+  {
+    "slide": 24,
+    "title": "MongoDB's Right to Win",
+    "objective": "State the core positioning.",
+    "coreClaim": "MongoDB can win as the durable, flexible, agent-ready data plane for AI automation.",
+    "sourceIds": ["mongodb-atlas-vector-search", "mongodb-atlas-search", "n8n-mongodb-node"],
+    "visual": "architecture",
+    "practicalTakeaway": "Position Atlas as state plus documents plus search plus vectors plus audit."
+  },
+  {
+    "slide": 25,
+    "title": "Position 1: Workflow State Store",
+    "objective": "Detail state-store positioning.",
+    "coreClaim": "AI workflows need durable state across executions, retries, approvals, users, and long-running tasks.",
+    "sourceIds": ["n8n-ai-agents-docs", "retool-docs"],
+    "visual": "state-machine",
+    "practicalTakeaway": "Create templates for long-running state machines, not only CRUD examples."
+  },
+  {
+    "slide": 26,
+    "title": "Position 2: RAG and Memory Store",
+    "objective": "Detail retrieval and memory positioning.",
+    "coreClaim": "MongoDB can combine source documents, chunks, embeddings, metadata, text search, vector search, and source ledgers.",
+    "sourceIds": ["mongodb-atlas-vector-search", "mongodb-atlas-search", "dify-knowledge"],
+    "visual": "architecture",
+    "practicalTakeaway": "Use Atlas Search and Vector Search to own the evidence layer."
+  },
+  {
+    "slide": 27,
+    "title": "Position 3: Agent-Safe Actions",
+    "objective": "Move beyond generic connector thinking.",
+    "coreClaim": "Agent-safe MongoDB integrations should expose validated business actions, not only generic reads and writes.",
+    "sourceIds": ["zapier-ai-actions", "n8n-mongodb-node", "microsoft-mongodb-connector"],
+    "visual": "code",
+    "practicalTakeaway": "Package safe actions like find customer, append event, search policy, and create approval record."
+  },
+  {
+    "slide": 28,
+    "title": "Position 4: Audit and Observability",
+    "objective": "Show trace and governance opportunity.",
+    "coreClaim": "Production AI workflows need execution traces, tool calls, prompts, context, approvals, costs, and outcomes.",
+    "sourceIds": ["servicenow-ai-release", "ibm-agentic-operations"],
+    "visual": "flow",
+    "practicalTakeaway": "MongoDB can become the run ledger and eval store for AI automation."
+  },
+  {
+    "slide": 29,
+    "title": "Commercial Opportunity Map",
+    "objective": "Translate positioning into revenue motions.",
+    "coreClaim": "The commercial opportunities are workload capture, partner marketplaces, migration from lightweight stores, solution accelerators, and ecosystem-led demand.",
+    "sourceIds": ["n8n-sap-partnership", "datastax-langflow-acquisition", "ibm-agentic-operations"],
+    "visual": "metric-map",
+    "practicalTakeaway": "Prioritize opportunities where MongoDB becomes the production upgrade path."
+  },
+  {
+    "slide": 30,
+    "title": "ICP Signals",
+    "objective": "Define where MongoDB should target.",
+    "coreClaim": "Strong ICP signals include shared workflow state, memory across executions, regulated actions, RAG, approval routing, and spreadsheet limits.",
+    "sourceIds": ["ibm-agentic-operations", "ibm-agentic-operations"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "Use these signals in sales qualification and product-led templates."
+  },
+  {
+    "slide": 31,
+    "title": "Product Gap: Connector UX",
+    "objective": "Identify connector improvements.",
+    "coreClaim": "Generic database connectors are too low-level for business builders and too risky for agents.",
+    "sourceIds": ["n8n-mongodb-node", "microsoft-mongodb-connector", "zapier-ai-actions"],
+    "visual": "comparison",
+    "practicalTakeaway": "Invest in schema-aware fields, safe writes, examples, and typed outputs."
+  },
+  {
+    "slide": 32,
+    "title": "Product Gap: Templates",
+    "objective": "Identify template strategy.",
+    "coreClaim": "Templates are the fastest way to change platform defaults because builders copy working patterns.",
+    "sourceIds": ["n8n-ai-agents-docs", "make-ai-agents", "langflow-docs"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "Ship MongoDB-backed template packs for RevOps, SupportOps, FinOps, ComplianceOps, and IT Ops."
+  },
+  {
+    "slide": 33,
+    "title": "Product Gap: RAG Modules",
+    "objective": "Identify RAG integration needs.",
+    "coreClaim": "Visual AI builders need one-click MongoDB RAG modules with source ledgers and retrieval observability.",
+    "sourceIds": ["langflow-docs", "flowise-docs", "dify-knowledge", "mongodb-atlas-vector-search"],
+    "visual": "architecture",
+    "practicalTakeaway": "Compete for vector-store defaults with opinionated RAG building blocks."
+  },
+  {
+    "slide": 34,
+    "title": "Partner Strategy",
+    "objective": "Prioritize partner motions.",
+    "coreClaim": "MongoDB should segment partners by workload capture: n8n/Make/Zapier for automation, Langflow/Flowise/Dify for RAG, Retool for internal tools, Microsoft for enterprise distribution.",
+    "sourceIds": ["n8n-sap-partnership", "datastax-langflow-acquisition", "copilot-studio-docs"],
+    "visual": "comparison",
+    "practicalTakeaway": "Do not treat every marketplace listing as equal."
+  },
+  {
+    "slide": 35,
+    "title": "Competitive Risks",
+    "objective": "Name threats clearly.",
+    "coreClaim": "MongoDB risks losing defaults to platform-native stores, Postgres/Supabase, vector-first vendors, and enterprise suite data clouds.",
+    "sourceIds": ["datastax-langflow-acquisition", "salesforce-agentforce-builder", "servicenow-ai-release"],
+    "visual": "comparison",
+    "practicalTakeaway": "Win before defaults become invisible infrastructure."
+  },
+  {
+    "slide": 36,
+    "title": "MongoDB Offer Design",
+    "objective": "Package the strategy.",
+    "coreClaim": "A coherent offer should combine connectors, templates, data models, RAG modules, audit ledgers, and partner distribution.",
+    "sourceIds": ["mongodb-atlas-vector-search", "mongodb-atlas-search", "n8n-mongodb-node"],
+    "visual": "architecture",
+    "practicalTakeaway": "Create an Atlas for AI Automation motion."
+  },
+  {
+    "slide": 37,
+    "title": "Reference Blueprint",
+    "objective": "Show a MongoDB-backed AI workflow blueprint.",
+    "coreClaim": "A production blueprint has workflow canvas, agent node, MongoDB state, RAG store, approval ledger, and observability loop.",
+    "sourceIds": ["n8n-ai-agents-docs", "mongodb-atlas-vector-search", "mongodb-atlas-search"],
+    "visual": "architecture",
+    "practicalTakeaway": "Turn this blueprint into docs, demos, and partner templates."
+  },
+  {
+    "slide": 38,
+    "title": "Prioritized Roadmap",
+    "objective": "Recommend product sequence.",
+    "coreClaim": "The highest-impact sequence is connector upgrades, n8n templates, visual RAG integrations, Retool apps, Copilot Studio connector patterns, then packaged observability.",
+    "sourceIds": ["n8n-mongodb-node", "langflow-docs", "retool-docs", "copilot-studio-docs"],
+    "visual": "sequence",
+    "practicalTakeaway": "Start with the platforms where MongoDB can become a copied pattern quickly."
+  },
+  {
+    "slide": 39,
+    "title": "Decision Framework",
+    "objective": "Give strategy teams a scoring model.",
+    "coreClaim": "Score opportunities by builder adoption, data gravity, connector quality, workflow criticality, MongoDB differentiation, and partner access.",
+    "sourceIds": ["ibm-agentic-operations", "n8n-sap-partnership"],
+    "visual": "metric-map",
+    "practicalTakeaway": "Use a repeatable scoring model before funding integrations."
+  },
+  {
+    "slide": 40,
+    "title": "Key Takeaways",
+    "objective": "Summarize the strategic answer.",
+    "coreClaim": "MongoDB's best position is the production data plane for AI automation: state, documents, retrieval, memory, safe actions, and observability.",
+    "sourceIds": ["mongodb-atlas-vector-search", "mongodb-atlas-search", "n8n-sap-partnership"],
+    "visual": "taxonomy",
+    "practicalTakeaway": "Make MongoDB the production upgrade path from low/no-code AI experimentation."
+  },
+  {
+    "slide": 41,
+    "title": "References",
+    "objective": "Provide source-grounded follow-up reading.",
+    "coreClaim": "The deck relies primarily on official platform docs, vendor announcements, and selected market research.",
+    "sourceIds": ["n8n-ai-agents-docs", "zapier-ai-actions", "make-ai-agents", "langflow-docs", "flowise-docs", "dify-agent-docs", "retool-docs", "copilot-studio-docs", "mongodb-atlas-vector-search"],
+    "visual": "none",
+    "practicalTakeaway": "Re-check platform docs before making roadmap commitments because this market changes quickly."
+  }
+]

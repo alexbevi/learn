@@ -1,0 +1,902 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Low/No-Code AI Platforms and MongoDB Strategy</title>
+    <script src="../../../assets/js/theme.js"></script>
+    <link rel="stylesheet" href="../../../assets/vendor/reveal/dist/reveal.css" />
+    <link
+      rel="stylesheet"
+      href="../../../assets/vendor/reveal/dist/plugin/highlight/monokai.css"
+    />
+    <link rel="stylesheet" href="../../../assets/css/deck.css" />
+    <style>
+      .platform-grid,
+      .strategy-grid,
+      .flow,
+      .matrix,
+      .architecture,
+      .roadmap {
+        display: grid;
+        gap: 13px;
+        margin-top: 22px;
+      }
+
+      .platform-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .strategy-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .strategy-grid.three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .flow {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+      }
+
+      .flow.five {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+
+      .roadmap {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+      }
+
+      .architecture {
+        grid-template-columns: 1fr 1.2fr 1fr;
+        align-items: stretch;
+      }
+
+      .architecture.four {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .lane {
+        display: grid;
+        gap: 12px;
+      }
+
+      .card,
+      .step,
+      .node,
+      .cell,
+      .road-step {
+        border: 1px solid var(--deck-line);
+        border-radius: 8px;
+        background: linear-gradient(180deg, var(--deck-panel-2), var(--deck-panel));
+        padding: 13px 15px;
+      }
+
+      .card strong,
+      .step strong,
+      .node strong,
+      .cell strong,
+      .road-step strong {
+        display: block;
+        color: var(--deck-text);
+        font-size: 0.55em;
+        line-height: 1.14;
+      }
+
+      .card span,
+      .step span,
+      .node span,
+      .cell span,
+      .road-step span {
+        display: block;
+        margin-top: 7px;
+        color: var(--deck-muted);
+        font-size: 0.44em;
+        line-height: 1.27;
+      }
+
+      .card.accent,
+      .node.accent,
+      .step.accent,
+      .cell.accent {
+        border-color: rgb(33 199 168 / 58%);
+      }
+
+      .card.warn,
+      .node.warn,
+      .step.warn {
+        border-color: rgb(255 184 77 / 58%);
+      }
+
+      .step,
+      .road-step {
+        position: relative;
+        min-height: 124px;
+      }
+
+      .step:not(:last-child)::after,
+      .road-step:not(:last-child)::after {
+        content: ">";
+        position: absolute;
+        top: 50%;
+        right: -11px;
+        z-index: 2;
+        color: var(--deck-accent);
+        font-size: 0.6em;
+        font-weight: 900;
+        transform: translateY(-50%);
+      }
+
+      .matrix {
+        grid-template-columns: 0.9fr 1.1fr 1.1fr 1.1fr;
+      }
+
+      .cell.header {
+        border-color: rgb(33 199 168 / 52%);
+      }
+
+      .wide-table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+        font-size: 0.42em;
+      }
+
+      .wide-table th,
+      .wide-table td {
+        padding: 8px 9px;
+        border: 1px solid var(--deck-line);
+        vertical-align: top;
+      }
+
+      .wide-table th {
+        color: var(--deck-text);
+        background: var(--deck-panel-2);
+      }
+
+      .wide-table td {
+        color: var(--deck-muted);
+        line-height: 1.28;
+      }
+
+      .code-tight {
+        font-size: 0.43em;
+        line-height: 1.22;
+      }
+
+      .reference-list {
+        columns: 3;
+        column-gap: 28px;
+      }
+
+      .reference-list li {
+        font-size: 0.42em;
+        overflow-wrap: anywhere;
+      }
+
+      .small-note {
+        margin-top: 18px;
+        color: var(--deck-footnote);
+        font-size: 0.48em;
+      }
+
+      @media (max-width: 1000px) {
+        .platform-grid,
+        .strategy-grid,
+        .strategy-grid.three,
+        .flow,
+        .flow.five,
+        .roadmap,
+        .architecture,
+        .architecture.four,
+        .matrix {
+          grid-template-columns: 1fr;
+        }
+
+        .step:not(:last-child)::after,
+        .road-step:not(:last-child)::after {
+          content: "";
+        }
+
+        .reference-list {
+          columns: 1;
+        }
+      }
+    </style>
+  </head>
+  <body class="has-deck-topbar">
+    <header class="deck-topbar" aria-label="Presentation navigation">
+      <a class="deck-nav-link" href="../../../">Main menu</a>
+      <div class="deck-title">
+        <span>Low/No-Code AI Platforms and MongoDB Strategy</span>
+        <small>Market map, use cases, commercial opportunity, and positioning</small>
+      </div>
+      <a class="deck-nav-link" href="../../../topics/agent-development/">Topic</a>
+    </header>
+
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <p class="kicker">Agent Development</p>
+          <h1>Low/No-Code AI Platforms and MongoDB Strategy</h1>
+          <p class="lead">
+            A hybrid product and strategy deep dive into n8n, Zapier, Make,
+            Langflow, Flowise, Dify, Retool, Copilot Studio, and adjacent AI
+            automation platforms: what they are used for, where commercial
+            opportunity is forming, and where MongoDB can win.
+          </p>
+          <p class="footnote">80 minutes / 41 slides / Last updated 2026-06-01</p>
+        </section>
+
+        <section>
+          <p class="kicker">Learning goals</p>
+          <h2>Build a strategy map, not a tool list</h2>
+          <div class="strategy-grid" data-visual="learning goals">
+            <div class="card accent"><strong>Market map</strong><span>Separate automation-first, visual AI, internal app, enterprise suite, and AI-native platforms.</span></div>
+            <div class="card"><strong>Use cases</strong><span>Understand where business teams are using these tools for real work.</span></div>
+            <div class="card"><strong>Commercial signal</strong><span>Identify where funding, enterprise distribution, and workflow ownership point.</span></div>
+            <div class="card"><strong>MongoDB strategy</strong><span>Turn platform adoption into Atlas workloads, partners, and product gaps.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Executive thesis</p>
+          <h2>This is not another chatbot market</h2>
+          <div class="strategy-grid three" data-visual="executive thesis">
+            <div class="card warn"><strong>Wrong frame</strong><span>"No-code chatbot builder with some integrations."</span></div>
+            <div class="card accent"><strong>Right frame</strong><span>Business-user automation surface for AI decisions, tool use, retrieval, and human review.</span></div>
+            <div class="card"><strong>MongoDB frame</strong><span>Production data plane for state, documents, RAG, memory, audit, and safe actions.</span></div>
+          </div>
+          <p class="lead">
+            The commercial opportunity appears when experiments become
+            operational workflows that need durable, governed data.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Why now</p>
+          <h2>AI orchestration is crossing into enterprise distribution</h2>
+          <div class="strategy-grid" data-visual="market signals">
+            <div class="card accent"><strong>n8n</strong><span>Series C and SAP partnership signal enterprise demand for AI orchestration.</span></div>
+            <div class="card"><strong>Zapier + Make</strong><span>Broad app networks are adding agents to existing automation graphs.</span></div>
+            <div class="card"><strong>ServiceNow</strong><span>AI Agent Studio and Orchestrator move agents into workflow-suite governance.</span></div>
+            <div class="card"><strong>Buyers</strong><span>Ops leaders want workflow redesign, not only productivity assistants.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Taxonomy</p>
+          <h2>The market has several centers of gravity</h2>
+          <div class="platform-grid" data-visual="platform taxonomy">
+            <div class="card accent"><strong>Automation-first</strong><span>n8n, Zapier, Make. Triggers, connectors, branching, retries, credentials.</span></div>
+            <div class="card accent"><strong>Visual AI builders</strong><span>Langflow, Flowise, Dify. Agents, RAG, prompts, tools, knowledge bases.</span></div>
+            <div class="card"><strong>Internal tool builders</strong><span>Retool. Admin apps, data operations, saved queries, workflows.</span></div>
+            <div class="card"><strong>Enterprise suites</strong><span>Copilot Studio, Salesforce Agentforce, ServiceNow. Identity, governance, process ownership.</span></div>
+            <div class="card"><strong>Record-native</strong><span>Airtable. Business tables, field agents, app-like workflows.</span></div>
+            <div class="card"><strong>AI-native agents</strong><span>Gumloop, Relevance AI, Lindy. Prompt-to-workflow, role agents, faster GTM/ops adoption.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Use cases</p>
+          <h2>What teams are actually automating</h2>
+          <div class="platform-grid" data-visual="use case map">
+            <div class="card"><strong>GTM</strong><span>Lead enrichment, account research, outbound, CRM hygiene, meeting prep.</span></div>
+            <div class="card"><strong>Support</strong><span>Ticket triage, routing, summarization, knowledge lookup, escalation briefs.</span></div>
+            <div class="card"><strong>Finance ops</strong><span>Invoice review, expenses, procurement, collections, quote-to-cash exceptions.</span></div>
+            <div class="card"><strong>Knowledge work</strong><span>Policy Q&A, contract review, compliance questionnaires, document extraction.</span></div>
+            <div class="card"><strong>Data ops</strong><span>SaaS sync, cleanup, categorization, webhooks, ETL-lite jobs, dashboards.</span></div>
+            <div class="card"><strong>IT and internal tools</strong><span>Access requests, incidents, runbooks, review queues, admin panels.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Pattern</p>
+          <h2>AI sits inside a visible workflow</h2>
+          <div class="flow" data-visual="workload pattern">
+            <div class="step"><strong>Trigger</strong><span>Webhook, schedule, app event, chat, form, record change.</span></div>
+            <div class="step"><strong>Normalize</strong><span>Parse payload, map fields, validate shape, enrich context.</span></div>
+            <div class="step accent"><strong>Decide</strong><span>AI classifies, extracts, routes, drafts, or plans.</span></div>
+            <div class="step"><strong>Retrieve</strong><span>Docs, memory, tickets, policies, customer or product data.</span></div>
+            <div class="step warn"><strong>Approve</strong><span>Human gate for money, customer, legal, or risk actions.</span></div>
+            <div class="step"><strong>Act + trace</strong><span>Update systems, notify users, log outcomes, feed evals.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Automation-first</p>
+          <h2>n8n, Zapier, and Make are process glue</h2>
+          <div class="strategy-grid three" data-visual="automation first comparison">
+            <div class="card accent"><strong>n8n</strong><span>Technical visual workflow engine with cloud, self-hosting, custom code, AI Agent node, and MongoDB node.</span></div>
+            <div class="card"><strong>Zapier</strong><span>Business-user automation network with AI Actions and a very broad app ecosystem.</span></div>
+            <div class="card"><strong>Make</strong><span>Scenario canvas where AI agents operate inside transparent automations.</span></div>
+          </div>
+          <p class="small-note">
+            Their wedge is not model quality. It is connecting AI decisions to
+            the messy SaaS systems where work already happens.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">n8n deep dive</p>
+          <h2>The most obvious near-term MongoDB wedge</h2>
+          <div class="architecture" data-visual="n8n strategic map">
+            <div class="lane">
+              <div class="node accent"><strong>Builder gravity</strong><span>Technical teams, ops engineers, automation consultants, self-hosters.</span></div>
+              <div class="node"><strong>AI surface</strong><span>Agent node plus workflow graph, tools, credentials, code, and templates.</span></div>
+            </div>
+            <div class="lane">
+              <div class="node accent"><strong>MongoDB node</strong><span>Document operations, aggregation, and search-index operations already exist.</span></div>
+              <div class="node"><strong>Production upgrade</strong><span>State, memory, source ledger, workflow runs, approvals, RAG evidence.</span></div>
+            </div>
+            <div class="lane">
+              <div class="node accent"><strong>Commercial signal</strong><span>Funding plus SAP partnership moves n8n closer to enterprise AI workflow standardization.</span></div>
+              <div class="node warn"><strong>Risk</strong><span>If MongoDB is only a generic database node, builders will copy weaker patterns.</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Zapier deep dive</p>
+          <h2>Distribution matters as much as architecture</h2>
+          <div class="strategy-grid three" data-visual="zapier strategy">
+            <div class="card accent"><strong>Core asset</strong><span>App network and low-friction business-user automation.</span></div>
+            <div class="card"><strong>AI direction</strong><span>AI Actions and agents expose app capabilities to AI systems.</span></div>
+            <div class="card warn"><strong>MongoDB need</strong><span>Agent-safe actions with schema, guardrails, typed outputs, and audit events.</span></div>
+          </div>
+          <p class="lead">
+            The question is not whether a connector exists. It is whether a
+            non-database expert can safely let an agent use MongoDB.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Make deep dive</p>
+          <h2>Transparent automation is a trust advantage</h2>
+          <div class="strategy-grid three" data-visual="make strategy">
+            <div class="card accent"><strong>Canvas</strong><span>Scenarios make steps, branches, modules, and approvals visible.</span></div>
+            <div class="card"><strong>AI agents</strong><span>Adaptive AI behavior appears inside existing automation work.</span></div>
+            <div class="card"><strong>MongoDB role</strong><span>Scenario templates for support, invoices, enrichment, RAG, and durable task state.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Visual AI builders</p>
+          <h2>Langflow, Flowise, and Dify start from the AI graph</h2>
+          <div class="platform-grid" data-visual="visual ai builders">
+            <div class="card accent"><strong>Langflow</strong><span>Visual editor for AI apps, agents, MCP, and component workflows.</span></div>
+            <div class="card"><strong>Flowise</strong><span>Open-source GenAI development platform for agents and LLM workflows.</span></div>
+            <div class="card"><strong>Dify</strong><span>Apps, agents, tools, workflows, knowledge bases, retrieval settings.</span></div>
+            <div class="card"><strong>Shared need</strong><span>Vector store, document store, metadata filters, memory, source ledgers.</span></div>
+            <div class="card"><strong>MongoDB wedge</strong><span>Atlas Vector Search plus Atlas Search plus flexible document model.</span></div>
+            <div class="card warn"><strong>Risk</strong><span>Vector-first and database vendors can win defaults through first-class components.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Competitive signal</p>
+          <h2>DataStax bought the builder surface</h2>
+          <div class="strategy-grid three" data-visual="datastax langflow signal">
+            <div class="card accent"><strong>What happened</strong><span>DataStax acquired Langflow, a popular visual framework for RAG applications.</span></div>
+            <div class="card"><strong>Why it matters</strong><span>Database vendors see visual AI builders as demand-generation and default-setting surfaces.</span></div>
+            <div class="card warn"><strong>MongoDB implication</strong><span>Do not let visual RAG defaults form around competitor data planes.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Flowise + Dify</p>
+          <h2>RAG is a product surface, not just a library call</h2>
+          <div class="architecture" data-visual="flowise dify architecture">
+            <div class="node"><strong>Builder</strong><span>Prompt, model, tool, agent, workflow, and knowledge components.</span></div>
+            <div class="node accent"><strong>Retrieval layer</strong><span>Documents, chunks, embeddings, metadata, reranking, citations.</span></div>
+            <div class="node"><strong>App output</strong><span>Chat app, workflow endpoint, internal assistant, human review queue.</span></div>
+          </div>
+          <p class="lead">
+            MongoDB should show up as a complete retrieval and memory module,
+            not as a blank database connection users must assemble themselves.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Internal tools</p>
+          <h2>Retool is close to operational data</h2>
+          <div class="architecture" data-visual="retool architecture">
+            <div class="lane">
+              <div class="node accent"><strong>Apps</strong><span>Admin consoles, review queues, support tools, back-office workflows.</span></div>
+              <div class="node"><strong>Queries</strong><span>Saved database queries and API calls become governed tools.</span></div>
+            </div>
+            <div class="lane">
+              <div class="node accent"><strong>Agents + workflows</strong><span>Automate human work with scheduled or user-triggered actions.</span></div>
+              <div class="node"><strong>MCP and tools</strong><span>Agents can access controlled tools instead of raw systems.</span></div>
+            </div>
+            <div class="lane">
+              <div class="node accent"><strong>MongoDB opportunity</strong><span>Operational app data, flexible records, queue state, audit, and RAG context.</span></div>
+              <div class="node warn"><strong>Risk</strong><span>If MongoDB access feels lower-level than SQL, teams will choose easier defaults.</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Enterprise suites</p>
+          <h2>Governance and installed data win inside the suite</h2>
+          <table class="wide-table" data-visual="enterprise suite comparison">
+            <thead>
+              <tr>
+                <th>Platform</th>
+                <th>Center of gravity</th>
+                <th>Agent surface</th>
+                <th>MongoDB adjacency</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Microsoft</td>
+                <td>Microsoft 365, Power Platform, connectors, identity</td>
+                <td>Copilot Studio agents, actions, knowledge, connectors</td>
+                <td>External operational data, connector actions, knowledge pipelines</td>
+              </tr>
+              <tr>
+                <td>Salesforce</td>
+                <td>CRM, Data Cloud, customer workflows</td>
+                <td>Agentforce builder and lifecycle</td>
+                <td>Customer 360 extensions, product telemetry, custom app data</td>
+              </tr>
+              <tr>
+                <td>ServiceNow</td>
+                <td>IT, HR, service, workflow governance</td>
+                <td>AI Agent Studio, Orchestrator, workflow fabric</td>
+                <td>External systems, event history, operational applications</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Microsoft</p>
+          <h2>Copilot Studio is a connector-led enterprise path</h2>
+          <div class="architecture" data-visual="copilot studio architecture">
+            <div class="node accent"><strong>Maker</strong><span>Builds agent in Copilot Studio with topics, actions, knowledge, connectors.</span></div>
+            <div class="node"><strong>Connector layer</strong><span>Power Platform connectors expose systems to agents and flows.</span></div>
+            <div class="node accent"><strong>MongoDB</strong><span>Power Platform MongoDB connector supports document operations and aggregation.</span></div>
+          </div>
+          <p class="lead">
+            The strategic work is connector quality: identity, schema mapping,
+            safe actions, examples, and governance documentation.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Suite-native agents</p>
+          <h2>Salesforce and ServiceNow deepen their data gravity</h2>
+          <div class="strategy-grid three" data-visual="suite native agents">
+            <div class="card accent"><strong>Strength</strong><span>They already own workflows, users, permissions, and domain records.</span></div>
+            <div class="card"><strong>MongoDB strategy</strong><span>Complement as custom app data, external system of record, event store, or knowledge ledger.</span></div>
+            <div class="card warn"><strong>Threat</strong><span>Suite data clouds can absorb AI workflow state if MongoDB is not clearly differentiated.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Emerging surfaces</p>
+          <h2>Airtable, Gumloop, Relevance AI, and Lindy compress time-to-workflow</h2>
+          <div class="platform-grid" data-visual="emerging platforms">
+            <div class="card"><strong>Airtable</strong><span>Record-native AI and field agents inside business tables.</span></div>
+            <div class="card"><strong>Gumloop</strong><span>No-code AI automations with agents, tools, credits, and package-supported execution.</span></div>
+            <div class="card"><strong>Relevance AI</strong><span>Low/no-code agents and multi-agent workforces for business tasks.</span></div>
+            <div class="card"><strong>Lindy</strong><span>AI agents for automation with a fast onboarding surface.</span></div>
+            <div class="card accent"><strong>MongoDB opportunity</strong><span>Influence defaults before these platforms harden their storage patterns.</span></div>
+            <div class="card warn"><strong>Watch</strong><span>They may hide the data plane until customers hit reliability or governance limits.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Comparison matrix</p>
+          <h2>Map platform family to MongoDB entry point</h2>
+          <div class="matrix" data-visual="platform comparison matrix">
+            <div class="cell header"><strong>Family</strong><span>Examples</span></div>
+            <div class="cell header"><strong>Center of gravity</strong><span>Why users choose it</span></div>
+            <div class="cell header"><strong>MongoDB entry</strong><span>Best wedge</span></div>
+            <div class="cell header"><strong>Main risk</strong><span>Why MongoDB loses</span></div>
+            <div class="cell"><strong>Automation-first</strong><span>n8n, Zapier, Make</span></div>
+            <div class="cell"><strong>Connect work</strong><span>Triggers, SaaS APIs, branching, retries.</span></div>
+            <div class="cell"><strong>State + safe actions</strong><span>Workflow records, RAG, audit, approvals.</span></div>
+            <div class="cell"><strong>Generic connector</strong><span>Users copy spreadsheet or raw CRUD patterns.</span></div>
+            <div class="cell"><strong>Visual AI</strong><span>Langflow, Flowise, Dify</span></div>
+            <div class="cell"><strong>Build AI apps</strong><span>Prompts, tools, agents, RAG graphs.</span></div>
+            <div class="cell"><strong>RAG module</strong><span>Vector, search, documents, memory.</span></div>
+            <div class="cell"><strong>Vector defaults</strong><span>Competitors win first-class components.</span></div>
+            <div class="cell"><strong>Enterprise suite</strong><span>Microsoft, Salesforce, ServiceNow</span></div>
+            <div class="cell"><strong>Govern work</strong><span>Identity, process, packaged domain workflows.</span></div>
+            <div class="cell"><strong>External data plane</strong><span>Custom apps, events, knowledge, telemetry.</span></div>
+            <div class="cell"><strong>Suite gravity</strong><span>Native data cloud absorbs workflow state.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Runtime architecture</p>
+          <h2>The same loops keep appearing</h2>
+          <div class="flow" data-visual="runtime architecture">
+            <div class="step"><strong>Trigger</strong><span>Event starts the run.</span></div>
+            <div class="step"><strong>Normalize</strong><span>Shape data for deterministic and AI steps.</span></div>
+            <div class="step accent"><strong>Decide</strong><span>Agent or model chooses classification, route, or draft.</span></div>
+            <div class="step"><strong>Retrieve</strong><span>Find source records, documents, policies, memories.</span></div>
+            <div class="step"><strong>Act</strong><span>Call APIs, write records, send messages, create tasks.</span></div>
+            <div class="step warn"><strong>Observe</strong><span>Trace inputs, outputs, errors, costs, approvals, outcomes.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Data objects</p>
+          <h2>AI workflows create database demand in disguise</h2>
+          <div class="platform-grid" data-visual="persistent data objects">
+            <div class="card"><strong>Workflow state</strong><span>Task status, owners, steps, retries, checkpoints.</span></div>
+            <div class="card"><strong>Runs</strong><span>Inputs, outputs, node execution, errors, timing.</span></div>
+            <div class="card"><strong>Business records</strong><span>Customers, leads, invoices, tickets, vendors, assets.</span></div>
+            <div class="card"><strong>Documents</strong><span>Raw files, parsed text, chunks, embeddings, metadata.</span></div>
+            <div class="card"><strong>Memory</strong><span>User, account, task, conversation, and entity history.</span></div>
+            <div class="card"><strong>Governance</strong><span>Approvals, audit events, policy decisions, eval outcomes.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Failure modes</p>
+          <h2>Production exposes the missing data layer</h2>
+          <table class="wide-table" data-visual="failure modes">
+            <thead>
+              <tr>
+                <th>Symptom</th>
+                <th>Root cause</th>
+                <th>MongoDB angle</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Workflow forgets prior context</td>
+                <td>Stateless automation or spreadsheet state</td>
+                <td>Durable task and memory store</td>
+              </tr>
+              <tr>
+                <td>Agent writes bad data</td>
+                <td>Raw CRUD exposed as tool</td>
+                <td>Validated business actions and approval ledger</td>
+              </tr>
+              <tr>
+                <td>RAG answer cannot be trusted</td>
+                <td>No source ledger, metadata, or retrieval trace</td>
+                <td>Document, chunk, vector, search, and citation model</td>
+              </tr>
+              <tr>
+                <td>No one can debug outcomes</td>
+                <td>Execution history is scattered across tools</td>
+                <td>Run ledger and observability collections</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Right to win</p>
+          <h2>MongoDB as the AI automation data plane</h2>
+          <div class="architecture" data-visual="mongodb right to win">
+            <div class="lane">
+              <div class="node"><strong>Workflow state</strong><span>Long-running tasks, retries, approvals, checkpoints.</span></div>
+              <div class="node"><strong>Operational app data</strong><span>Flexible customer, ticket, invoice, account, product records.</span></div>
+            </div>
+            <div class="lane">
+              <div class="node accent"><strong>Atlas</strong><span>Documents, flexible schema, Search, Vector Search, aggregation, operational scale.</span></div>
+              <div class="node"><strong>Agent-safe layer</strong><span>Validated actions, typed outputs, write policies, audit events.</span></div>
+            </div>
+            <div class="lane">
+              <div class="node"><strong>RAG and memory</strong><span>Sources, chunks, embeddings, metadata, citations, account memory.</span></div>
+              <div class="node"><strong>Observability</strong><span>Runs, traces, costs, feedback, evals, governance reporting.</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Position 1</p>
+          <h2>Workflow state store</h2>
+          <div class="flow five" data-visual="workflow state store">
+            <div class="step"><strong>New run</strong><span>Capture trigger payload and normalized business object.</span></div>
+            <div class="step"><strong>In progress</strong><span>Track owner, step, tool calls, retries, and deadlines.</span></div>
+            <div class="step warn"><strong>Needs review</strong><span>Human approval for risk, money, legal, or customer actions.</span></div>
+            <div class="step"><strong>Committed</strong><span>Write validated output and downstream event.</span></div>
+            <div class="step accent"><strong>Learned</strong><span>Feed outcome into memory, evals, and template improvements.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Position 2</p>
+          <h2>RAG and memory store</h2>
+          <div class="architecture" data-visual="rag memory store">
+            <div class="lane">
+              <div class="node"><strong>Sources</strong><span>Docs, tickets, policies, CRM notes, contracts, product records.</span></div>
+              <div class="node"><strong>Ledger</strong><span>Owner, version, permission, effective date, freshness.</span></div>
+            </div>
+            <div class="lane">
+              <div class="node accent"><strong>MongoDB</strong><span>Documents, chunks, metadata, Atlas Search, Atlas Vector Search.</span></div>
+              <div class="node"><strong>Memory</strong><span>User, account, task, and entity history scoped by policy.</span></div>
+            </div>
+            <div class="lane">
+              <div class="node"><strong>Agent context</strong><span>Retrieved evidence, citations, facts, and action constraints.</span></div>
+              <div class="node"><strong>Trace</strong><span>Query, hits, scores, context, answer, outcome.</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Position 3</p>
+          <h2>Agent-safe actions beat raw CRUD</h2>
+          <pre><code class="language-json code-tight">{
+  "action": "append_customer_event",
+  "allowedCollections": ["customers", "customer_events"],
+  "requiredFields": ["customerId", "eventType", "source", "summary"],
+  "writePolicy": "append-only",
+  "approvalRequiredWhen": ["eventType = refund", "confidence < 0.85"],
+  "returns": ["eventId", "customerId", "auditRecordId"]
+}</code></pre>
+          <p class="small-note">
+            This is the shape low/no-code platforms need: business actions,
+            typed inputs, constrained writes, and auditable outputs.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Position 4</p>
+          <h2>Audit and observability store</h2>
+          <div class="flow five" data-visual="audit observability flow">
+            <div class="step"><strong>Request</strong><span>User, workflow, trigger, input, auth context.</span></div>
+            <div class="step"><strong>Decision</strong><span>Prompt, model, tool plan, classification, confidence.</span></div>
+            <div class="step"><strong>Action</strong><span>API calls, database writes, approvals, failures.</span></div>
+            <div class="step"><strong>Outcome</strong><span>Latency, cost, customer result, human feedback.</span></div>
+            <div class="step accent"><strong>Eval</strong><span>Regression set, score, drift, release gate.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Commercial opportunity</p>
+          <h2>Where the money can show up</h2>
+          <div class="platform-grid" data-visual="commercial opportunity map">
+            <div class="card accent"><strong>New Atlas workloads</strong><span>Workflow state, RAG, memory, audit, operational apps.</span></div>
+            <div class="card"><strong>Marketplace demand</strong><span>Certified connectors and templates where builders start.</span></div>
+            <div class="card"><strong>Migration motion</strong><span>From Sheets, Airtable, Notion, embedded tables, and brittle SaaS sync.</span></div>
+            <div class="card"><strong>Solution accelerators</strong><span>RevOps, SupportOps, FinOps, ComplianceOps, IT Ops.</span></div>
+            <div class="card"><strong>Partner co-sell</strong><span>Automation vendors, enterprise suites, consultancies, SIs.</span></div>
+            <div class="card"><strong>Developer relations</strong><span>Teach safe AI workflow architecture using MongoDB defaults.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">ICP signals</p>
+          <h2>Where MongoDB should lean in</h2>
+          <div class="strategy-grid" data-visual="icp signals">
+            <div class="card"><strong>Shared state</strong><span>More than one workflow needs the same durable object model.</span></div>
+            <div class="card"><strong>Memory</strong><span>Agent must remember users, customers, accounts, or prior cases.</span></div>
+            <div class="card"><strong>Risk</strong><span>Workflow touches money, customer commitments, compliance, or regulated data.</span></div>
+            <div class="card"><strong>RAG</strong><span>Answers need source ledgers, metadata filters, citations, and freshness.</span></div>
+            <div class="card"><strong>Scale</strong><span>Spreadsheets and platform tables break under volume or schema complexity.</span></div>
+            <div class="card"><strong>Audit</strong><span>Team must explain who did what, why, with which data.</span></div>
+            <div class="card"><strong>Integrations</strong><span>Workflows span multiple SaaS tools and custom systems.</span></div>
+            <div class="card"><strong>Ownership</strong><span>Business wants speed but engineering needs an operable data layer.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Product gap</p>
+          <h2>Connector UX decides whether MongoDB feels safe</h2>
+          <div class="strategy-grid three" data-visual="connector gap">
+            <div class="card warn"><strong>Current anti-pattern</strong><span>Generic find, insert, update, aggregate with raw field mapping and little business context.</span></div>
+            <div class="card accent"><strong>Needed UX</strong><span>Schema-aware fields, sample documents, typed outputs, safe write modes, test data.</span></div>
+            <div class="card"><strong>Agent-ready layer</strong><span>Approved actions, guardrails, validation, audit record creation, review routing.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Product gap</p>
+          <h2>Templates change defaults faster than docs</h2>
+          <div class="platform-grid" data-visual="template strategy">
+            <div class="card accent"><strong>SupportOps</strong><span>Ticket triage, customer memory, escalation brief, known-issue RAG.</span></div>
+            <div class="card"><strong>RevOps</strong><span>Lead enrichment, account research, CRM cleanup, next-best action.</span></div>
+            <div class="card"><strong>FinOps</strong><span>Invoice exception review, expense audit, vendor onboarding.</span></div>
+            <div class="card"><strong>ComplianceOps</strong><span>Questionnaire answers, policy lookup, approval ledger.</span></div>
+            <div class="card"><strong>IT Ops</strong><span>Incident summaries, access requests, runbook execution.</span></div>
+            <div class="card warn"><strong>Design rule</strong><span>Every template should include state, trace, source ledger, and safe action patterns.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Product gap</p>
+          <h2>Visual RAG modules need batteries included</h2>
+          <div class="architecture" data-visual="rag module gap">
+            <div class="node"><strong>What builders want</strong><span>Upload or sync docs, choose retrieval settings, connect agent.</span></div>
+            <div class="node accent"><strong>What MongoDB should provide</strong><span>Source ledger, chunk model, vector index, text search, filters, eval hooks.</span></div>
+            <div class="node warn"><strong>What to avoid</strong><span>A blank "connect to database" block that leaves RAG architecture to the user.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Partner strategy</p>
+          <h2>Invest by workload capture, not logo count</h2>
+          <div class="matrix" data-visual="partner strategy">
+            <div class="cell header"><strong>Partner class</strong><span>Examples</span></div>
+            <div class="cell header"><strong>Primary MongoDB role</strong><span>What to sell</span></div>
+            <div class="cell header"><strong>Best asset</strong><span>What to ship</span></div>
+            <div class="cell header"><strong>Priority</strong><span>Why</span></div>
+            <div class="cell"><strong>Automation</strong><span>n8n, Make, Zapier</span></div>
+            <div class="cell"><strong>State + actions</strong><span>Workflow data, safe writes, app records.</span></div>
+            <div class="cell"><strong>Templates</strong><span>Copyable workflows and certified actions.</span></div>
+            <div class="cell"><strong>High</strong><span>Fast path from experiment to Atlas workload.</span></div>
+            <div class="cell"><strong>Visual AI</strong><span>Langflow, Flowise, Dify</span></div>
+            <div class="cell"><strong>RAG + memory</strong><span>Documents, vectors, search, citations.</span></div>
+            <div class="cell"><strong>Components</strong><span>First-class vector/document/memory blocks.</span></div>
+            <div class="cell"><strong>High</strong><span>Default-setting threat from vector competitors.</span></div>
+            <div class="cell"><strong>Enterprise</strong><span>Microsoft, Retool, ServiceNow</span></div>
+            <div class="cell"><strong>External data plane</strong><span>Operational records and governed tools.</span></div>
+            <div class="cell"><strong>Patterns</strong><span>Identity, governance, admin apps, data access.</span></div>
+            <div class="cell"><strong>Selective</strong><span>Longer sales cycle but larger governed workloads.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Competitive risks</p>
+          <h2>The default data plane may disappear into someone else's platform</h2>
+          <div class="strategy-grid" data-visual="competitive risks">
+            <div class="card warn"><strong>Platform-native tables</strong><span>Good enough for lightweight state and small teams.</span></div>
+            <div class="card warn"><strong>Postgres/Supabase</strong><span>Visible startup and no-code ecosystem defaults.</span></div>
+            <div class="card warn"><strong>Vector-first vendors</strong><span>Win first-class visual RAG integrations.</span></div>
+            <div class="card warn"><strong>Enterprise data clouds</strong><span>Suites pull AI workflow state into their governed layer.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Offer design</p>
+          <h2>Atlas for AI Automation</h2>
+          <div class="platform-grid" data-visual="offer design">
+            <div class="card accent"><strong>Connectors</strong><span>Certified, schema-aware, safe write modes, typed outputs.</span></div>
+            <div class="card accent"><strong>Templates</strong><span>Function-specific workflows with source, state, and audit built in.</span></div>
+            <div class="card"><strong>Data models</strong><span>Run ledger, approval ledger, memory, source ledger, eval store.</span></div>
+            <div class="card"><strong>RAG modules</strong><span>Documents, chunks, Search, Vector Search, citations, filters.</span></div>
+            <div class="card"><strong>Partner distribution</strong><span>n8n, Make, Zapier, Retool, Copilot Studio, Dify, Langflow, Flowise.</span></div>
+            <div class="card"><strong>Enablement</strong><span>Demo apps, architecture docs, sales plays, marketplace listings.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Blueprint</p>
+          <h2>MongoDB-backed AI workflow reference architecture</h2>
+          <div class="architecture" data-visual="reference blueprint">
+            <div class="lane">
+              <div class="node accent"><strong>Low/no-code canvas</strong><span>Trigger, branch, call agent, request approval, send output.</span></div>
+              <div class="node"><strong>SaaS tools</strong><span>CRM, email, ticketing, files, ERP, chat, calendar.</span></div>
+            </div>
+            <div class="lane">
+              <div class="node accent"><strong>MongoDB Atlas</strong><span>Workflow state, operational records, source ledger, approval ledger.</span></div>
+              <div class="node"><strong>Search + Vector Search</strong><span>RAG evidence, memory, citations, metadata filters.</span></div>
+            </div>
+            <div class="lane">
+              <div class="node accent"><strong>Agent-safe API</strong><span>Validated business actions, typed outputs, guardrails.</span></div>
+              <div class="node"><strong>Observability</strong><span>Execution traces, evals, cost, latency, feedback, outcomes.</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Roadmap</p>
+          <h2>Prioritize the shortest path to copied patterns</h2>
+          <div class="roadmap" data-visual="prioritized roadmap">
+            <div class="road-step accent"><strong>1. Connectors</strong><span>Upgrade n8n and Microsoft patterns; define safe actions.</span></div>
+            <div class="road-step"><strong>2. n8n packs</strong><span>Ship SupportOps, RevOps, FinOps, ComplianceOps templates.</span></div>
+            <div class="road-step"><strong>3. RAG blocks</strong><span>Langflow, Flowise, Dify components with Atlas defaults.</span></div>
+            <div class="road-step"><strong>4. Retool apps</strong><span>Admin and review consoles backed by MongoDB.</span></div>
+            <div class="road-step"><strong>5. Copilot patterns</strong><span>Identity, connector, and knowledge-source reference architectures.</span></div>
+            <div class="road-step"><strong>6. Observability</strong><span>Run ledger and eval-store bundle for AI automation.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Decision framework</p>
+          <h2>Score platform opportunities before funding them</h2>
+          <table class="wide-table" data-visual="decision framework">
+            <thead>
+              <tr>
+                <th>Dimension</th>
+                <th>High score looks like</th>
+                <th>Strategic question</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Builder adoption</td>
+                <td>Active community, enterprise growth, consultants, templates</td>
+                <td>Will builders copy MongoDB patterns?</td>
+              </tr>
+              <tr>
+                <td>Data gravity</td>
+                <td>Workflows need durable, flexible, governed data</td>
+                <td>Is MongoDB differentiated from platform-native state?</td>
+              </tr>
+              <tr>
+                <td>Connector quality</td>
+                <td>Can expose safe business actions and typed outputs</td>
+                <td>Can an agent use it without raw CRUD risk?</td>
+              </tr>
+              <tr>
+                <td>Partner access</td>
+                <td>Marketplace, co-sell, docs, examples, engineering path</td>
+                <td>Can MongoDB influence default components?</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <p class="kicker">Takeaways</p>
+          <h2>MongoDB should become the production upgrade path</h2>
+          <div class="strategy-grid" data-visual="key takeaways">
+            <div class="card accent"><strong>Do not compete on canvas</strong><span>Win underneath the platforms product and ops teams already adopt.</span></div>
+            <div class="card"><strong>Move past connectors</strong><span>Ship safe actions, schema-aware UX, templates, and RAG modules.</span></div>
+            <div class="card"><strong>Target production pain</strong><span>State, memory, RAG, audit, approvals, traceability, governance.</span></div>
+            <div class="card"><strong>Partner by workload</strong><span>Prioritize surfaces that can create repeated Atlas workloads.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">References</p>
+          <h2>Follow-up sources by concept</h2>
+          <div class="reference-list">
+            <h3>Automation platforms</h3>
+            <ul>
+              <li><a href="https://docs.n8n.io/advanced-ai/examples/understand-agents/">n8n AI Agents</a></li>
+              <li><a href="https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.mongodb/">n8n MongoDB Node</a></li>
+              <li><a href="https://blog.n8n.io/series-c/">n8n Series C</a></li>
+              <li><a href="https://www.prnewswire.com/news-releases/n8n-valuation-doubles-to-5-2bn-as-sap-makes-strategic-investment-and-plans-to-embed-the-ai-platform-into-joule-studio-302767222.html">n8n SAP Partnership</a></li>
+              <li><a href="https://docs.zapier.com/integrations/reference/ai-actions">Zapier AI Actions</a></li>
+              <li><a href="https://help.make.com/make-ai-agents-the-next-step-in-automation">Make AI Agents</a></li>
+            </ul>
+            <h3>Visual AI builders</h3>
+            <ul>
+              <li><a href="https://docs.langflow.org/">Langflow Docs</a></li>
+              <li><a href="https://www.datastax.com/press-release/datastax-acquires-langflow-to-make-building-genai-apps-100x-easier-faster-more-fun">DataStax Acquires Langflow</a></li>
+              <li><a href="https://docs.flowiseai.com/">Flowise Docs</a></li>
+              <li><a href="https://docs.dify.ai/en/use-dify/build/agent">Dify Agent Docs</a></li>
+            </ul>
+            <h3>Enterprise and app builders</h3>
+            <ul>
+              <li><a href="https://docs.retool.com/">Retool Docs</a></li>
+              <li><a href="https://learn.microsoft.com/en-us/microsoft-copilot-studio/">Microsoft Copilot Studio</a></li>
+              <li><a href="https://learn.microsoft.com/en-us/connectors/mongodb/">Microsoft MongoDB Connector</a></li>
+              <li><a href="https://www.salesforce.com/agentforce/agent-builder/">Salesforce Agentforce Builder</a></li>
+              <li><a href="https://servicenow.github.io/sdk/guides/building-ai-agents-guide">ServiceNow AI Agents Guide</a></li>
+              <li><a href="https://www.airtable.com/platform/ai-agents">Airtable AI Agents</a></li>
+            </ul>
+            <h3>Emerging and market context</h3>
+            <ul>
+              <li><a href="https://docs.gumloop.com/">Gumloop Docs</a></li>
+              <li><a href="https://relevanceai.com/docs">Relevance AI Docs</a></li>
+              <li><a href="https://docs.lindy.ai/">Lindy Docs</a></li>
+              <li><a href="https://www.ibm.com/thought-leadership/institute-business-value/en-us/report/agentic-process-automation">IBM Agentic Operations</a></li>
+            </ul>
+            <h3>MongoDB</h3>
+            <ul>
+              <li><a href="https://www.mongodb.com/docs/vector-search/query/aggregation-stages/vector-search-stage/">MongoDB Vector Search</a></li>
+              <li><a href="https://www.mongodb.com/docs/atlas/atlas-search/">MongoDB Atlas Search</a></li>
+            </ul>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script src="../../../assets/vendor/reveal/dist/reveal.js"></script>
+    <script src="../../../assets/vendor/reveal/dist/plugin/highlight.js"></script>
+    <script>
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        hash: true,
+        slideNumber: true,
+        transition: "slide",
+        backgroundTransition: "fade",
+        plugins: [RevealHighlight],
+      });
+    </script>
+  </body>
+</html>
