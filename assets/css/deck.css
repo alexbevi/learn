@@ -1,4 +1,5 @@
 :root {
+  color-scheme: dark;
   --deck-bg: #0f1115;
   --deck-panel: #171b22;
   --deck-panel-2: #202633;
@@ -9,6 +10,38 @@
   --deck-amber: #ffb84d;
   --deck-red: #f26d6d;
   --deck-blue: #7aa8ff;
+  --deck-topbar-bg: rgb(15 17 21 / 92%);
+  --deck-topbar-line: rgb(255 255 255 / 9%);
+  --deck-bg-glow: rgb(33 199 168 / 15%);
+  --deck-bg-sheen: rgb(255 255 255 / 5%);
+  --deck-code-border: rgb(255 255 255 / 10%);
+  --deck-code-fill: rgb(255 255 255 / 7%);
+  --deck-callout-line: rgb(33 199 168 / 45%);
+  --deck-code-bg: #11151c;
+  --deck-footnote: #8994a5;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --deck-bg: #f7f8fb;
+  --deck-panel: #ffffff;
+  --deck-panel-2: #eef3f7;
+  --deck-text: #17202c;
+  --deck-muted: #516072;
+  --deck-line: #d8e0ea;
+  --deck-accent: #087f6f;
+  --deck-amber: #9a5b00;
+  --deck-red: #b42335;
+  --deck-blue: #255ec4;
+  --deck-topbar-bg: rgb(247 248 251 / 92%);
+  --deck-topbar-line: rgb(15 23 42 / 10%);
+  --deck-bg-glow: rgb(8 127 111 / 10%);
+  --deck-bg-sheen: rgb(15 23 42 / 3%);
+  --deck-code-border: rgb(15 23 42 / 12%);
+  --deck-code-fill: rgb(15 23 42 / 5%);
+  --deck-callout-line: rgb(8 127 111 / 35%);
+  --deck-code-bg: #f3f6fa;
+  --deck-footnote: #657386;
 }
 
 .reveal {
@@ -33,13 +66,13 @@ body.has-deck-topbar .reveal {
   left: 0;
   z-index: 50;
   display: grid;
-  grid-template-columns: minmax(90px, 150px) minmax(0, 1fr) minmax(70px, 120px);
+  grid-template-columns: minmax(90px, 150px) minmax(0, 1fr) minmax(70px, 120px) minmax(70px, 92px);
   align-items: center;
   gap: 14px;
   height: 58px;
   padding: 0 24px;
-  border-bottom: 1px solid rgb(255 255 255 / 9%);
-  background: rgb(15 17 21 / 92%);
+  border-bottom: 1px solid var(--deck-topbar-line);
+  background: var(--deck-topbar-bg);
   backdrop-filter: blur(18px);
   color: var(--deck-text);
   font-family:
@@ -90,8 +123,8 @@ body.has-deck-topbar .reveal {
 
 .reveal-viewport {
   background:
-    radial-gradient(circle at 82% 12%, rgb(33 199 168 / 15%), transparent 300px),
-    linear-gradient(180deg, rgb(255 255 255 / 5%), transparent 340px),
+    radial-gradient(circle at 82% 12%, var(--deck-bg-glow), transparent 300px),
+    linear-gradient(180deg, var(--deck-bg-sheen), transparent 340px),
     var(--deck-bg);
 }
 
@@ -146,9 +179,9 @@ body.has-deck-topbar .reveal {
 
 .reveal :not(pre) > code {
   padding: 0.1em 0.32em;
-  border: 1px solid rgb(255 255 255 / 10%);
+  border: 1px solid var(--deck-code-border);
   border-radius: 6px;
-  background: rgb(255 255 255 / 7%);
+  background: var(--deck-code-fill);
   color: var(--deck-text);
   font-family:
     "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
@@ -217,7 +250,7 @@ body.has-deck-topbar .reveal {
 }
 
 .callout {
-  border-color: rgb(33 199 168 / 45%);
+  border-color: var(--deck-callout-line);
 }
 
 .metric {
@@ -245,7 +278,7 @@ body.has-deck-topbar .reveal {
   margin: 26px 0 0;
   border: 1px solid var(--deck-line);
   border-radius: 8px;
-  background: #11151c;
+  background: var(--deck-code-bg);
   box-shadow: none;
 }
 
@@ -276,8 +309,46 @@ body.has-deck-topbar .reveal {
 
 .footnote {
   margin-top: 22px;
-  color: #8994a5;
+  color: var(--deck-footnote);
   font-size: 0.48em;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 0 10px;
+  border: 1px solid var(--deck-line);
+  border-radius: 999px;
+  background: var(--deck-code-fill);
+  color: var(--deck-muted);
+  cursor: pointer;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 0.76rem;
+  font-weight: 720;
+}
+
+.theme-toggle:hover {
+  border-color: var(--deck-accent);
+  color: var(--deck-text);
+}
+
+.theme-toggle-mark {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: inset 5px 0 0 var(--deck-bg);
+}
+
+:root[data-theme="light"] .theme-toggle-mark {
+  background: transparent;
+  box-shadow: 0 0 0 3px rgb(8 127 111 / 14%);
 }
 
 .reference-list {
@@ -317,7 +388,7 @@ body.has-deck-topbar .reveal {
 
 @media (max-width: 680px) {
   .deck-topbar {
-    grid-template-columns: 74px minmax(0, 1fr) 58px;
+    grid-template-columns: 74px minmax(0, 1fr) 58px 40px;
     gap: 8px;
     height: 54px;
     padding: 0 10px;
@@ -339,5 +410,20 @@ body.has-deck-topbar .reveal {
   .deck-nav-link {
     min-height: 32px;
     font-size: 0.72rem;
+  }
+
+  .theme-toggle {
+    width: 40px;
+    min-height: 32px;
+    padding: 0;
+  }
+
+  .theme-toggle [data-theme-toggle-label] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
   }
 }

@@ -10,9 +10,35 @@
   --accent-2: #ffb84d;
   --accent-3: #f26d6d;
   --shadow: 0 12px 38px rgb(0 0 0 / 22%);
+  --page-sheen: rgb(255 255 255 / 3%);
+  --page-glow: rgb(33 199 168 / 10%);
+  --soft-line: rgb(255 255 255 / 6%);
+  --soft-fill: rgb(255 255 255 / 4%);
+  --soft-border: rgb(255 255 255 / 10%);
+  --updated: #7f8a99;
   --max: 1180px;
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f6f7f9;
+  --panel: #ffffff;
+  --panel-strong: #f0f4f8;
+  --text: #18202b;
+  --muted: #526173;
+  --line: #d8e0ea;
+  --accent: #087f6f;
+  --accent-2: #9a5b00;
+  --accent-3: #b42335;
+  --shadow: 0 12px 34px rgb(15 23 42 / 10%);
+  --page-sheen: rgb(15 23 42 / 3%);
+  --page-glow: rgb(8 127 111 / 10%);
+  --soft-line: rgb(15 23 42 / 8%);
+  --soft-fill: rgb(15 23 42 / 4%);
+  --soft-border: rgb(15 23 42 / 10%);
+  --updated: #6b7787;
 }
 
 * {
@@ -23,8 +49,8 @@ body {
   margin: 0;
   min-height: 100vh;
   background:
-    linear-gradient(180deg, rgb(255 255 255 / 3%), transparent 220px),
-    radial-gradient(circle at 85% 8%, rgb(33 199 168 / 10%), transparent 220px),
+    linear-gradient(180deg, var(--page-sheen), transparent 220px),
+    radial-gradient(circle at 85% 8%, var(--page-glow), transparent 220px),
     var(--bg);
   color: var(--text);
 }
@@ -46,6 +72,12 @@ a {
   justify-content: space-between;
   gap: 24px;
   padding: 14px 0;
+}
+
+.site-header nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .brand {
@@ -79,7 +111,7 @@ a {
 
 .hero {
   padding: 24px 0 26px;
-  border-top: 1px solid rgb(255 255 255 / 5%);
+  border-top: 1px solid var(--soft-line);
 }
 
 .hero .section-inner {
@@ -106,7 +138,7 @@ a {
 
 .band {
   padding: 28px 0;
-  border-top: 1px solid rgb(255 255 255 / 6%);
+  border-top: 1px solid var(--soft-line);
 }
 
 .section-heading {
@@ -206,7 +238,7 @@ a {
   display: inline-flex;
   margin: 14px 0 0;
   padding: 6px 9px;
-  border: 1px solid rgb(255 255 255 / 10%);
+  border: 1px solid var(--soft-border);
   border-radius: 8px;
   color: var(--accent-2);
   font-size: 0.78rem;
@@ -215,7 +247,7 @@ a {
 
 .updated-line {
   margin: 8px 0 0;
-  color: #7f8a99;
+  color: var(--updated);
   font-size: 0.78rem;
 }
 
@@ -248,7 +280,7 @@ a {
 .tag-chip {
   border: 1px solid var(--line);
   border-radius: 999px;
-  background: rgb(255 255 255 / 4%);
+  background: var(--soft-fill);
   color: var(--muted);
   font: inherit;
   font-size: 0.82rem;
@@ -263,6 +295,42 @@ a {
 .tag-button.is-active {
   border-color: var(--accent);
   color: var(--text);
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 0 11px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--soft-fill);
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 720;
+}
+
+.theme-toggle:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.theme-toggle-mark {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: inset 5px 0 0 var(--bg);
+}
+
+:root[data-theme="light"] .theme-toggle-mark {
+  background: transparent;
+  box-shadow: 0 0 0 3px rgb(8 127 111 / 14%);
 }
 
 .tag-chip {
@@ -288,6 +356,11 @@ a {
   .section-heading {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .site-header nav {
+    width: 100%;
+    justify-content: space-between;
   }
 
   .hero .section-inner {
