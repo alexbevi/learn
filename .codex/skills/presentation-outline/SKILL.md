@@ -92,6 +92,19 @@ Example contract:
    - Technical deep dives usually need 35-60 slides.
    - Prefer more focused slides over overloaded layouts.
 
+6. Run an adversarial outline review before authoring HTML.
+   - Review `claims.json` for:
+     - unsupported or weakly sourced claims
+     - missing caveats, constraints, lifecycle stage, or version sensitivity
+     - slides that say "what" without explaining "why" or "how"
+     - slides that are too broad, repetitive, or generic
+     - comparison slides with inconsistent axes
+     - claims that need code, command, API, state-flow, or failure-mode detail
+     - major concepts without an appropriate planned visual
+   - Revise `claims.json` before proceeding when issues are found.
+   - Record unresolved scope risks in the outline response instead of hiding
+     them in later slides.
+
 ## Output
 
 - `claims.json` ready for authoring.
