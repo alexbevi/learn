@@ -431,7 +431,7 @@ window.LEARN_CATALOG = {
       ],
       durationMinutes: 70,
       slideCount: 42,
-      lastUpdated: "2026-05-27",
+      lastUpdated: "2026-06-01",
       tags: [
         { slug: "agent-development", label: "Agent Development" },
         { slug: "agents", label: "Agents" },
