@@ -44,6 +44,14 @@ Create source-grounded, static HTML learning decks for the Learn repository. The
    - Use the shared reveal.js layout, shared CSS, persistent presentation topbar, and local assets.
    - Include title, learning goals, conceptual framing, technical detail, practical guidance, recap, and final references slides.
    - For technical content, prefer mechanisms, interfaces, state flow, failure modes, code-level examples, and tradeoffs.
+   - Apply the no-generic-slide test: every technical slide must answer a
+     specific learner question and include at least two concrete specifics such
+     as a named API, command, config knob, protocol, lifecycle state, data
+     structure, policy, index type, failure mode, code path, workload, or
+     decision criterion.
+   - Revise or remove slides that could apply unchanged to many unrelated
+     technologies. Replace vague value claims with mechanisms, examples,
+     caveats, or operational consequences.
    - Use real HTML formatting. Inline code in prose must be `<code>...</code>`, not markdown-style backticks.
    - Avoid slide text overflow by using compact copy, responsive grids, stable dimensions, and smaller text inside cards/panels.
 
