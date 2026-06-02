@@ -24,8 +24,39 @@ Convert research into a slide contract before writing HTML.
    - Use an array of slide contract objects.
    - Required fields: `slide`, `title`, `objective`, `coreClaim`,
      `sourceIds`, `visual`, `practicalTakeaway`.
+   - For substantial technical or strategic decks, also include:
+     - `learnerQuestion`: the specific question this slide answers
+     - `mechanism`: the concrete API, state path, runtime flow, protocol,
+       data model, policy, or decision mechanism that supports the claim
+     - `example`: the workload, scenario, code snippet, or artifact that makes
+       the claim concrete
+     - `counterpoint`: the caveat, constraint, failure mode, tradeoff, or
+       competing interpretation the learner should not miss
+     - `sourceTreatment`: `sourced`, `inference`, or `mixed`
    - `visual` should be `none`, `taxonomy`, `flow`, `architecture`,
      `state-machine`, `sequence`, `comparison`, `metric-map`, or `code`.
+   - Keep inferred claims explicit: if `sourceTreatment` is `inference` or
+     `mixed`, name the evidence used and the reasoning step in the slide
+     contract.
+
+Example contract:
+
+```json
+{
+  "slide": 12,
+  "title": "Auth and RLS Request Path",
+  "objective": "Explain how browser-side access can be safe.",
+  "learnerQuestion": "How does the platform keep direct client data access from leaking tenant data?",
+  "coreClaim": "JWT identity and database-enforced policies let generated APIs serve browser clients safely when policies are correct.",
+  "mechanism": "Client JWT -> generated API -> database role/claims -> row-level policy predicate -> filtered result set.",
+  "example": "Membership policy over projects and agent_runs tables.",
+  "counterpoint": "Policies can be misconfigured, slow, or bypassed by privileged service-role code.",
+  "sourceIds": ["vendor-auth-docs", "vendor-policy-docs"],
+  "sourceTreatment": "sourced",
+  "visual": "flow",
+  "practicalTakeaway": "Treat policy definitions as production application code."
+}
+```
 
 3. Keep one claim per slide whenever possible.
    - Dense decks can use two supporting points, but avoid mixed-purpose slides.
