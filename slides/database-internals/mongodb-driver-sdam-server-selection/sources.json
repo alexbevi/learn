@@ -1,0 +1,156 @@
+[
+  {
+    "id": "spec-sdam",
+    "title": "Server Discovery and Monitoring",
+    "url": "https://specifications.readthedocs.io/en/latest/server-discovery-and-monitoring/server-discovery-and-monitoring/",
+    "sourceType": "primary",
+    "publisher": "MongoDB Driver Specifications",
+    "retrieved": "2026-06-01",
+    "concepts": ["sdam", "topology-description", "server-description", "hello", "monitoring"],
+    "confidence": "high",
+    "notes": "Primary driver specification for topology discovery, monitoring, server descriptions, topology descriptions, and state transitions."
+  },
+  {
+    "id": "spec-server-selection",
+    "title": "Server Selection",
+    "url": "https://specifications.readthedocs.io/en/latest/server-selection/server-selection/",
+    "sourceType": "primary",
+    "publisher": "MongoDB Driver Specifications",
+    "retrieved": "2026-06-01",
+    "concepts": ["server-selection", "read-preference", "latency-window", "local-threshold", "max-staleness"],
+    "confidence": "high",
+    "notes": "Primary driver specification for selecting suitable servers from topology state."
+  },
+  {
+    "id": "spec-csot",
+    "title": "Client Side Operations Timeout",
+    "url": "https://specifications.readthedocs.io/en/latest/client-side-operations-timeout/client-side-operations-timeout/",
+    "sourceType": "primary",
+    "publisher": "MongoDB Driver Specifications",
+    "retrieved": "2026-06-01",
+    "concepts": ["timeoutms", "operation-timeout", "server-selection-timeout", "deadline"],
+    "confidence": "high",
+    "notes": "Driver specification for timeoutMS and operation-level client deadlines."
+  },
+  {
+    "id": "spec-cmap",
+    "title": "Connection Monitoring and Pooling",
+    "url": "https://specifications.readthedocs.io/en/latest/connection-monitoring-and-pooling/connection-monitoring-and-pooling/",
+    "sourceType": "primary",
+    "publisher": "MongoDB Driver Specifications",
+    "retrieved": "2026-06-01",
+    "concepts": ["connection-pooling", "pool-clearing", "checkout", "events"],
+    "confidence": "high",
+    "notes": "Driver specification for connection pool behavior, checkout, pool clearing, and monitoring events."
+  },
+  {
+    "id": "spec-retryable-writes",
+    "title": "Retryable Writes",
+    "url": "https://specifications.readthedocs.io/en/latest/retryable-writes/retryable-writes/",
+    "sourceType": "primary",
+    "publisher": "MongoDB Driver Specifications",
+    "retrieved": "2026-06-01",
+    "concepts": ["retryable-writes", "sessions", "error-labels", "transactions"],
+    "confidence": "high",
+    "notes": "Driver specification for retryable write eligibility and labels."
+  },
+  {
+    "id": "spec-retryable-reads",
+    "title": "Retryable Reads",
+    "url": "https://specifications.readthedocs.io/en/latest/retryable-reads/retryable-reads/",
+    "sourceType": "primary",
+    "publisher": "MongoDB Driver Specifications",
+    "retrieved": "2026-06-01",
+    "concepts": ["retryable-reads", "server-selection", "sessions", "error-labels"],
+    "confidence": "high",
+    "notes": "Driver specification for retryable read behavior."
+  },
+  {
+    "id": "spec-load-balancers",
+    "title": "Load Balancers",
+    "url": "https://specifications.readthedocs.io/en/latest/load-balancers/load-balancers/",
+    "sourceType": "primary",
+    "publisher": "MongoDB Driver Specifications",
+    "retrieved": "2026-06-01",
+    "concepts": ["load-balanced-mode", "service-id", "connection-pinning"],
+    "confidence": "high",
+    "notes": "Driver specification for load-balanced deployments and serviceId behavior."
+  },
+  {
+    "id": "mongodb-read-pref-mechanics",
+    "title": "Server Selection Algorithm",
+    "url": "https://www.mongodb.com/docs/manual/core/read-preference-mechanics/",
+    "sourceType": "primary",
+    "publisher": "MongoDB",
+    "retrieved": "2026-06-01",
+    "concepts": ["server-selection", "read-preference", "local-threshold", "max-staleness", "tags"],
+    "confidence": "high",
+    "notes": "MongoDB manual description of server selection algorithm and read preference mechanics."
+  },
+  {
+    "id": "mongodb-read-preference",
+    "title": "Read Preference",
+    "url": "https://www.mongodb.com/docs/manual/core/read-preference/",
+    "sourceType": "primary",
+    "publisher": "MongoDB",
+    "retrieved": "2026-06-01",
+    "concepts": ["read-preference", "primary", "secondary", "nearest", "tags"],
+    "confidence": "high",
+    "notes": "MongoDB manual reference for read preference modes and behavior."
+  },
+  {
+    "id": "mongodb-max-staleness",
+    "title": "maxStalenessSeconds",
+    "url": "https://www.mongodb.com/docs/manual/core/read-preference-staleness/",
+    "sourceType": "primary",
+    "publisher": "MongoDB",
+    "retrieved": "2026-06-01",
+    "concepts": ["max-staleness", "secondary-reads", "replication-lag"],
+    "confidence": "high",
+    "notes": "MongoDB manual page for maxStalenessSeconds behavior."
+  },
+  {
+    "id": "mongodb-connection-string-options",
+    "title": "Connection String Options",
+    "url": "https://www.mongodb.com/docs/manual/reference/connection-string-options/",
+    "sourceType": "primary",
+    "publisher": "MongoDB",
+    "retrieved": "2026-06-01",
+    "concepts": ["connection-string", "serverSelectionTimeoutMS", "localThresholdMS", "heartbeatFrequencyMS", "directConnection"],
+    "confidence": "high",
+    "notes": "MongoDB manual reference for connection string options relevant to discovery, server selection, and pooling."
+  },
+  {
+    "id": "node-csot",
+    "title": "Node.js Driver Client-Side Operation Timeout",
+    "url": "https://www.mongodb.com/docs/drivers/node/current/fundamentals/connection/csot/",
+    "sourceType": "primary",
+    "publisher": "MongoDB",
+    "retrieved": "2026-06-01",
+    "concepts": ["node-driver", "timeoutMS", "csot"],
+    "confidence": "high",
+    "notes": "Node.js driver documentation for timeoutMS and CSOT usage."
+  },
+  {
+    "id": "go-connection-options",
+    "title": "Go Driver Connection Options",
+    "url": "https://www.mongodb.com/docs/drivers/go/current/connect/specify-connection-options/",
+    "sourceType": "primary",
+    "publisher": "MongoDB",
+    "retrieved": "2026-06-01",
+    "concepts": ["go-driver", "connection-options", "timeouts", "pools"],
+    "confidence": "high",
+    "notes": "Go driver documentation for connection and timeout options."
+  },
+  {
+    "id": "mongodb-hello",
+    "title": "hello Command",
+    "url": "https://www.mongodb.com/docs/manual/reference/command/hello/",
+    "sourceType": "primary",
+    "publisher": "MongoDB",
+    "retrieved": "2026-06-01",
+    "concepts": ["hello", "topology", "wire-version", "replica-set"],
+    "confidence": "high",
+    "notes": "MongoDB command reference for hello response fields used by drivers."
+  }
+]
