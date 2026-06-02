@@ -1,0 +1,156 @@
+[
+  {
+    "id": "a2a-spec",
+    "title": "A2A Protocol Specification",
+    "url": "https://a2a-protocol.org/latest/specification/",
+    "sourceType": "primary",
+    "publisher": "A2A Protocol",
+    "retrieved": "2026-06-01",
+    "concepts": ["a2a", "specification", "messages", "tasks", "artifacts", "agent-card"],
+    "confidence": "high",
+    "notes": "Primary protocol specification for Agent Cards, messages, tasks, parts, artifacts, states, and operations."
+  },
+  {
+    "id": "a2a-what-is",
+    "title": "What is A2A?",
+    "url": "https://a2a-protocol.org/latest/topics/what-is-a2a/",
+    "sourceType": "primary",
+    "publisher": "A2A Protocol",
+    "retrieved": "2026-06-01",
+    "concepts": ["a2a", "overview", "interoperability"],
+    "confidence": "high",
+    "notes": "Official conceptual overview for why A2A exists and what problem it solves."
+  },
+  {
+    "id": "a2a-key-concepts",
+    "title": "A2A Core Concepts",
+    "url": "https://a2a-protocol.org/latest/topics/key-concepts/",
+    "sourceType": "primary",
+    "publisher": "A2A Protocol",
+    "retrieved": "2026-06-01",
+    "concepts": ["agent-card", "task", "message", "part", "artifact", "capabilities"],
+    "confidence": "high",
+    "notes": "Official concept guide for nouns and object relationships."
+  },
+  {
+    "id": "a2a-discovery",
+    "title": "A2A Agent Discovery",
+    "url": "https://a2a-protocol.org/latest/topics/agent-discovery/",
+    "sourceType": "primary",
+    "publisher": "A2A Protocol",
+    "retrieved": "2026-06-01",
+    "concepts": ["agent-discovery", "agent-card", "registry", "capabilities"],
+    "confidence": "high",
+    "notes": "Official discovery guidance for finding and evaluating remote agents."
+  },
+  {
+    "id": "a2a-streaming",
+    "title": "A2A Streaming and Asynchronous Operations",
+    "url": "https://a2a-protocol.org/latest/topics/streaming-and-async/",
+    "sourceType": "primary",
+    "publisher": "A2A Protocol",
+    "retrieved": "2026-06-01",
+    "concepts": ["streaming", "async", "push-notifications", "task-status"],
+    "confidence": "high",
+    "notes": "Official guidance for streaming, polling, push notifications, and long-running tasks."
+  },
+  {
+    "id": "a2a-mcp",
+    "title": "A2A and MCP",
+    "url": "https://a2a-protocol.org/latest/topics/a2a-and-mcp/",
+    "sourceType": "primary",
+    "publisher": "A2A Protocol",
+    "retrieved": "2026-06-01",
+    "concepts": ["a2a", "mcp", "tools", "agents"],
+    "confidence": "high",
+    "notes": "Official comparison between A2A for agent-to-agent collaboration and MCP for tool/context access."
+  },
+  {
+    "id": "a2a-github",
+    "title": "A2A Project GitHub Repository",
+    "url": "https://github.com/a2aproject/A2A",
+    "sourceType": "primary",
+    "publisher": "A2A Project",
+    "retrieved": "2026-06-01",
+    "concepts": ["a2a", "repository", "samples", "specification"],
+    "confidence": "high",
+    "notes": "Official A2A repository for spec, SDKs, and samples."
+  },
+  {
+    "id": "a2a-python-sdk",
+    "title": "A2A Python SDK Reference",
+    "url": "https://a2a-protocol.org/latest/sdk/python/api/",
+    "sourceType": "primary",
+    "publisher": "A2A Protocol",
+    "retrieved": "2026-06-01",
+    "concepts": ["python-sdk", "implementation", "server", "client"],
+    "confidence": "high",
+    "notes": "Official Python SDK API reference."
+  },
+  {
+    "id": "a2a-js-sdk",
+    "title": "A2A JavaScript SDK",
+    "url": "https://www.npmjs.com/package/@a2a-js/sdk",
+    "sourceType": "primary",
+    "publisher": "npm",
+    "retrieved": "2026-06-01",
+    "concepts": ["javascript-sdk", "implementation", "client", "server"],
+    "confidence": "medium",
+    "notes": "Package metadata for the A2A JavaScript SDK."
+  },
+  {
+    "id": "google-adk-a2a",
+    "title": "Google ADK with Agent2Agent Protocol",
+    "url": "https://google.github.io/adk-docs/a2a/",
+    "sourceType": "primary",
+    "publisher": "Google ADK",
+    "retrieved": "2026-06-01",
+    "concepts": ["google-adk", "a2a", "local-agents", "remote-agents"],
+    "confidence": "high",
+    "notes": "Google ADK documentation for exposing and consuming A2A agents."
+  },
+  {
+    "id": "langchain-a2a",
+    "title": "LangChain Agent Server A2A Endpoint",
+    "url": "https://docs.langchain.com/langsmith/server-a2a",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-06-01",
+    "concepts": ["langchain", "langsmith", "agent-server", "a2a"],
+    "confidence": "high",
+    "notes": "LangChain documentation for Agent Server A2A endpoint and context/thread mapping."
+  },
+  {
+    "id": "crewai-a2a",
+    "title": "CrewAI Agent-to-Agent Protocol",
+    "url": "https://docs.crewai.com/en/learn/a2a-agent-delegation",
+    "sourceType": "primary",
+    "publisher": "CrewAI",
+    "retrieved": "2026-06-01",
+    "concepts": ["crewai", "a2a", "delegation"],
+    "confidence": "high",
+    "notes": "CrewAI documentation for A2A delegation."
+  },
+  {
+    "id": "mastra-a2a",
+    "title": "Mastra Agent-to-Agent Support",
+    "url": "https://mastra.ai/blog/introducing-agent-to-agent-support",
+    "sourceType": "primary",
+    "publisher": "Mastra",
+    "retrieved": "2026-06-01",
+    "concepts": ["mastra", "a2a", "typescript", "agents"],
+    "confidence": "medium",
+    "notes": "Mastra maintainer blog announcing A2A support."
+  },
+  {
+    "id": "microsoft-agent-framework-a2a",
+    "title": "Microsoft Agent Framework A2A Agent",
+    "url": "https://learn.microsoft.com/en-us/agent-framework/agents/providers/agent-to-agent",
+    "sourceType": "primary",
+    "publisher": "Microsoft",
+    "retrieved": "2026-06-01",
+    "concepts": ["microsoft-agent-framework", "a2a", "remote-agents", "continuation"],
+    "confidence": "high",
+    "notes": "Microsoft documentation for A2A agent provider and continuation behavior."
+  }
+]

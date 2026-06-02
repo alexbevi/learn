@@ -143,7 +143,7 @@ window.LEARN_CATALOG = {
       ],
       durationMinutes: 80,
       slideCount: 45,
-      lastUpdated: "2026-05-27",
+      lastUpdated: "2026-06-01",
       tags: [
         { slug: "database-internals", label: "Database Internals" },
         { slug: "vector-search", label: "Vector Search" },
