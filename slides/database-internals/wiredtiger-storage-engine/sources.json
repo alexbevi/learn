@@ -1,0 +1,222 @@
+[
+  {
+    "id": "mongodb-wiredtiger",
+    "title": "WiredTiger Storage Engine",
+    "url": "https://www.mongodb.com/docs/manual/core/wiredtiger/",
+    "sourceType": "primary",
+    "publisher": "MongoDB",
+    "retrieved": "2026-06-01",
+    "concepts": ["wiredtiger", "cache", "compression", "journaling", "filesystem-cache"],
+    "confidence": "high",
+    "notes": "MongoDB manual page for WiredTiger behavior, cache, compression defaults, checkpoints, and filesystem cache interaction."
+  },
+  {
+    "id": "mongodb-journaling",
+    "title": "Journaling",
+    "url": "https://www.mongodb.com/docs/manual/core/journaling/",
+    "sourceType": "primary",
+    "publisher": "MongoDB",
+    "retrieved": "2026-06-01",
+    "concepts": ["journal", "write-ahead-log", "durability", "recovery"],
+    "confidence": "high",
+    "notes": "MongoDB manual reference for journal durability and recovery behavior."
+  },
+  {
+    "id": "mongodb-serverstatus",
+    "title": "serverStatus",
+    "url": "https://www.mongodb.com/docs/manual/reference/command/serverStatus/",
+    "sourceType": "primary",
+    "publisher": "MongoDB",
+    "retrieved": "2026-06-01",
+    "concepts": ["serverstatus", "metrics", "wiredtiger-cache", "eviction", "checkpoint"],
+    "confidence": "high",
+    "notes": "Primary diagnostic source for WiredTiger cache, eviction, checkpoint, block-manager, transaction, and spill metrics."
+  },
+  {
+    "id": "mongodb-concurrency",
+    "title": "FAQ: Concurrency",
+    "url": "https://www.mongodb.com/docs/manual/faq/concurrency/",
+    "sourceType": "primary",
+    "publisher": "MongoDB",
+    "retrieved": "2026-06-01",
+    "concepts": ["concurrency", "locking", "document-level-concurrency", "intent-locks"],
+    "confidence": "high",
+    "notes": "MongoDB manual page for multi-granularity locking and WiredTiger document-level concurrency."
+  },
+  {
+    "id": "mongodb-insertmany",
+    "title": "db.collection.insertMany()",
+    "url": "https://www.mongodb.com/docs/manual/reference/method/db.collection.insertMany/",
+    "sourceType": "primary",
+    "publisher": "MongoDB",
+    "retrieved": "2026-06-01",
+    "concepts": ["insertmany", "bulk-write", "ordered", "unordered", "oplog"],
+    "confidence": "high",
+    "notes": "MongoDB manual method page for ordered/unordered insertMany semantics and bulk insert behavior."
+  },
+  {
+    "id": "mongodb-write-concern",
+    "title": "Write Concern",
+    "url": "https://www.mongodb.com/docs/manual/reference/write-concern/",
+    "sourceType": "primary",
+    "publisher": "MongoDB",
+    "retrieved": "2026-06-01",
+    "concepts": ["write-concern", "acknowledgement", "durability", "replication"],
+    "confidence": "high",
+    "notes": "MongoDB manual page for client acknowledgement semantics layered above storage-engine work."
+  },
+  {
+    "id": "mongodb-transactions",
+    "title": "Transactions",
+    "url": "https://www.mongodb.com/docs/manual/core/transactions/",
+    "sourceType": "primary",
+    "publisher": "MongoDB",
+    "retrieved": "2026-06-01",
+    "concepts": ["transactions", "snapshot", "write-conflicts", "multi-document-transactions"],
+    "confidence": "high",
+    "notes": "MongoDB manual transaction behavior and performance caveats."
+  },
+  {
+    "id": "mongodb-atomicity",
+    "title": "Atomicity and Transactions",
+    "url": "https://www.mongodb.com/docs/manual/core/write-operations-atomicity/",
+    "sourceType": "primary",
+    "publisher": "MongoDB",
+    "retrieved": "2026-06-01",
+    "concepts": ["atomicity", "single-document-writes", "transactions"],
+    "confidence": "high",
+    "notes": "MongoDB manual page for single-document atomicity and multi-document transaction framing."
+  },
+  {
+    "id": "mongodb-agg-optimization",
+    "title": "Aggregation Pipeline Optimization",
+    "url": "https://www.mongodb.com/docs/manual/core/aggregation-pipeline-optimization/",
+    "sourceType": "primary",
+    "publisher": "MongoDB",
+    "retrieved": "2026-06-01",
+    "concepts": ["aggregation", "optimizer", "indexes", "sbe", "pipeline"],
+    "confidence": "high",
+    "notes": "MongoDB manual page for pipeline optimization, index use, and slot-based execution conditions."
+  },
+  {
+    "id": "mongodb-explain",
+    "title": "Explain Results",
+    "url": "https://www.mongodb.com/docs/manual/reference/explain-results/",
+    "sourceType": "primary",
+    "publisher": "MongoDB",
+    "retrieved": "2026-06-01",
+    "concepts": ["explain", "query-plans", "execution-stats", "diagnostics"],
+    "confidence": "high",
+    "notes": "MongoDB manual page for interpreting query and aggregation execution plans."
+  },
+  {
+    "id": "mongodb-sbe",
+    "title": "Slot-Based Query Execution Engine",
+    "url": "https://www.mongodb.com/docs/manual/reference/sbe/",
+    "sourceType": "primary",
+    "publisher": "MongoDB",
+    "retrieved": "2026-06-01",
+    "concepts": ["sbe", "query-execution", "aggregation"],
+    "confidence": "high",
+    "notes": "MongoDB manual reference for SBE as a server execution layer above the storage engine."
+  },
+  {
+    "id": "mongodb-sort",
+    "title": "$sort",
+    "url": "https://www.mongodb.com/docs/manual/reference/operator/aggregation/sort/",
+    "sourceType": "primary",
+    "publisher": "MongoDB",
+    "retrieved": "2026-06-01",
+    "concepts": ["aggregation", "sort", "memory", "spill", "indexes"],
+    "confidence": "high",
+    "notes": "MongoDB manual page for sort behavior, index use, and temporary file considerations."
+  },
+  {
+    "id": "mongodb-group",
+    "title": "$group",
+    "url": "https://www.mongodb.com/docs/manual/reference/operator/aggregation/group/",
+    "sourceType": "primary",
+    "publisher": "MongoDB",
+    "retrieved": "2026-06-01",
+    "concepts": ["aggregation", "group", "memory", "sbe"],
+    "confidence": "high",
+    "notes": "MongoDB manual page for group behavior and SBE-related optimization notes."
+  },
+  {
+    "id": "wiredtiger-btree",
+    "title": "WiredTiger Architecture Guide: B-Trees",
+    "url": "https://source.wiredtiger.com/develop/arch-btree.html",
+    "sourceType": "primary",
+    "publisher": "WiredTiger",
+    "retrieved": "2026-06-01",
+    "concepts": ["btree", "pages", "row-store", "updates"],
+    "confidence": "medium",
+    "notes": "WiredTiger architecture guide; useful for internal mechanics, with project caveat that architecture docs may not match every release exactly."
+  },
+  {
+    "id": "wiredtiger-transactions",
+    "title": "WiredTiger Architecture Guide: Transactions",
+    "url": "https://source.wiredtiger.com/develop/arch-transaction.html",
+    "sourceType": "primary",
+    "publisher": "WiredTiger",
+    "retrieved": "2026-06-01",
+    "concepts": ["transactions", "mvcc", "visibility", "timestamps"],
+    "confidence": "medium",
+    "notes": "WiredTiger transaction architecture and visibility model; use with release caveat."
+  },
+  {
+    "id": "wiredtiger-timestamps",
+    "title": "WiredTiger Architecture Guide: Timestamps",
+    "url": "https://source.wiredtiger.com/develop/arch-timestamp.html",
+    "sourceType": "primary",
+    "publisher": "WiredTiger",
+    "retrieved": "2026-06-01",
+    "concepts": ["timestamps", "stable-timestamp", "oldest-timestamp", "pinned-timestamp"],
+    "confidence": "medium",
+    "notes": "WiredTiger timestamp architecture for stable, oldest, and pinned timestamp concepts."
+  },
+  {
+    "id": "wiredtiger-eviction",
+    "title": "WiredTiger Architecture Guide: Eviction",
+    "url": "https://source.wiredtiger.com/develop/arch-eviction.html",
+    "sourceType": "primary",
+    "publisher": "WiredTiger",
+    "retrieved": "2026-06-01",
+    "concepts": ["eviction", "cache", "dirty-pages", "reconciliation"],
+    "confidence": "medium",
+    "notes": "WiredTiger eviction architecture; useful for cache pressure and dirty-page flow."
+  },
+  {
+    "id": "wiredtiger-checkpoint",
+    "title": "WiredTiger Architecture Guide: Checkpoint",
+    "url": "https://source.wiredtiger.com/develop/arch-checkpoint.html",
+    "sourceType": "primary",
+    "publisher": "WiredTiger",
+    "retrieved": "2026-06-01",
+    "concepts": ["checkpoint", "snapshot", "durable-base-image", "recovery"],
+    "confidence": "medium",
+    "notes": "WiredTiger checkpoint architecture; project docs caution that architecture guides are not release-locked."
+  },
+  {
+    "id": "wiredtiger-logging",
+    "title": "WiredTiger Architecture Guide: Logging",
+    "url": "https://source.wiredtiger.com/develop/arch-logging.html",
+    "sourceType": "primary",
+    "publisher": "WiredTiger",
+    "retrieved": "2026-06-01",
+    "concepts": ["logging", "write-ahead-log", "journal", "recovery"],
+    "confidence": "medium",
+    "notes": "WiredTiger logging architecture for write-ahead log and recovery."
+  },
+  {
+    "id": "wiredtiger-block-manager",
+    "title": "WiredTiger Architecture Guide: Block Manager",
+    "url": "https://source.wiredtiger.com/develop/arch-block.html",
+    "sourceType": "primary",
+    "publisher": "WiredTiger",
+    "retrieved": "2026-06-01",
+    "concepts": ["block-manager", "disk-space", "file-pages", "checkpoints"],
+    "confidence": "medium",
+    "notes": "WiredTiger block manager architecture for disk pages, allocation, and checkpoint metadata."
+  }
+]
