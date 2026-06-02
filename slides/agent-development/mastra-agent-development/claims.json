@@ -1,0 +1,544 @@
+[
+  {
+    "slide": 1,
+    "title": "Mastra for Agent Development",
+    "coreClaim": "Mastra is best understood as a TypeScript-centered agent application framework that packages agents, workflows, memory, tools, storage, observability, and evals together.",
+    "mechanism": "The framework centers registered primitives that can be used by local development, server APIs, Studio, memory, and telemetry surfaces.",
+    "example": "A customer operations agent can start as a typed tool-calling agent and later add workflows, retrieval, memory, MCP, traces, and scorers.",
+    "sourceIds": [
+      "mastra-overview",
+      "mastra-agents"
+    ],
+    "visual": "Title slide.",
+    "practicalTakeaway": "Evaluate Mastra by product-stack fit, not only by agent API syntax.",
+    "objective": "Explain Mastra for Agent Development."
+  },
+  {
+    "slide": 2,
+    "title": "Mastra competes on product shape, not just API syntax",
+    "coreClaim": "Mastra's main differentiation is bundling adjacent agent-application concerns into a TypeScript product surface.",
+    "mechanism": "Agents, workflows, memory, MCP, storage, observability, Studio, and evals are presented as part of one framework and platform story.",
+    "example": "A TypeScript team can keep agent logic near existing Node or Next.js application code.",
+    "sourceIds": [
+      "mastra-overview",
+      "mastra-agents",
+      "mastra-observability"
+    ],
+    "visual": "Positioning cards.",
+    "practicalTakeaway": "Ask whether the framework reduces product and deployment boundaries for your team.",
+    "objective": "Explain Mastra competes on product shape, not just API syntax."
+  },
+  {
+    "slide": 3,
+    "title": "By the end, you should be able to explain",
+    "coreClaim": "A practical comparison requires understanding primitives, overlap with LangChain/LangGraph/LangSmith, and decision criteria.",
+    "mechanism": "The deck follows one customer-operations example through tools, retrieval, memory, workflows, MCP, observability, and evals.",
+    "example": "The same support workflow can be built in Mastra or in the LangChain ecosystem with different product feel.",
+    "sourceIds": [
+      "mastra-overview",
+      "langchain-js-agents",
+      "langgraph-overview",
+      "langsmith-observability"
+    ],
+    "visual": "Learning-goal cards.",
+    "practicalTakeaway": "Use the comparison to decide system shape, not framework fandom.",
+    "objective": "Explain By the end, you should be able to explain."
+  },
+  {
+    "slide": 4,
+    "title": "Customer operations agent",
+    "coreClaim": "The example workload needs tool-backed answers, retrieval, memory, explicit workflow control, escalation, and quality feedback.",
+    "mechanism": "Each added capability maps to a common production agent primitive.",
+    "example": "A support agent retrieves policy, looks up account data, drafts a response, and escalates high-risk changes.",
+    "sourceIds": [
+      "mastra-agents",
+      "mastra-workflows",
+      "mastra-memory-overview",
+      "mastra-observability"
+    ],
+    "visual": "Example scenario slide.",
+    "practicalTakeaway": "Anchor framework evaluation in a concrete workload.",
+    "objective": "Explain Customer operations agent."
+  },
+  {
+    "slide": 5,
+    "title": "Most agent frameworks converge on the same primitives",
+    "coreClaim": "Frameworks differ in packaging, but production agents converge on tools, memory, retrieval, workflow control, observability, and evaluation.",
+    "mechanism": "These primitives address recurring boundaries between model behavior and application systems.",
+    "example": "Mastra and LangChain both expose tool-calling patterns; Mastra and LangGraph both support explicit workflow/control concepts.",
+    "sourceIds": [
+      "mastra-agents",
+      "langchain-js-agents",
+      "langgraph-overview"
+    ],
+    "visual": "Primitive comparison table.",
+    "practicalTakeaway": "Compare how well each framework operationalizes the same primitives.",
+    "objective": "Explain Most agent frameworks converge on the same primitives."
+  },
+  {
+    "slide": 6,
+    "title": "Mastra is a unified TypeScript framework; LangChain is a layered ecosystem",
+    "coreClaim": "Mastra emphasizes one TypeScript framework surface while the LangChain ecosystem separates agent harness, graph runtime, and observability/evaluation platform layers.",
+    "mechanism": "Mastra bundles agents/workflows/memory/observability; LangChain, LangGraph, and LangSmith are related but distinct surfaces.",
+    "example": "A Mastra app can register agents, workflows, storage, and telemetry in one project while LangChain teams may combine LangChain, LangGraph, and LangSmith.",
+    "sourceIds": [
+      "mastra-overview",
+      "langchain-js-agents",
+      "langgraph-overview",
+      "langsmith-observability"
+    ],
+    "visual": "Local ecosystem map PNG.",
+    "practicalTakeaway": "Decide whether one integrated surface or layered ecosystem depth fits your team better.",
+    "objective": "Explain Mastra is a unified TypeScript framework; LangChain is a layered ecosystem."
+  },
+  {
+    "slide": 7,
+    "title": "Mastra's pitch: keep agent development in your TypeScript product stack",
+    "coreClaim": "Mastra is attractive when the application and team already live in TypeScript.",
+    "mechanism": "Typed contracts, Node-compatible deployment, local Studio, storage, observability, and evals reduce cross-language boundaries.",
+    "example": "A Next.js product team can build and deploy the agent runtime without introducing a separate Python service by default.",
+    "sourceIds": [
+      "mastra-overview",
+      "mastra-agents"
+    ],
+    "visual": "Three value-proposition cards.",
+    "practicalTakeaway": "Use Mastra when stack alignment is a real delivery advantage.",
+    "objective": "Explain Mastra's pitch: keep agent development in your TypeScript product stack."
+  },
+  {
+    "slide": 8,
+    "title": "The core Mastra unit is a registry of agents, workflows, storage, and telemetry",
+    "coreClaim": "Mastra's registry pattern makes application primitives discoverable by the framework's development and runtime surfaces.",
+    "mechanism": "A `Mastra` instance can register agents, workflows, storage, and telemetry configuration.",
+    "example": "`new Mastra({ agents, workflows, storage })` centralizes the customer operations agent and ticket workflow.",
+    "sourceIds": [
+      "mastra-overview",
+      "mastra-storage",
+      "mastra-agent-reference"
+    ],
+    "visual": "TypeScript registry code.",
+    "practicalTakeaway": "Treat the registry as the application boundary for agent infrastructure.",
+    "objective": "Explain The core Mastra unit is a registry of agents, workflows, storage, and telemetry."
+  },
+  {
+    "slide": 9,
+    "title": "Start with the customer operations agent",
+    "coreClaim": "A first useful Mastra agent should expose narrow business tools rather than open-ended database access.",
+    "mechanism": "The agent combines instructions, a model, and typed tools that wrap application capabilities.",
+    "example": "A support agent starts with order and ticket lookup tools.",
+    "sourceIds": [
+      "mastra-agents",
+      "mastra-create-tool"
+    ],
+    "visual": "Agent construction code.",
+    "practicalTakeaway": "Begin with a small tool boundary that represents real product capabilities.",
+    "objective": "Explain Start with the customer operations agent."
+  },
+  {
+    "slide": 10,
+    "title": "Typed tools are the agent's action boundary",
+    "coreClaim": "Typed tools define what the model is allowed to ask the application to do.",
+    "mechanism": "Tool schemas and execute functions convert model intent into validated application calls.",
+    "example": "A `lookupCustomer` tool validates `customerId` before retrieving data.",
+    "sourceIds": [
+      "mastra-create-tool",
+      "mastra-agents"
+    ],
+    "visual": "Tool boundary table.",
+    "practicalTakeaway": "Keep authorization, validation, and side-effect policy outside model prose.",
+    "objective": "Explain Typed tools are the agent's action boundary."
+  },
+  {
+    "slide": 11,
+    "title": "The first useful version answers with tool-backed context",
+    "coreClaim": "The first production-shaped agent should answer using known tools and explicit context, not unconstrained model knowledge.",
+    "mechanism": "The model uses tool results as grounded evidence before producing a response.",
+    "example": "The agent calls a ticket lookup tool before drafting a support answer.",
+    "sourceIds": [
+      "mastra-agents",
+      "mastra-create-tool"
+    ],
+    "visual": "Simple agent invocation code.",
+    "practicalTakeaway": "Make tool-backed evidence the default answer path.",
+    "objective": "Explain The first useful version answers with tool-backed context."
+  },
+  {
+    "slide": 12,
+    "title": "Studio is part of the Mastra differentiation",
+    "coreClaim": "Mastra Studio is part of the framework's product feel because local development, inspection, and iteration are integrated with registered primitives.",
+    "mechanism": "Studio can use the same agent, workflow, storage, and observability configuration developers register in code.",
+    "example": "A developer can test a customer operations agent locally and inspect memory or traces.",
+    "sourceIds": [
+      "mastra-overview",
+      "mastra-agents",
+      "mastra-memory-overview"
+    ],
+    "visual": "Studio differentiation cards.",
+    "practicalTakeaway": "Include local inspection and iteration experience in framework evaluation.",
+    "objective": "Explain Studio is part of the Mastra differentiation."
+  },
+  {
+    "slide": 13,
+    "title": "Add product and policy retrieval as a tool",
+    "coreClaim": "Retrieval should be exposed as a controlled agent tool when the agent needs current policy or product knowledge.",
+    "mechanism": "A vector query tool searches indexed content and returns context for the model to use.",
+    "example": "A support policy retriever returns refund-policy chunks filtered by product and tenant.",
+    "sourceIds": [
+      "mastra-vector-query-tool",
+      "mastra-semantic-recall"
+    ],
+    "visual": "Retrieval tool code.",
+    "practicalTakeaway": "Treat retrieval as an application capability with permissions and ranking, not as magic memory.",
+    "objective": "Explain Add product and policy retrieval as a tool."
+  },
+  {
+    "slide": 14,
+    "title": "Mastra makes retrieval a first-class agent tool",
+    "coreClaim": "Mastra's retrieval story integrates vector querying into the agent tool surface.",
+    "mechanism": "The vector query tool can be registered and called like other tools while relying on configured vector stores.",
+    "example": "A `policySearch` tool can call into pgvector, MongoDB, or another configured vector provider through the framework path.",
+    "sourceIds": [
+      "mastra-vector-query-tool",
+      "mastra-semantic-recall"
+    ],
+    "visual": "Mastra versus LangChain RAG comparison table.",
+    "practicalTakeaway": "Evaluate whether the RAG path is integrated enough for your product team.",
+    "objective": "Explain Mastra makes retrieval a first-class agent tool."
+  },
+  {
+    "slide": 15,
+    "title": "Memory is not just conversation history",
+    "coreClaim": "Mastra memory distinguishes message history, working memory, semantic recall, and observational memory.",
+    "mechanism": "Different memory modes store and retrieve different kinds of context across threads and resources.",
+    "example": "Working memory stores user preferences; semantic recall retrieves older similar messages; observational memory condenses long histories.",
+    "sourceIds": [
+      "mastra-memory-overview",
+      "mastra-semantic-recall",
+      "mastra-observational-memory"
+    ],
+    "visual": "Local memory modes PNG.",
+    "practicalTakeaway": "Choose memory modes by product behavior, not by a generic memory checkbox.",
+    "objective": "Explain Memory is not just conversation history."
+  },
+  {
+    "slide": 16,
+    "title": "Configure memory explicitly for persistence and recall",
+    "coreClaim": "Memory requires explicit storage, vector, embedding, thread, and resource choices.",
+    "mechanism": "Storage persists messages and memory; vector stores and embedders support semantic recall; thread/resource identifiers define scope.",
+    "example": "A memory configuration uses `LibSQLStore`, `LibSQLVector`, and a `ModelRouterEmbeddingModel`.",
+    "sourceIds": [
+      "mastra-memory-overview",
+      "mastra-storage",
+      "mastra-semantic-recall"
+    ],
+    "visual": "Memory configuration code.",
+    "practicalTakeaway": "Make memory persistence and scope explicit in code and product policy.",
+    "objective": "Explain Configure memory explicitly for persistence and recall."
+  },
+  {
+    "slide": 17,
+    "title": "Mastra and LangGraph split memory in similar conceptual ways",
+    "coreClaim": "Mastra and LangGraph both separate conversation/session state from longer-term memory and retrieval concerns, even though APIs differ.",
+    "mechanism": "Mastra uses threads/resources and memory modes; LangGraph uses persistence, threads, stores, and checkpoints.",
+    "example": "Both stacks need a way to resume context and a way to retrieve longer-lived facts.",
+    "sourceIds": [
+      "mastra-memory-overview",
+      "mastra-storage",
+      "langgraph-js-persistence"
+    ],
+    "visual": "Concept comparison table.",
+    "practicalTakeaway": "Map memory semantics before mapping APIs.",
+    "objective": "Explain Mastra and LangGraph split memory in similar conceptual ways."
+  },
+  {
+    "slide": 18,
+    "title": "Use workflows when the business process should not be improvised",
+    "coreClaim": "Business-critical processes should be modeled as explicit workflows instead of left to an open-ended agent loop.",
+    "mechanism": "Workflow steps and control paths make ordering, approval, retries, and side effects inspectable.",
+    "example": "Classify ticket, draft response, request approval, execute action, and notify customer as separate steps.",
+    "sourceIds": [
+      "mastra-workflows",
+      "langgraph-overview"
+    ],
+    "visual": "Local workflow boundary PNG.",
+    "practicalTakeaway": "Use workflows where product correctness depends on sequence and control.",
+    "objective": "Explain Use workflows when the business process should not be improvised."
+  },
+  {
+    "slide": 19,
+    "title": "Promote the support process into explicit steps",
+    "coreClaim": "A support process with classification, approval, and side effects should become workflow code.",
+    "mechanism": "Explicit steps replace implicit model improvisation with named execution boundaries.",
+    "example": "A ticket workflow can classify risk before allowing a customer-impacting action.",
+    "sourceIds": [
+      "mastra-workflows"
+    ],
+    "visual": "Workflow code sample.",
+    "practicalTakeaway": "Turn high-risk product behavior into reviewable workflow structure.",
+    "objective": "Explain Promote the support process into explicit steps."
+  },
+  {
+    "slide": 20,
+    "title": "Mastra workflows and LangGraph both make control flow explicit",
+    "coreClaim": "Mastra workflows and LangGraph both address the need for explicit control flow, but they package the developer experience differently.",
+    "mechanism": "Mastra presents workflow APIs inside a TypeScript application framework; LangGraph emphasizes stateful graph execution and persistence.",
+    "example": "Both can model an approval step before a side effect.",
+    "sourceIds": [
+      "mastra-workflows",
+      "langgraph-overview",
+      "langgraph-js-persistence"
+    ],
+    "visual": "Mastra versus LangGraph workflow table.",
+    "practicalTakeaway": "Choose based on desired runtime model and ecosystem, not only syntax.",
+    "objective": "Explain Mastra workflows and LangGraph both make control flow explicit."
+  },
+  {
+    "slide": 21,
+    "title": "Escalation belongs at the side-effect boundary",
+    "coreClaim": "Human escalation should happen before durable side effects, not after the model has already acted.",
+    "mechanism": "Workflow suspension or graph interrupts can pause execution and preserve state for review.",
+    "example": "A billing adjustment pauses for supervisor approval before executing the external action.",
+    "sourceIds": [
+      "mastra-workflows",
+      "langgraph-js-persistence"
+    ],
+    "visual": "Escalation boundary cards.",
+    "practicalTakeaway": "Place approval at the boundary where irreversible work begins.",
+    "objective": "Explain Escalation belongs at the side-effect boundary."
+  },
+  {
+    "slide": 22,
+    "title": "MCP turns tools into portable capabilities",
+    "coreClaim": "MCP provides a framework-agnostic way to expose and consume tools and agent capabilities.",
+    "mechanism": "Mastra can work with MCP clients/servers so local tools, agents, and workflows can become portable capabilities.",
+    "example": "A support knowledge search capability can be exposed to other MCP-compatible clients.",
+    "sourceIds": [
+      "mastra-mcp-overview",
+      "mastra-mcp-server",
+      "mastra-agents"
+    ],
+    "visual": "MCP capability cards.",
+    "practicalTakeaway": "Use MCP when interoperability matters, but write descriptions that make capabilities selectable.",
+    "objective": "Explain MCP turns tools into portable capabilities."
+  },
+  {
+    "slide": 23,
+    "title": "Agents need traces, not just logs",
+    "coreClaim": "Agent debugging needs structured traces across model calls, tools, memory operations, workflows, and quality signals.",
+    "mechanism": "Mastra observability captures agent decision paths and can export telemetry; LangSmith provides a comparable tracing baseline.",
+    "example": "A bad answer can be debugged by inspecting retrieval, tool outputs, model input, and workflow path.",
+    "sourceIds": [
+      "mastra-observability",
+      "langsmith-observability"
+    ],
+    "visual": "Local quality loop PNG.",
+    "practicalTakeaway": "Instrument the reasoning path, not only application errors.",
+    "objective": "Explain Agents need traces, not just logs."
+  },
+  {
+    "slide": 24,
+    "title": "Scorers turn quality into a regression surface",
+    "coreClaim": "Scorers and evals convert agent behavior into measurable signals that can be tracked across changes.",
+    "mechanism": "Scorers can use model-graded, rule-based, or statistical approaches and store results for analysis.",
+    "example": "A support-answer scorer checks groundedness, escalation correctness, and policy compliance.",
+    "sourceIds": [
+      "mastra-observability",
+      "mastra-scorers",
+      "langsmith-evaluation"
+    ],
+    "visual": "Scorer/eval cards.",
+    "practicalTakeaway": "Make agent quality part of CI and release review.",
+    "objective": "Explain Scorers turn quality into a regression surface."
+  },
+  {
+    "slide": 25,
+    "title": "Equivalent first agent, different product feel",
+    "coreClaim": "Mastra and LangChain can express similar first-agent functionality, but the surrounding product workflow feels different.",
+    "mechanism": "Both can bind tools to models; Mastra keeps the example inside a TypeScript framework/product stack while LangChain leans on its broader ecosystem.",
+    "example": "A first customer support agent can be written in either stack with similar high-level behavior.",
+    "sourceIds": [
+      "mastra-agent-reference",
+      "mastra-create-tool",
+      "langchain-js-agents"
+    ],
+    "visual": "Side-by-side code/comparison.",
+    "practicalTakeaway": "Compare the complete developer loop around the agent, not just the agent constructor.",
+    "objective": "Explain Equivalent first agent, different product feel."
+  },
+  {
+    "slide": 26,
+    "title": "Where Mastra feels different",
+    "coreClaim": "Mastra feels different because it starts from TypeScript product teams, bundles adjacent lifecycle needs, and emphasizes local Studio integration.",
+    "mechanism": "The framework organizes product development, runtime primitives, and observability into a cohesive surface.",
+    "example": "A team can iterate on an agent, inspect it locally, and deploy it in the same TypeScript project shape.",
+    "sourceIds": [
+      "mastra-overview",
+      "mastra-agents",
+      "mastra-observability"
+    ],
+    "visual": "Differentiation cards.",
+    "practicalTakeaway": "Use Mastra when that integrated TypeScript product feel removes friction.",
+    "objective": "Explain Where Mastra feels different."
+  },
+  {
+    "slide": 27,
+    "title": "The incumbent ecosystem matters",
+    "coreClaim": "LangChain's ecosystem depth, examples, integrations, and mindshare remain a major decision factor.",
+    "mechanism": "LangChain, LangGraph, and LangSmith cover agent harnessing, graph runtime, observability, and evaluation across a large ecosystem.",
+    "example": "A team using existing LangChain integrations may value continuity over a unified TypeScript stack.",
+    "sourceIds": [
+      "langchain-js-agents",
+      "langgraph-overview",
+      "langsmith-observability",
+      "langsmith-evaluation"
+    ],
+    "visual": "Ecosystem consideration slide.",
+    "practicalTakeaway": "Do not ignore ecosystem depth when the workload depends on many integrations.",
+    "objective": "Explain The incumbent ecosystem matters."
+  },
+  {
+    "slide": 28,
+    "title": "The TypeScript product-stack argument is strong",
+    "coreClaim": "Mastra's strongest argument is reducing stack fragmentation for TypeScript-first application teams.",
+    "mechanism": "Agents, workflows, deployment, storage, observability, and evals can live closer to the product code and team skillset.",
+    "example": "A Node application can host agent endpoints without defaulting to a separate Python orchestration service.",
+    "sourceIds": [
+      "mastra-overview",
+      "mastra-agents"
+    ],
+    "visual": "Where Mastra wins slide.",
+    "practicalTakeaway": "Choose Mastra when organizational fit is a concrete delivery advantage.",
+    "objective": "Explain The TypeScript product-stack argument is strong."
+  },
+  {
+    "slide": 29,
+    "title": "Choose based on system shape, not hype",
+    "coreClaim": "The right framework depends on language stack, control-flow needs, memory requirements, observability depth, integration needs, and deployment shape.",
+    "mechanism": "Each axis changes the amount of custom glue the team must build and operate.",
+    "example": "A regulated workflow with Python-heavy ML infrastructure may favor LangGraph; a TypeScript SaaS support agent may favor Mastra.",
+    "sourceIds": [
+      "mastra-overview",
+      "langchain-js-agents",
+      "langgraph-overview",
+      "langsmith-observability"
+    ],
+    "visual": "Decision table.",
+    "practicalTakeaway": "Score frameworks against the system you actually need to ship.",
+    "objective": "Explain Choose based on system shape, not hype."
+  },
+  {
+    "slide": 30,
+    "title": "A production customer operations agent has the same bones in either stack",
+    "coreClaim": "Regardless of framework, production support agents need an experience layer, control plane, data plane, and quality plane.",
+    "mechanism": "Framework choice changes packaging, but the architecture still needs tools, state, retrieval, memory, side-effect control, traces, and evals.",
+    "example": "Mastra and LangChain/LangGraph/LangSmith both need a way to represent workflows, data access, retrieval, and evaluation.",
+    "sourceIds": [
+      "mastra-overview",
+      "mastra-workflows",
+      "mastra-memory-overview",
+      "mastra-observability",
+      "langgraph-overview",
+      "langsmith-evaluation"
+    ],
+    "visual": "Local production architecture PNG.",
+    "practicalTakeaway": "Do not let a framework demo hide the shared production architecture.",
+    "objective": "Explain A production customer operations agent has the same bones in either stack."
+  },
+  {
+    "slide": 31,
+    "title": "How I would build the example in Mastra",
+    "coreClaim": "A pragmatic Mastra build order starts with typed tools, then adds retrieval, memory, workflows, MCP, traces, and scorers.",
+    "mechanism": "Each step adds a clear product or operational guarantee.",
+    "example": "Begin with lookup tools; add policy retrieval; configure memory; model escalation as a workflow; add scorer-backed regression cases.",
+    "sourceIds": [
+      "mastra-create-tool",
+      "mastra-vector-query-tool",
+      "mastra-memory-overview",
+      "mastra-workflows",
+      "mastra-observability"
+    ],
+    "visual": "Implementation sequence table.",
+    "practicalTakeaway": "Add capabilities in the order product risk demands.",
+    "objective": "Explain How I would build the example in Mastra."
+  },
+  {
+    "slide": 32,
+    "title": "What not to learn from framework demos",
+    "coreClaim": "Framework demos often understate authorization, data boundaries, failure recovery, evals, and deployment constraints.",
+    "mechanism": "Small examples optimize for readability, while production agents need controls around state, tools, side effects, and quality.",
+    "example": "A demo may show a tool call without showing tenant authorization or duplicate-action protection.",
+    "sourceIds": [
+      "mastra-create-tool",
+      "mastra-workflows",
+      "mastra-storage",
+      "mastra-observability"
+    ],
+    "visual": "Anti-pattern guidance slide.",
+    "practicalTakeaway": "Read demos as API introductions, not production architecture.",
+    "objective": "Explain What not to learn from framework demos."
+  },
+  {
+    "slide": 33,
+    "title": "Mastra is best understood as an agent application framework",
+    "coreClaim": "Mastra's category is closer to an application framework for agents than a narrow library for prompt/tool loops.",
+    "mechanism": "It spans development, runtime, storage, workflows, memory, MCP, observability, and eval concerns.",
+    "example": "A Mastra app can register the primitives needed to build and inspect a customer operations agent end to end.",
+    "sourceIds": [
+      "mastra-overview",
+      "mastra-agents",
+      "mastra-workflows",
+      "mastra-observability"
+    ],
+    "visual": "Category recap cards.",
+    "practicalTakeaway": "Adopt Mastra when you want the framework to shape the full agent app lifecycle.",
+    "objective": "Explain Mastra is best understood as an agent application framework."
+  },
+  {
+    "slide": 34,
+    "title": "The comparison in one slide",
+    "coreClaim": "Mastra optimizes for integrated TypeScript app development, while LangChain/LangGraph/LangSmith optimize for ecosystem breadth, graph runtime control, and platform depth.",
+    "mechanism": "The tradeoff is integration and product-stack coherence versus ecosystem depth and specialized layers.",
+    "example": "A TypeScript SaaS team may prefer Mastra; a Python-heavy AI platform team may prefer LangGraph plus LangSmith.",
+    "sourceIds": [
+      "mastra-overview",
+      "langchain-js-agents",
+      "langgraph-overview",
+      "langsmith-observability",
+      "langsmith-evaluation"
+    ],
+    "visual": "Final comparison table.",
+    "practicalTakeaway": "Make the framework decision explicit and reversible where possible.",
+    "objective": "Explain The comparison in one slide."
+  },
+  {
+    "slide": 35,
+    "title": "Follow-up reading by concept",
+    "coreClaim": "The references are grouped by framework agents, workflows, memory/RAG/storage, MCP, observability/evals, and ecosystem comparison.",
+    "mechanism": "Each group maps to one major concept in the deck.",
+    "example": "Read Mastra memory docs before configuring resource/thread persistence and semantic recall.",
+    "sourceIds": [
+      "mastra-overview",
+      "mastra-agents",
+      "mastra-agent-reference",
+      "mastra-create-tool",
+      "mastra-workflows",
+      "mastra-memory-overview",
+      "mastra-semantic-recall",
+      "mastra-observational-memory",
+      "mastra-storage",
+      "mastra-vector-query-tool",
+      "mastra-mcp-overview",
+      "mastra-mcp-server",
+      "mastra-observability",
+      "mastra-scorers",
+      "langchain-js-agents",
+      "langgraph-overview",
+      "langgraph-js-persistence",
+      "langsmith-observability",
+      "langsmith-evaluation"
+    ],
+    "visual": "Grouped references slide.",
+    "practicalTakeaway": "Use the latest primary docs for API details because this ecosystem changes quickly.",
+    "objective": "Explain Follow-up reading by concept."
+  }
+]

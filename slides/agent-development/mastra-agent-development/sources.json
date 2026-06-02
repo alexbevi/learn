@@ -1,0 +1,211 @@
+[
+  {
+    "id": "mastra-overview",
+    "title": "Mastra Framework Overview",
+    "url": "https://mastra.ai/",
+    "sourceType": "primary",
+    "publisher": "Mastra",
+    "retrieved": "2026-06-01",
+    "concepts": ["mastra", "typescript", "agents", "workflows", "observability", "platform"],
+    "confidence": "high",
+    "notes": "Official Mastra overview for positioning, TypeScript focus, framework primitives, deployment, memory, MCP, and observability claims."
+  },
+  {
+    "id": "mastra-agents",
+    "title": "Mastra Agents",
+    "url": "https://mastra.ai/agents",
+    "sourceType": "primary",
+    "publisher": "Mastra",
+    "retrieved": "2026-06-01",
+    "concepts": ["agents", "tools", "memory", "mcp", "tracing", "evals"],
+    "confidence": "high",
+    "notes": "Official agent product page describing stateful agents with memory, tools, MCP, logging, tracing, eval primitives, and local playground workflow."
+  },
+  {
+    "id": "mastra-agent-reference",
+    "title": "Mastra Agent Class Reference",
+    "url": "https://mastra.ai/reference/agents/agent",
+    "sourceType": "primary",
+    "publisher": "Mastra",
+    "retrieved": "2026-06-01",
+    "concepts": ["agent-class", "typescript", "configuration"],
+    "confidence": "high",
+    "notes": "Official Agent class API reference used for code-level agent construction."
+  },
+  {
+    "id": "mastra-create-tool",
+    "title": "Mastra createTool Reference",
+    "url": "https://mastra.ai/reference/tools/create-tool",
+    "sourceType": "primary",
+    "publisher": "Mastra",
+    "retrieved": "2026-06-01",
+    "concepts": ["tools", "typed-tools", "zod", "action-boundary"],
+    "confidence": "high",
+    "notes": "Redirects to the official createTool reference; supports typed tool boundary claims."
+  },
+  {
+    "id": "mastra-workflows",
+    "title": "Mastra Workflows Overview",
+    "url": "https://mastra.ai/ai-workflows",
+    "sourceType": "primary",
+    "publisher": "Mastra",
+    "retrieved": "2026-06-01",
+    "concepts": ["workflows", "control-flow", "human-in-the-loop", "durable-processes"],
+    "confidence": "high",
+    "notes": "Official workflow product page for graph-based workflow orchestration and suspend/resume positioning."
+  },
+  {
+    "id": "mastra-memory-overview",
+    "title": "Mastra Memory Overview",
+    "url": "https://mastra.ai/docs/memory/overview",
+    "sourceType": "primary",
+    "publisher": "Mastra",
+    "retrieved": "2026-06-01",
+    "concepts": ["memory", "message-history", "observational-memory", "working-memory", "semantic-recall"],
+    "confidence": "high",
+    "notes": "Official memory overview distinguishing message history, observational memory, working memory, semantic recall, storage, threads, resources, and memory processors."
+  },
+  {
+    "id": "mastra-semantic-recall",
+    "title": "Mastra Semantic Recall",
+    "url": "https://mastra.ai/docs/memory/semantic-recall",
+    "sourceType": "primary",
+    "publisher": "Mastra",
+    "retrieved": "2026-06-01",
+    "concepts": ["semantic-recall", "rag", "vector-stores", "embeddings"],
+    "confidence": "high",
+    "notes": "Official semantic recall documentation for RAG-style memory search, vector stores, embeddings, and recall options."
+  },
+  {
+    "id": "mastra-observational-memory",
+    "title": "Mastra Observational Memory",
+    "url": "https://mastra.ai/docs/memory/observational-memory",
+    "sourceType": "primary",
+    "publisher": "Mastra",
+    "retrieved": "2026-06-01",
+    "concepts": ["observational-memory", "memory-compression", "long-context"],
+    "confidence": "high",
+    "notes": "Official observational memory documentation for dense observation logs and long-running conversation memory."
+  },
+  {
+    "id": "mastra-storage",
+    "title": "Mastra Storage",
+    "url": "https://mastra.ai/docs/server-db/storage",
+    "sourceType": "primary",
+    "publisher": "Mastra",
+    "retrieved": "2026-06-01",
+    "concepts": ["storage", "threads", "resources", "composite-storage", "providers"],
+    "confidence": "high",
+    "notes": "Redirects to official memory storage docs; supports storage adapter, provider, thread/resource, instance-level, agent-level, and composite storage claims."
+  },
+  {
+    "id": "mastra-vector-query-tool",
+    "title": "Mastra Vector Query Tool Reference",
+    "url": "https://mastra.ai/en/reference/tools/vector-query-tool",
+    "sourceType": "primary",
+    "publisher": "Mastra",
+    "retrieved": "2026-06-01",
+    "concepts": ["rag", "retrieval", "vector-query-tool"],
+    "confidence": "high",
+    "notes": "Redirects to official vector query tool reference; supports claims about retrieval as an agent tool."
+  },
+  {
+    "id": "mastra-mcp-overview",
+    "title": "Mastra MCP Overview",
+    "url": "https://mastra.ai/en/docs/tools-mcp/mcp-overview",
+    "sourceType": "primary",
+    "publisher": "Mastra",
+    "retrieved": "2026-06-01",
+    "concepts": ["mcp", "tools", "interoperability"],
+    "confidence": "high",
+    "notes": "Redirects to official MCP overview; supports claims about exposing and consuming MCP tools."
+  },
+  {
+    "id": "mastra-mcp-server",
+    "title": "Mastra MCPServer Reference",
+    "url": "https://mastra.ai/en/reference/tools/mcp-server",
+    "sourceType": "primary",
+    "publisher": "Mastra",
+    "retrieved": "2026-06-01",
+    "concepts": ["mcp-server", "tools", "agents", "workflows"],
+    "confidence": "high",
+    "notes": "Official MCP server reference used for claims about exposing Mastra primitives through MCP."
+  },
+  {
+    "id": "mastra-observability",
+    "title": "Mastra Observability",
+    "url": "https://mastra.ai/ai-agent-observability",
+    "sourceType": "primary",
+    "publisher": "Mastra",
+    "retrieved": "2026-06-01",
+    "concepts": ["observability", "tracing", "opentelemetry", "scorers", "evals"],
+    "confidence": "high",
+    "notes": "Official observability overview for traces, logs, OpenTelemetry-compatible export, scorers, and evaluation positioning."
+  },
+  {
+    "id": "mastra-scorers",
+    "title": "Introducing Scorers in Mastra",
+    "url": "https://mastra.ai/blog/mastra-scorers",
+    "sourceType": "primary",
+    "publisher": "Mastra",
+    "retrieved": "2026-06-01",
+    "concepts": ["scorers", "evals", "quality", "regression-testing"],
+    "confidence": "medium",
+    "notes": "Maintainer blog post for scorer positioning; used as a product-update source rather than stable API reference."
+  },
+  {
+    "id": "langchain-js-agents",
+    "title": "LangChain JavaScript Agents",
+    "url": "https://docs.langchain.com/oss/javascript/langchain/agents",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-06-01",
+    "concepts": ["langchain", "javascript", "agents", "tools"],
+    "confidence": "high",
+    "notes": "Official LangChain JavaScript agents docs for comparison with Mastra's agent harness."
+  },
+  {
+    "id": "langgraph-overview",
+    "title": "LangGraph Overview",
+    "url": "https://docs.langchain.com/oss/python/langgraph/overview",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-06-01",
+    "concepts": ["langgraph", "graphs", "state", "workflows"],
+    "confidence": "high",
+    "notes": "Official LangGraph overview for comparison with Mastra workflow control flow."
+  },
+  {
+    "id": "langgraph-js-persistence",
+    "title": "LangGraph JavaScript Persistence",
+    "url": "https://docs.langchain.com/oss/javascript/langgraph/persistence",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-06-01",
+    "concepts": ["langgraph", "javascript", "persistence", "checkpoints", "threads"],
+    "confidence": "high",
+    "notes": "Official LangGraph JavaScript persistence docs for checkpoint, thread, memory, and human-in-the-loop comparison claims."
+  },
+  {
+    "id": "langsmith-observability",
+    "title": "LangSmith Observability Concepts",
+    "url": "https://docs.langchain.com/langsmith/observability-concepts",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-06-01",
+    "concepts": ["langsmith", "observability", "tracing"],
+    "confidence": "high",
+    "notes": "Official LangSmith observability concepts for comparison with Mastra observability."
+  },
+  {
+    "id": "langsmith-evaluation",
+    "title": "LangSmith Evaluation Concepts",
+    "url": "https://docs.langchain.com/langsmith/evaluation-concepts",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-06-01",
+    "concepts": ["langsmith", "evaluations", "datasets", "experiments"],
+    "confidence": "high",
+    "notes": "Official LangSmith evaluation concepts for comparison with Mastra scorer/eval claims."
+  }
+]
