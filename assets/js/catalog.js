@@ -71,7 +71,7 @@ window.LEARN_CATALOG = {
       ],
       durationMinutes: 90,
       slideCount: 48,
-      lastUpdated: "2026-05-27",
+      lastUpdated: "2026-06-01",
       tags: [
         { slug: "database-internals", label: "Database Internals" },
         { slug: "mongodb", label: "MongoDB" },

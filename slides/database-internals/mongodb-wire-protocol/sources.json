@@ -1,0 +1,189 @@
+[
+  {
+    "id": "mongodb-wire-protocol",
+    "title": "MongoDB Wire Protocol",
+    "url": "https://www.mongodb.com/docs/manual/reference/mongodb-wire-protocol/",
+    "sourceType": "primary",
+    "publisher": "MongoDB",
+    "retrieved": "2026-06-01",
+    "concepts": ["wire-protocol", "message-header", "opcodes", "op-msg", "op-compressed"],
+    "confidence": "high",
+    "notes": "MongoDB manual reference for message header, opcode formats, legacy opcodes, OP_MSG, OP_COMPRESSED, and little-endian layout."
+  },
+  {
+    "id": "bson-spec",
+    "title": "BSON Specification",
+    "url": "https://bsonspec.org/spec.html",
+    "sourceType": "primary",
+    "publisher": "BSON",
+    "retrieved": "2026-06-01",
+    "concepts": ["bson", "serialization", "types", "documents"],
+    "confidence": "high",
+    "notes": "BSON binary document format specification used by MongoDB command documents and replies."
+  },
+  {
+    "id": "mongodb-bson-types",
+    "title": "BSON Types",
+    "url": "https://www.mongodb.com/docs/current/reference/bson-types/",
+    "sourceType": "primary",
+    "publisher": "MongoDB",
+    "retrieved": "2026-06-01",
+    "concepts": ["bson", "types", "drivers"],
+    "confidence": "high",
+    "notes": "MongoDB manual reference for BSON types and driver conversion behavior."
+  },
+  {
+    "id": "spec-op-msg",
+    "title": "OP_MSG",
+    "url": "https://specifications.readthedocs.io/en/latest/message/OP_MSG/",
+    "sourceType": "primary",
+    "publisher": "MongoDB Driver Specifications",
+    "retrieved": "2026-06-01",
+    "concepts": ["op-msg", "sections", "flags", "command-envelope"],
+    "confidence": "high",
+    "notes": "Driver specification for OP_MSG as a bidirectional command envelope introduced in MongoDB 3.6."
+  },
+  {
+    "id": "spec-compression",
+    "title": "Compression and OP_COMPRESSED",
+    "url": "https://specifications.readthedocs.io/en/latest/compression/OP_COMPRESSED/",
+    "sourceType": "primary",
+    "publisher": "MongoDB Driver Specifications",
+    "retrieved": "2026-06-01",
+    "concepts": ["compression", "op-compressed", "snappy", "zlib", "zstd"],
+    "confidence": "high",
+    "notes": "Driver specification for connection negotiation and OP_COMPRESSED message wrapping."
+  },
+  {
+    "id": "spec-handshake",
+    "title": "MongoDB Handshake",
+    "url": "https://github.com/mongodb/specifications/blob/master/source/mongodb-handshake/handshake.md",
+    "sourceType": "primary",
+    "publisher": "MongoDB Driver Specifications",
+    "retrieved": "2026-06-01",
+    "concepts": ["handshake", "hello", "isMaster", "metadata", "drivers"],
+    "confidence": "high",
+    "notes": "Driver specification for initial client/server handshake metadata and behavior."
+  },
+  {
+    "id": "spec-sdam",
+    "title": "Server Discovery and Monitoring",
+    "url": "https://github.com/mongodb/specifications/blob/master/source/server-discovery-and-monitoring/server-discovery-and-monitoring.md",
+    "sourceType": "primary",
+    "publisher": "MongoDB Driver Specifications",
+    "retrieved": "2026-06-01",
+    "concepts": ["sdam", "hello", "topology", "drivers", "wire-version"],
+    "confidence": "high",
+    "notes": "Driver specification for topology discovery and monitoring using hello/isMaster command replies."
+  },
+  {
+    "id": "spec-crud",
+    "title": "CRUD Specification",
+    "url": "https://github.com/mongodb/specifications/blob/master/source/crud/crud.md",
+    "sourceType": "primary",
+    "publisher": "MongoDB Driver Specifications",
+    "retrieved": "2026-06-01",
+    "concepts": ["crud", "commands", "drivers", "bulk-writes"],
+    "confidence": "high",
+    "notes": "Driver specification for driver CRUD APIs and their command behavior."
+  },
+  {
+    "id": "mongodb-hello",
+    "title": "hello Command",
+    "url": "https://www.mongodb.com/docs/manual/reference/command/hello/",
+    "sourceType": "primary",
+    "publisher": "MongoDB",
+    "retrieved": "2026-06-01",
+    "concepts": ["hello", "handshake", "wire-version", "topology"],
+    "confidence": "high",
+    "notes": "MongoDB command reference for hello response fields including wire versions and topology-related signals."
+  },
+  {
+    "id": "mongodb-auth-scram",
+    "title": "SCRAM Authentication",
+    "url": "https://www.mongodb.com/docs/manual/core/security-scram/",
+    "sourceType": "primary",
+    "publisher": "MongoDB",
+    "retrieved": "2026-06-01",
+    "concepts": ["authentication", "scram", "commands", "sasl"],
+    "confidence": "high",
+    "notes": "MongoDB authentication reference for SCRAM and SASL command traffic."
+  },
+  {
+    "id": "aws-documentdb-compatibility",
+    "title": "Amazon DocumentDB Compatibility",
+    "url": "https://docs.aws.amazon.com/documentdb/latest/developerguide/compatibility.html",
+    "sourceType": "primary",
+    "publisher": "Amazon Web Services",
+    "retrieved": "2026-06-01",
+    "concepts": ["documentdb", "mongodb-compatibility", "wire-protocol", "api-coverage"],
+    "confidence": "high",
+    "notes": "Official Amazon DocumentDB compatibility matrix and MongoDB version/API support details."
+  },
+  {
+    "id": "ferretdb-intro",
+    "title": "FerretDB Introduction",
+    "url": "https://docs.ferretdb.io/",
+    "sourceType": "primary",
+    "publisher": "FerretDB",
+    "retrieved": "2026-06-01",
+    "concepts": ["ferretdb", "postgresql", "wire-protocol", "proxy"],
+    "confidence": "high",
+    "notes": "Official FerretDB docs describing FerretDB as a proxy converting MongoDB wire protocol queries to SQL over PostgreSQL with DocumentDB extension."
+  },
+  {
+    "id": "ferretdb-compatibility",
+    "title": "FerretDB Compatibility",
+    "url": "https://docs.ferretdb.io/migration/compatibility/",
+    "sourceType": "primary",
+    "publisher": "FerretDB",
+    "retrieved": "2026-06-01",
+    "concepts": ["ferretdb", "compatibility", "drivers", "operators"],
+    "confidence": "high",
+    "notes": "Official FerretDB compatibility page for wire protocol and feature coverage caveats."
+  },
+  {
+    "id": "cosmos-mongodb",
+    "title": "Azure Cosmos DB for MongoDB",
+    "url": "https://learn.microsoft.com/azure/cosmos-db/mongodb/introduction",
+    "sourceType": "primary",
+    "publisher": "Microsoft",
+    "retrieved": "2026-06-01",
+    "concepts": ["cosmos-db", "mongodb-api", "wire-protocol", "drivers"],
+    "confidence": "high",
+    "notes": "Official Microsoft page for Cosmos DB for MongoDB and use of MongoDB wire protocol, drivers, SDKs, and tools."
+  },
+  {
+    "id": "microsoft-documentdb",
+    "title": "Microsoft DocumentDB GitHub Repository",
+    "url": "https://github.com/microsoft/documentdb",
+    "sourceType": "primary",
+    "publisher": "Microsoft",
+    "retrieved": "2026-06-01",
+    "concepts": ["documentdb", "postgresql", "mongodb-compatible", "bson"],
+    "confidence": "high",
+    "notes": "Official repository describing DocumentDB as a MongoDB-compatible document database built on PostgreSQL."
+  },
+  {
+    "id": "percona-mongodb",
+    "title": "Percona Server for MongoDB Documentation",
+    "url": "https://docs.percona.com/percona-server-for-mongodb/",
+    "sourceType": "primary",
+    "publisher": "Percona",
+    "retrieved": "2026-06-01",
+    "concepts": ["percona", "mongodb-server", "compatibility", "drivers"],
+    "confidence": "high",
+    "notes": "Percona Server for MongoDB docs for compatibility and MongoDB-derived server distribution context."
+  },
+  {
+    "id": "mongodb-stable-api",
+    "title": "Stable API",
+    "url": "https://www.mongodb.com/docs/manual/reference/stable-api/",
+    "sourceType": "primary",
+    "publisher": "MongoDB",
+    "retrieved": "2026-06-01",
+    "concepts": ["stable-api", "api-version", "commands", "compatibility"],
+    "confidence": "high",
+    "notes": "MongoDB manual page used to distinguish wire version, API version, and product version."
+  }
+]
