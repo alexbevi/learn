@@ -1,0 +1,156 @@
+[
+  {
+    "id": "langchain-agents",
+    "title": "LangChain Agents",
+    "url": "https://docs.langchain.com/oss/python/langchain/agents",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-06-01",
+    "concepts": ["langchain", "agents", "create-agent", "tools", "middleware"],
+    "confidence": "high",
+    "notes": "Official LangChain agents docs for agent harness concepts and create_agent usage."
+  },
+  {
+    "id": "langchain-create-agent",
+    "title": "create_agent Reference",
+    "url": "https://reference.langchain.com/python/langchain/agents/factory/create_agent",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-06-01",
+    "concepts": ["create-agent", "agent-graph", "tools", "models"],
+    "confidence": "high",
+    "notes": "API reference describing create_agent as creating an agent graph that calls tools in a loop until stopping condition."
+  },
+  {
+    "id": "langchain-hitl",
+    "title": "LangChain Human-in-the-loop",
+    "url": "https://docs.langchain.com/oss/python/langchain/human-in-the-loop",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-06-01",
+    "concepts": ["human-in-the-loop", "approval", "agents"],
+    "confidence": "high",
+    "notes": "Official LangChain docs for human-in-the-loop agent controls."
+  },
+  {
+    "id": "langgraph-overview",
+    "title": "LangGraph Overview",
+    "url": "https://docs.langchain.com/oss/python/langgraph/overview",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-06-01",
+    "concepts": ["langgraph", "graphs", "state", "runtime"],
+    "confidence": "high",
+    "notes": "Official LangGraph overview for graph runtime, state, and orchestration."
+  },
+  {
+    "id": "thinking-in-langgraph",
+    "title": "Thinking in LangGraph",
+    "url": "https://docs.langchain.com/oss/python/langgraph/thinking-in-langgraph",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-06-01",
+    "concepts": ["langgraph", "state-machine", "workflow-design"],
+    "confidence": "high",
+    "notes": "Official guide for designing graph workflows around state and control flow."
+  },
+  {
+    "id": "langgraph-durable-execution",
+    "title": "LangGraph Durable Execution",
+    "url": "https://docs.langchain.com/oss/python/langgraph/durable-execution",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-06-01",
+    "concepts": ["durable-execution", "persistence", "interrupts", "resume"],
+    "confidence": "high",
+    "notes": "Official durable execution guide for persistence and resume behavior."
+  },
+  {
+    "id": "langgraph-interrupts",
+    "title": "LangGraph Interrupts",
+    "url": "https://docs.langchain.com/oss/python/langgraph/interrupts",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-06-01",
+    "concepts": ["interrupts", "human-in-the-loop", "checkpointers"],
+    "confidence": "high",
+    "notes": "Official docs for interrupt() and state persistence requirements."
+  },
+  {
+    "id": "langgraph-persistence",
+    "title": "LangGraph Persistence",
+    "url": "https://docs.langchain.com/oss/python/langgraph/persistence",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-06-01",
+    "concepts": ["persistence", "checkpointing", "threads", "state"],
+    "confidence": "high",
+    "notes": "Official persistence docs for checkpointing and state."
+  },
+  {
+    "id": "langgraph-memory",
+    "title": "LangGraph Memory",
+    "url": "https://docs.langchain.com/oss/python/langgraph/add-memory",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-06-01",
+    "concepts": ["memory", "short-term-memory", "long-term-memory", "threads"],
+    "confidence": "high",
+    "notes": "Official LangGraph guide for adding memory."
+  },
+  {
+    "id": "langgraph-checkpointers",
+    "title": "LangGraph Checkpointer Integrations",
+    "url": "https://docs.langchain.com/oss/python/integrations/checkpointers/index",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-06-01",
+    "concepts": ["checkpointers", "mongodb", "postgres", "redis", "sqlite"],
+    "confidence": "high",
+    "notes": "Official checkpointer integration list including MongoDB, Postgres, Redis, SQLite, and other backends."
+  },
+  {
+    "id": "langsmith-observability",
+    "title": "LangSmith Observability Concepts",
+    "url": "https://docs.langchain.com/langsmith/observability-concepts",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-06-01",
+    "concepts": ["langsmith", "observability", "tracing", "agents"],
+    "confidence": "high",
+    "notes": "Official LangSmith observability concepts."
+  },
+  {
+    "id": "mongodb-vector-search",
+    "title": "MongoDB Vector Search",
+    "url": "https://www.mongodb.com/docs/vector-search/",
+    "sourceType": "primary",
+    "publisher": "MongoDB",
+    "retrieved": "2026-06-01",
+    "concepts": ["mongodb", "vector-search", "retrieval", "rag"],
+    "confidence": "high",
+    "notes": "MongoDB Vector Search docs for retrieval store role."
+  },
+  {
+    "id": "pgvector",
+    "title": "pgvector",
+    "url": "https://github.com/pgvector/pgvector",
+    "sourceType": "primary",
+    "publisher": "pgvector",
+    "retrieved": "2026-06-01",
+    "concepts": ["postgres", "vectors", "retrieval"],
+    "confidence": "high",
+    "notes": "pgvector project README for Postgres vector search."
+  },
+  {
+    "id": "aws-outbox",
+    "title": "Transactional Outbox Pattern",
+    "url": "https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/transactional-outbox.html",
+    "sourceType": "primary",
+    "publisher": "Amazon Web Services",
+    "retrieved": "2026-06-01",
+    "concepts": ["transactional-outbox", "queues", "reliability", "events"],
+    "confidence": "high",
+    "notes": "AWS prescriptive guidance for transactional outbox pattern."
+  }
+]
