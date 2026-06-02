@@ -32,9 +32,14 @@ Build the evidence base before writing slides.
    - Group by concept, not by URL.
    - For each concept include:
      - source ids
+     - learner problem or before-state this concept addresses
+     - after-state or capability the concept enables
      - extracted claims
-     - mechanisms or flows
+     - concrete mechanisms, APIs, protocols, runtime paths, or flows
+     - implementation details, configuration surfaces, and code-level handles
      - operational or implementation implications
+     - knobs, limits, failure modes, security concerns, or observability signals
+     - example workload or scenario where the concept matters
      - version-sensitive areas
      - contradictions, gaps, or uncertainty
 
@@ -49,3 +54,8 @@ Build the evidence base before writing slides.
 - Mark inferences explicitly.
 - Prefer concrete behavior, APIs, metrics, state transitions, and failure modes
   over summary prose.
+- Avoid feature-tour research. If a section only says what a product offers,
+  expand it until it explains how the feature works, when it matters, where it
+  breaks down, and what a practitioner should do with it.
+- Research should be strong enough that an outline can answer "why", "how",
+  "what changes", and "what can go wrong" without inventing unsupported detail.
