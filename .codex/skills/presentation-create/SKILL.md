@@ -68,14 +68,28 @@ Create source-grounded, static HTML learning decks for the Learn repository. The
    - Generate tags from actual deck content after authoring.
    - Use canonical lowercase slugs and useful concept-level labels; avoid near-duplicates.
 
-9. Validate locally.
+9. Audit information density after authoring and before validation.
+   - Review the deck slide by slide against `claims.json`.
+   - For each slide, confirm:
+     - it answers a concrete learner question
+     - the core claim is source-backed or explicitly marked as inference
+     - it includes a mechanism, example, operational implication, caveat, or
+       decision criterion
+     - it does not repeat another slide without adding new structure
+     - it has a visual when the concept involves architecture, lifecycle,
+       runtime flow, data flow, taxonomy, state, or comparison
+   - Tighten, split, merge, or remove slides that are accurate but thin.
+   - Update `claims.json`, `visuals.md`, references, and catalog metadata if
+     the audit changes the deck.
+
+10. Validate locally.
    - Run `node scripts/validate-site.mjs`.
    - Use local files or a local static server for browser checks and screenshots.
    - Do not wait for public GitHub Pages deployment to validate the content.
    - Fix structural, rendering, metadata, reference, image accessibility, and inline-code issues before committing.
    - Treat visual-aid warnings as prompts to add or improve visuals for substantial decks.
 
-10. Commit and push a vertical slice when requested by the repo workflow.
+11. Commit and push a vertical slice when requested by the repo workflow.
    - Stage only task-local files.
    - Use Conventional Commit format.
    - Leave unrelated dirty changes alone.
