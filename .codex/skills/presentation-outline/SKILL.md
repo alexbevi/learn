@@ -15,12 +15,24 @@ Convert research into a slide contract before writing HTML.
 
 ## Workflow
 
-1. Define the narrative arc.
+1. Choose practical anchors before outlining.
+   - Select one or two concrete workloads, systems, user journeys, incidents,
+     migrations, or architecture decisions that will recur throughout the deck.
+   - Derive the anchors from user intake and research. If the user did not
+     provide one, choose a conservative default that stresses the topic's real
+     tradeoffs.
+   - Use the anchors repeatedly to explain architecture, mechanisms, code,
+     failure modes, operational choices, and product implications.
+   - Avoid one-off examples that appear once and then disappear.
+   - Record the anchors in the outline summary and reference them in relevant
+     `claims.json` slide contracts through the `example` field.
+
+2. Define the narrative arc.
    - Start with the learner problem and practical anchor.
    - Move from concepts to mechanisms to operations to application impact.
    - End with recap, diagnostic checklist, and grouped references.
 
-2. Create or update `claims.json`.
+3. Create or update `claims.json`.
    - Use an array of slide contract objects.
    - Required fields: `slide`, `title`, `objective`, `coreClaim`,
      `sourceIds`, `visual`, `practicalTakeaway`.
@@ -58,11 +70,11 @@ Example contract:
 }
 ```
 
-3. Keep one claim per slide whenever possible.
+4. Keep one claim per slide whenever possible.
    - Dense decks can use two supporting points, but avoid mixed-purpose slides.
    - Every technical claim should trace to source ids or be marked as inference.
 
-4. Estimate slide count and duration.
+5. Estimate slide count and duration.
    - Technical deep dives usually need 35-60 slides.
    - Prefer more focused slides over overloaded layouts.
 
