@@ -31,6 +31,20 @@ Convert research into a slide contract before writing HTML.
    - Start with the learner problem and practical anchor.
    - Move from concepts to mechanisms to operations to application impact.
    - End with recap, diagnostic checklist, and grouped references.
+   - For competitive, vendor, product-strategy, or platform-selection decks,
+     define stable comparison axes before creating comparison slides. Use the
+     axes consistently so each product is evaluated on the same basis:
+     - data model and persistence boundary
+     - auth, policy, and end-user authorization model
+     - generated API or integration surface
+     - local development, migration, and testing loop
+     - deployment, runtime, and operational model
+     - realtime, events, sync, or workflow primitives
+     - AI, vector, retrieval, or agent-tooling fit
+     - observability, governance, compliance, and enterprise controls
+     - lock-in, portability, migration risk, and ecosystem maturity
+   - If a comparison axis does not apply, say why instead of silently skipping
+     it.
 
 3. Create or update `claims.json`.
    - Use an array of slide contract objects.
