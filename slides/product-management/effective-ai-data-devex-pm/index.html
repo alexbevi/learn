@@ -1,0 +1,922 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Effective Product Management for AI/Data Developer Experience</title>
+    <script src="../../../assets/js/theme.js"></script>
+    <link rel="stylesheet" href="../../../assets/vendor/reveal/dist/reveal.css" />
+    <link
+      rel="stylesheet"
+      href="../../../assets/vendor/reveal/dist/plugin/highlight/monokai.css"
+    />
+    <link rel="stylesheet" href="../../../assets/css/deck.css" />
+    <style>
+      .pm-grid {
+        display: grid;
+        gap: 14px;
+        margin-top: 22px;
+      }
+
+      .cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .cols-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .cols-5 {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+
+      .pm-card,
+      .node,
+      .matrix-head,
+      .matrix-cell,
+      .phase,
+      .lane {
+        border: 1px solid var(--deck-line);
+        border-radius: 8px;
+        background: linear-gradient(180deg, var(--deck-panel-2), var(--deck-panel));
+        padding: 14px;
+      }
+
+      .pm-card strong,
+      .node strong,
+      .matrix-head,
+      .matrix-cell strong,
+      .phase strong,
+      .lane strong {
+        display: block;
+        color: var(--deck-text);
+        font-size: 0.54em;
+        line-height: 1.16;
+      }
+
+      .pm-card span,
+      .node span,
+      .matrix-cell span,
+      .phase span,
+      .lane span {
+        display: block;
+        margin-top: 7px;
+        color: var(--deck-muted);
+        font-size: 0.42em;
+        line-height: 1.3;
+      }
+
+      .pm-card h3,
+      .lane h3 {
+        margin-bottom: 10px;
+        color: var(--deck-accent);
+        font-size: 0.72em;
+      }
+
+      .visual {
+        width: min(100%, 1090px);
+        margin: 20px auto 0;
+      }
+
+      .compact .pm-card,
+      .compact .node,
+      .compact .matrix-cell {
+        padding: 12px;
+      }
+
+      .tight p,
+      .tight li {
+        font-size: 0.52em;
+      }
+
+      .flow {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .flow .node {
+        position: relative;
+        min-height: 116px;
+      }
+
+      .flow .node:not(:last-child)::after {
+        content: ">";
+        position: absolute;
+        top: 42px;
+        right: -14px;
+        z-index: 2;
+        color: var(--deck-accent);
+        font-size: 0.78em;
+        font-weight: 900;
+      }
+
+      .flow.wide {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+      }
+
+      .flow.wide .node {
+        min-height: 108px;
+      }
+
+      .stack-map {
+        display: grid;
+        grid-template-columns: 0.95fr 1.15fr 0.95fr;
+        gap: 14px;
+        align-items: stretch;
+      }
+
+      .stack-col {
+        display: grid;
+        gap: 10px;
+      }
+
+      .core {
+        border-color: rgb(33 199 168 / 58%);
+        box-shadow: inset 0 0 0 1px rgb(33 199 168 / 18%);
+      }
+
+      .amber {
+        border-color: rgb(255 184 77 / 48%);
+      }
+
+      .blue {
+        border-color: rgb(122 168 255 / 45%);
+      }
+
+      .red {
+        border-color: rgb(242 109 109 / 45%);
+      }
+
+      .tag-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin-top: 10px;
+      }
+
+      .tag {
+        display: inline-flex;
+        padding: 5px 8px;
+        border: 1px solid var(--deck-code-border);
+        border-radius: 999px;
+        color: var(--deck-muted);
+        font-size: 0.39em;
+        font-weight: 760;
+      }
+
+      .note {
+        margin-top: 12px;
+        color: var(--deck-amber);
+        font-size: 0.48em;
+        font-weight: 760;
+        line-height: 1.28;
+      }
+
+      .matrix {
+        display: grid;
+        grid-template-columns: 0.78fr repeat(3, 1fr);
+        gap: 8px;
+        margin-top: 20px;
+      }
+
+      .matrix.five {
+        grid-template-columns: 0.76fr repeat(4, 1fr);
+      }
+
+      .matrix-head {
+        color: var(--deck-accent);
+        font-size: 0.42em;
+        font-weight: 860;
+      }
+
+      .matrix-cell {
+        min-height: 88px;
+      }
+
+      .rail {
+        display: grid;
+        grid-template-columns: 210px minmax(0, 1fr) 255px;
+        gap: 12px;
+        align-items: start;
+        margin-top: 12px;
+      }
+
+      .rail .node {
+        min-height: 82px;
+      }
+
+      .timeline {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 22px;
+      }
+
+      .phase {
+        min-height: 210px;
+      }
+
+      .loop {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .loop .node {
+        min-height: 132px;
+      }
+
+      .evidence-map {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .metric-tree {
+        display: grid;
+        grid-template-columns: 0.9fr 1.1fr 1.1fr 0.9fr;
+        gap: 10px;
+        align-items: stretch;
+      }
+
+      .metric-tree .node {
+        min-height: 118px;
+      }
+
+      .reference-list h3 {
+        color: var(--deck-accent);
+        font-size: 0.6em;
+      }
+
+      .reference-list li {
+        font-size: 0.41em;
+      }
+    </style>
+  </head>
+  <body class="has-deck-topbar">
+    <header class="deck-topbar">
+      <a class="deck-nav-link" href="../../../">Learn</a>
+      <div class="deck-title">
+        <span>Effective Product Management</span>
+        <small>AI/Data Developer Experience</small>
+      </div>
+      <a class="deck-nav-link" href="../../../topics/product-management/">Product Management</a>
+    </header>
+
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <p class="kicker">Senior PM Operating Model</p>
+          <h1>Effective Product Management for AI/Data Developer Experience</h1>
+          <p class="lead">
+            A practical deck for Sr/Lead PMs who already know the mechanics and want a
+            sharper system for strategy, discovery, execution, influence, metrics, and
+            team leadership in AI and data developer products.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Learning Goals</p>
+          <h2>What this deck should change</h2>
+          <div class="pm-grid cols-3" data-visual>
+            <div class="pm-card">
+              <h3>Sharper strategy</h3>
+              <p>Name the segment, workflow, trust boundary, wedge, economic lever, and constraint.</p>
+            </div>
+            <div class="pm-card">
+              <h3>Better evidence</h3>
+              <p>Combine discovery, telemetry, support, traces, eval failures, and delivery data.</p>
+            </div>
+            <div class="pm-card">
+              <h3>Outcome execution</h3>
+              <p>Run roadmaps as bet portfolios with confidence, quality gates, and learning checks.</p>
+            </div>
+            <div class="pm-card">
+              <h3>Durable influence</h3>
+              <p>Use written tradeoffs and shared facts instead of meeting-by-meeting persuasion.</p>
+            </div>
+            <div class="pm-card">
+              <h3>Metric literacy</h3>
+              <p>Connect developer behavior, AI quality, data reliability, delivery health, and business impact.</p>
+            </div>
+            <div class="pm-card">
+              <h3>Scaled judgment</h3>
+              <p>Create artifacts and cadences that help other teams make better decisions.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Role Shift</p>
+          <h2>The senior PM job is not bigger backlog management</h2>
+          <div class="matrix">
+            <div class="matrix-head">Mode</div>
+            <div class="matrix-head">Feature coordination</div>
+            <div class="matrix-head">Product ownership</div>
+            <div class="matrix-head">Lead PM leverage</div>
+            <div class="matrix-cell"><strong>Primary question</strong></div>
+            <div class="matrix-cell"><strong>What ships?</strong><span>Dates, scope, dependencies, status.</span></div>
+            <div class="matrix-cell"><strong>Why this bet?</strong><span>Problem, outcome, evidence, risk, quality.</span></div>
+            <div class="matrix-cell"><strong>How does the system decide?</strong><span>Reusable strategy, metrics, cadence, and artifacts.</span></div>
+            <div class="matrix-cell"><strong>Failure signal</strong></div>
+            <div class="matrix-cell"><strong>Lots of motion</strong><span>Backlog moves while product truth stays fuzzy.</span></div>
+            <div class="matrix-cell"><strong>Clear decisions</strong><span>The team can say no and explain why.</span></div>
+            <div class="matrix-cell"><strong>Distributed judgment</strong><span>Other teams improve decisions without the PM in every room.</span></div>
+          </div>
+          <p class="note">Delivery coordination still matters. It is just not the highest-leverage part of the senior job.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Running Example</p>
+          <h2>Anchor: an AI developer platform</h2>
+          <div class="stack-map visual" data-visual>
+            <div class="stack-col">
+              <div class="node blue"><strong>Developer workflow</strong><span>Discover, install, authenticate, build, debug, eval, deploy, operate.</span></div>
+              <div class="node"><strong>Product surfaces</strong><span>Docs, SDKs, CLI, API, examples, errors, portal, support.</span></div>
+              <div class="node"><strong>Agent surface</strong><span>MCP tools, resources, prompts, permissions, safe examples.</span></div>
+            </div>
+            <div class="stack-col">
+              <div class="node core"><strong>AI/data platform</strong><span>Model calls, retrieval, tool execution, traces, evals, feedback, rollout controls.</span></div>
+              <div class="node core"><strong>Developer promise</strong><span>Move from idea to trusted production workflow with less integration and less rework.</span></div>
+            </div>
+            <div class="stack-col">
+              <div class="node amber"><strong>Trust systems</strong><span>Security, privacy, data contracts, lineage, governance, incident response.</span></div>
+              <div class="node red"><strong>Failure modes</strong><span>Stale data, bad retrieval, unsafe tool calls, hidden cost, latency, broken evals.</span></div>
+              <div class="node"><strong>Business outcome</strong><span>Production adoption, expansion, support deflection, lower time-to-value.</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Effectiveness Model</p>
+          <h2>The six pillars reinforce each other</h2>
+          <div class="loop visual" data-visual>
+            <div class="node core"><strong>Strategy</strong><span>Choose the workflow, wedge, constraint, and business theory.</span></div>
+            <div class="node blue"><strong>Discovery</strong><span>Find the real friction through customers, tools, telemetry, and failures.</span></div>
+            <div class="node core"><strong>Execution</strong><span>Roadmap as bets with confidence, dependencies, gates, and learning checks.</span></div>
+            <div class="node amber"><strong>Influence</strong><span>Align stakeholders around facts, options, consequences, and risk ownership.</span></div>
+            <div class="node blue"><strong>Metrics</strong><span>Connect adoption, quality, reliability, cost, sentiment, and delivery health.</span></div>
+            <div class="node core"><strong>Leadership</strong><span>Scale better decisions through artifacts, principles, and cadence.</span></div>
+          </div>
+          <p class="note">The weakest pillar becomes the limit of the product system.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Strategy</p>
+          <h2>Start with a product thesis</h2>
+          <div class="flow wide compact visual" data-visual>
+            <div class="node"><strong>Segment</strong><span>Platform engineers building governed AI workflows.</span></div>
+            <div class="node"><strong>Workflow</strong><span>Connect data, run evals, inspect traces, deploy safely.</span></div>
+            <div class="node"><strong>Friction</strong><span>Glue work, weak trust, unclear failures, slow reviews.</span></div>
+            <div class="node"><strong>Trust</strong><span>Permissions, data quality, traceability, rollback.</span></div>
+            <div class="node"><strong>Wedge</strong><span>Eval-first production readiness for AI apps.</span></div>
+            <div class="node"><strong>Metric</strong><span>More trusted production projects at lower support cost.</span></div>
+          </div>
+          <p class="lead">
+            Strategy is useful when it creates decisions. It should tell the team what to
+            ignore, what to sequence, and which risks are part of the product promise.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Strategy</p>
+          <h2>Choose the workflow wedge</h2>
+          <div class="matrix five" data-visual>
+            <div class="matrix-head">Wedge test</div>
+            <div class="matrix-head">Urgency</div>
+            <div class="matrix-head">Frequency</div>
+            <div class="matrix-head">Trust boundary</div>
+            <div class="matrix-head">Expansion path</div>
+            <div class="matrix-cell"><strong>Eval-first release</strong></div>
+            <div class="matrix-cell"><strong>High</strong><span>Bad upgrades break customer trust.</span></div>
+            <div class="matrix-cell"><strong>Recurring</strong><span>Every prompt, model, tool, and retrieval change.</span></div>
+            <div class="matrix-cell"><strong>Explicit</strong><span>Criteria, traces, rollout gates, rollback.</span></div>
+            <div class="matrix-cell"><strong>Strong</strong><span>Observability, governance, CI, support, enterprise controls.</span></div>
+            <div class="matrix-cell"><strong>Generic AI dashboard</strong></div>
+            <div class="matrix-cell"><strong>Medium</strong><span>Useful, but not always tied to a release decision.</span></div>
+            <div class="matrix-cell"><strong>Variable</strong><span>May become a reporting surface only.</span></div>
+            <div class="matrix-cell"><strong>Blurred</strong><span>Can hide who owns quality and risk.</span></div>
+            <div class="matrix-cell"><strong>Weak</strong><span>Harder to prove strategic advantage.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Strategy</p>
+          <h2>AI/data strategy must carry risk</h2>
+          <div class="pm-grid cols-3" data-visual>
+            <div class="pm-card red"><strong>Reliability</strong><span>Outputs vary. Evals, traces, and rollback are product requirements.</span></div>
+            <div class="pm-card red"><strong>Security</strong><span>Tool calls, credentials, tenant boundaries, and prompt injection change launch risk.</span></div>
+            <div class="pm-card amber"><strong>Data quality</strong><span>Freshness, schema, lineage, and semantics shape product truth.</span></div>
+            <div class="pm-card amber"><strong>Transparency</strong><span>Developers need to inspect what happened and why it failed.</span></div>
+            <div class="pm-card blue"><strong>Cost and latency</strong><span>Inference, retrieval, and tool loops create variable unit economics.</span></div>
+            <div class="pm-card blue"><strong>Governance</strong><span>Risk controls should be usable product surfaces, not late-stage blockers.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Discovery</p>
+          <h2>Discovery is workflow archaeology</h2>
+          <div class="flow wide compact visual" data-visual>
+            <div class="node"><strong>Setup</strong><span>Project, keys, local env, sample app.</span></div>
+            <div class="node"><strong>Docs</strong><span>Search, copy, adapt, mismatch, version drift.</span></div>
+            <div class="node"><strong>First error</strong><span>Auth, schema, model, rate, permission.</span></div>
+            <div class="node"><strong>Debug</strong><span>Logs, traces, eval output, support, teammate.</span></div>
+            <div class="node"><strong>Deploy</strong><span>CI, data contract, rollout, rollback.</span></div>
+            <div class="node"><strong>Operate</strong><span>Incidents, cost, model drift, user feedback.</span></div>
+          </div>
+          <p class="lead">
+            Developer interviews are necessary, but they miss friction that only appears
+            inside tools, logs, traces, and failure loops.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Discovery</p>
+          <h2>Use opportunity trees to prevent solution gravity</h2>
+          <div class="pm-grid cols-4" data-visual>
+            <div class="pm-card core"><strong>Outcome</strong><span>Increase trusted production adoption among platform teams.</span></div>
+            <div class="pm-card"><strong>Opportunity</strong><span>Teams cannot diagnose failed AI tasks quickly.</span></div>
+            <div class="pm-card"><strong>Solution options</strong><span>Trace explorer, failure classes, eval diff, docs-to-error links.</span></div>
+            <div class="pm-card amber"><strong>Assumption tests</strong><span>Can users identify root cause faster with trace plus eval context?</span></div>
+          </div>
+          <p class="note">The tree is a reasoning artifact. It only works if the team updates it when evidence changes.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Discovery</p>
+          <h2>Triangulate developer evidence</h2>
+          <div class="evidence-map visual" data-visual>
+            <div class="node blue"><strong>Qualitative</strong><span>Interviews, shadowing, usability tests, sales calls, support notes.</span></div>
+            <div class="node core"><strong>Product telemetry</strong><span>Install, first call, docs search, errors, funnel, retention.</span></div>
+            <div class="node amber"><strong>AI evidence</strong><span>Eval failures, traces, model versions, tool calls, human review.</span></div>
+            <div class="node red"><strong>Operating data</strong><span>Incidents, cost, latency, data freshness, delivery health.</span></div>
+          </div>
+          <p class="lead">
+            One evidence type will lie to you eventually. The senior PM's job is to
+            notice when the signals disagree and make that disagreement useful.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Discovery</p>
+          <h2>Include the AI failure corpus</h2>
+          <div class="rail" data-visual>
+            <div class="node core"><strong>Input</strong><span>Prompt, user goal, account, data slice, model version.</span></div>
+            <div class="node"><strong>Observed behavior</strong><span>Output, retrieved context, tool calls, trace, latency, cost, user feedback.</span></div>
+            <div class="node red"><strong>Product learning</strong><span>Expectation gap, trust break, missing affordance, launch gate, roadmap change.</span></div>
+          </div>
+          <div class="rail">
+            <div class="node amber"><strong>Expected behavior</strong><span>Criteria, rubric, examples, policy, accepted uncertainty.</span></div>
+            <div class="node"><strong>Failure class</strong><span>Retrieval, reasoning, policy, data freshness, tool schema, UX handoff.</span></div>
+            <div class="node blue"><strong>Decision</strong><span>Fix prompt, tool, data, UX, docs, permission, or product scope.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Execution</p>
+          <h2>Roadmaps are bet portfolios</h2>
+          <div class="matrix" data-visual>
+            <div class="matrix-head">Roadmap type</div>
+            <div class="matrix-head">Feature/date list</div>
+            <div class="matrix-head">Outcome bet portfolio</div>
+            <div class="matrix-head">Senior PM question</div>
+            <div class="matrix-cell"><strong>Unit</strong></div>
+            <div class="matrix-cell"><strong>Feature</strong><span>"Ship trace viewer in Q3."</span></div>
+            <div class="matrix-cell"><strong>Bet</strong><span>"Reduce failed AI task diagnosis time for platform teams."</span></div>
+            <div class="matrix-cell"><strong>Why this now?</strong><span>Evidence, risk, customer impact, strategic fit.</span></div>
+            <div class="matrix-cell"><strong>Commitment</strong></div>
+            <div class="matrix-cell"><strong>Scope and date</strong><span>Looks clear until evidence changes.</span></div>
+            <div class="matrix-cell"><strong>Outcome and learning gate</strong><span>Scope adapts as the team learns.</span></div>
+            <div class="matrix-cell"><strong>What would change our mind?</strong><span>Name the evidence before it arrives.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Execution</p>
+          <h2>Make confidence explicit</h2>
+          <div class="pm-grid cols-3" data-visual>
+            <div class="pm-card core"><strong>Customer evidence</strong><span>Observed workflow pain, qualified demand, support cost, renewal risk.</span></div>
+            <div class="pm-card"><strong>Technical feasibility</strong><span>Known architecture, integration boundary, migration cost, operational risk.</span></div>
+            <div class="pm-card"><strong>Data readiness</strong><span>Contracts, quality, lineage, freshness, access, privacy posture.</span></div>
+            <div class="pm-card"><strong>Quality signal</strong><span>Eval coverage, trace completeness, regression history, human review.</span></div>
+            <div class="pm-card"><strong>GTM clarity</strong><span>Buyer, user, packaging, enablement, proof points, support path.</span></div>
+            <div class="pm-card amber"><strong>Decision rule</strong><span>Low confidence does not mean no. It means fund learning deliberately.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Execution Health</p>
+          <h2>Execution health is speed plus stability</h2>
+          <div class="metric-tree visual" data-visual>
+            <div class="node core"><strong>Speed</strong><span>Lead time for changes, deployment frequency, cycle time, feedback loops.</span></div>
+            <div class="node blue"><strong>Stability</strong><span>Change failure rate, recovery time, incident learning, rollback confidence.</span></div>
+            <div class="node amber"><strong>Developer experience</strong><span>Cognitive load, flow disruption, docs success, error recovery.</span></div>
+            <div class="node red"><strong>AI quality</strong><span>Eval pass rate, trace failure classes, cost per success, model drift.</span></div>
+          </div>
+          <p class="note">Use these as team and system diagnostics, not individual productivity scorecards.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Launch Discipline</p>
+          <h2>Build quality gates into the product</h2>
+          <div class="flow wide compact visual" data-visual>
+            <div class="node"><strong>Evals</strong><span>Representative cases, criteria, regression threshold.</span></div>
+            <div class="node"><strong>Traces</strong><span>Model, retrieval, tool call, cost, latency, failure class.</span></div>
+            <div class="node"><strong>Data</strong><span>Contract, freshness, lineage, expectation suite.</span></div>
+            <div class="node"><strong>Security</strong><span>Permissions, secrets, tenant boundary, tool scope.</span></div>
+            <div class="node"><strong>Control</strong><span>Rollback, rate limit, kill switch, incident owner.</span></div>
+            <div class="node"><strong>Support</strong><span>Runbook, customer comms, known limitations, docs.</span></div>
+          </div>
+          <p class="lead">Risk tier matters. A prototype and a production tenant workflow should not share the same gate.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Influence</p>
+          <h2>Influence starts with shared facts</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Write the decision</h3>
+              <p>Context, recommendation, options, tradeoffs, rejected alternatives, risk, owner, and deadline.</p>
+            </div>
+            <div class="panel">
+              <h3>Expose the uncertainty</h3>
+              <p>Separate facts, beliefs, open questions, constraints, and the evidence that would change direction.</p>
+            </div>
+            <div class="panel">
+              <h3>Ask for the real choice</h3>
+              <p>Do we optimize for speed, trust, enterprise readiness, cost, adoption, or strategic positioning?</p>
+            </div>
+          </div>
+          <p class="note">Writing does not replace conversation. It makes the conversation worth having.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Influence</p>
+          <h2>Map stakeholders by risk and workflow</h2>
+          <div class="pm-grid cols-4" data-visual>
+            <div class="pm-card core"><strong>Builder</strong><span>Developers need fast setup, clear errors, examples, and safe defaults.</span></div>
+            <div class="pm-card blue"><strong>Operator</strong><span>SRE/support need traces, runbooks, rollback, and customer-impact detail.</span></div>
+            <div class="pm-card amber"><strong>Data owner</strong><span>Data teams need contracts, freshness, lineage, and consumer impact.</span></div>
+            <div class="pm-card red"><strong>Risk owner</strong><span>Security/legal need permissions, privacy, auditability, and policy controls.</span></div>
+            <div class="pm-card"><strong>Buyer</strong><span>Economic value, consolidation, governance, and proof of production readiness.</span></div>
+            <div class="pm-card"><strong>GTM</strong><span>Packaging, launch narrative, objection handling, enablement, references.</span></div>
+            <div class="pm-card"><strong>Engineering</strong><span>Architecture, reliability, migration, scalability, maintainability.</span></div>
+            <div class="pm-card"><strong>Design</strong><span>Workflow clarity, trust cues, failure handling, cognitive load.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Executive Narrative</p>
+          <h2>Tell the story in three layers</h2>
+          <div class="flow compact visual" data-visual>
+            <div class="node core"><strong>Business result</strong><span>Increase production AI platform expansion and reduce support burden.</span></div>
+            <div class="node blue"><strong>Customer behavior</strong><span>More teams ship monitored AI workflows without bespoke glue.</span></div>
+            <div class="node amber"><strong>Product mechanism</strong><span>Evals, traces, data contracts, safe tool integrations, rollback.</span></div>
+            <div class="node red"><strong>Risk and ask</strong><span>Sequence governance and reliability work before broad launch.</span></div>
+          </div>
+          <p class="lead">
+            Technical work becomes legible when you explain the mechanism that moves the
+            business and the risk it removes.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Metrics</p>
+          <h2>Your metric tree is your product theory</h2>
+          <div class="metric-tree visual" data-visual>
+            <div class="node core"><strong>Business</strong><span>Expansion, retention, production projects, support cost, gross margin.</span></div>
+            <div class="node"><strong>Customer outcome</strong><span>Trusted workflow shipped faster with fewer escalations.</span></div>
+            <div class="node blue"><strong>Product behavior</strong><span>First success, eval pass, trace use, staging, production, team reuse.</span></div>
+            <div class="node amber"><strong>System health</strong><span>Quality, latency, cost, data freshness, delivery stability, sentiment.</span></div>
+          </div>
+          <p class="note">The tree is a hypothesis. Treat it as testable, not as a law of nature.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Metrics</p>
+          <h2>Measure DevEx without flattening it</h2>
+          <div class="pm-grid cols-3" data-visual>
+            <div class="pm-card core"><strong>Feedback loops</strong><span>Time to install, first call, test result, deploy feedback, answer from support.</span></div>
+            <div class="pm-card blue"><strong>Cognitive load</strong><span>Concept count, unclear errors, context switching, policy confusion, setup steps.</span></div>
+            <div class="pm-card amber"><strong>Flow state</strong><span>Interruptions, waiting, unstable tools, noisy alerts, broken local loop.</span></div>
+            <div class="pm-card"><strong>SPACE balance</strong><span>Satisfaction, performance, activity, communication, efficiency and flow.</span></div>
+            <div class="pm-card red"><strong>Anti-metric</strong><span>More prompts, commits, or tool calls can mean rework rather than productivity.</span></div>
+            <div class="pm-card"><strong>PM move</strong><span>Pair telemetry with developer sentiment before declaring success.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">AI Quality</p>
+          <h2>AI quality needs its own measurement system</h2>
+          <div class="flow wide compact visual" data-visual>
+            <div class="node"><strong>Corpus</strong><span>Real tasks, edge cases, expected behavior, severity.</span></div>
+            <div class="node"><strong>Run</strong><span>Prompt, model, retrieval, tools, policy, version.</span></div>
+            <div class="node"><strong>Evaluate</strong><span>Rubric, grader, human review, regression threshold.</span></div>
+            <div class="node"><strong>Trace</strong><span>Step-by-step behavior, latency, cost, failure class.</span></div>
+            <div class="node"><strong>Fix</strong><span>Prompt, tool, data, UX, policy, docs, scope.</span></div>
+            <div class="node"><strong>Gate</strong><span>Compare versions before production rollout.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Data Reliability</p>
+          <h2>Data reliability is product reliability</h2>
+          <div class="stack-map visual" data-visual>
+            <div class="stack-col">
+              <div class="node blue"><strong>Producer</strong><span>Schema, semantics, freshness, ownership, change notice.</span></div>
+              <div class="node"><strong>Contract</strong><span>Expected fields, quality, SLA, governance, compatibility.</span></div>
+            </div>
+            <div class="stack-col">
+              <div class="node core"><strong>Validation and lineage</strong><span>Expectation suite, pipeline run, dataset lineage, impact analysis.</span></div>
+              <div class="node core"><strong>Product behavior</strong><span>Retrieval, ranking, assistant response, dashboard, automation.</span></div>
+            </div>
+            <div class="stack-col">
+              <div class="node amber"><strong>Consumer</strong><span>Developer, customer, agent, analyst, downstream product.</span></div>
+              <div class="node red"><strong>Incident workflow</strong><span>Detect, assess impact, roll back, notify, learn.</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Adoption</p>
+          <h2>Developer adoption is a production funnel</h2>
+          <div class="flow wide compact visual" data-visual>
+            <div class="node"><strong>Discover</strong><span>Docs, example, peer, agent suggestion.</span></div>
+            <div class="node"><strong>Install</strong><span>SDK, key, local setup, first config.</span></div>
+            <div class="node"><strong>First success</strong><span>Working API call or eval run.</span></div>
+            <div class="node"><strong>Debug</strong><span>Trace, error, docs, support path.</span></div>
+            <div class="node"><strong>Stage</strong><span>Quality gate, data contract, rollout plan.</span></div>
+            <div class="node"><strong>Production</strong><span>Retained workflow, team reuse, expansion.</span></div>
+          </div>
+          <p class="note">SDK downloads are curiosity. Production workflows are adoption.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Developer Experience</p>
+          <h2>DX surface area is larger than the API</h2>
+          <div class="stack-map visual" data-visual>
+            <div class="stack-col">
+              <div class="node"><strong>Before code</strong><span>Positioning, docs, examples, templates, pricing, constraints.</span></div>
+              <div class="node blue"><strong>Build loop</strong><span>SDK, CLI, local setup, auth, schema, mocks, tests.</span></div>
+            </div>
+            <div class="stack-col">
+              <div class="node core"><strong>Core API</strong><span>Endpoint, model, tool, data, policy, version, response.</span></div>
+              <div class="node core"><strong>Feedback loop</strong><span>Errors, traces, evals, logs, docs links, support handoff.</span></div>
+            </div>
+            <div class="stack-col">
+              <div class="node amber"><strong>Production loop</strong><span>Observability, rollout, rollback, cost, incident, governance.</span></div>
+              <div class="node"><strong>Agent loop</strong><span>MCP tools, resources, prompts, permissions, examples, audit.</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Technical Credibility</p>
+          <h2>Learn the failure modes that would make your roadmap untrue</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Model and evals</h3>
+              <p>Version drift, nondeterminism, stale eval corpus, false pass rates, weak failure taxonomy.</p>
+            </div>
+            <div class="panel">
+              <h3>Data and retrieval</h3>
+              <p>Schema changes, freshness gaps, permission leaks, poor chunking, missing lineage, undeclared consumers.</p>
+            </div>
+            <div class="panel">
+              <h3>Operations</h3>
+              <p>Latency, cost spikes, rate limits, tool failures, rollback gaps, support blind spots.</p>
+            </div>
+          </div>
+          <p class="note">Technical credibility is not overriding engineering. It is asking better product questions.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Leadership</p>
+          <h2>Team leadership means decision reuse</h2>
+          <div class="pm-grid cols-4" data-visual>
+            <div class="pm-card core"><strong>Principles</strong><span>How the area makes tradeoffs under pressure.</span></div>
+            <div class="pm-card"><strong>Decision records</strong><span>What was decided, why, by whom, and with what evidence.</span></div>
+            <div class="pm-card"><strong>Metric definitions</strong><span>Shared meaning for activation, quality, adoption, and reliability.</span></div>
+            <div class="pm-card"><strong>Research repository</strong><span>Customer evidence, opportunity trees, failure corpora, synthesis.</span></div>
+            <div class="pm-card"><strong>Roadmap narrative</strong><span>Why this sequence, why now, why not the alternatives.</span></div>
+            <div class="pm-card amber"><strong>Quality rubric</strong><span>Risk-tiered eval, data, security, trace, and support gates.</span></div>
+            <div class="pm-card"><strong>Launch review</strong><span>Decision, risk, owner, measurement, rollback, communication.</span></div>
+            <div class="pm-card blue"><strong>Learning review</strong><span>What changed, what surprised us, what decision updates next.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Leadership</p>
+          <h2>The product trio is a control system</h2>
+          <div class="flow compact visual" data-visual>
+            <div class="node core"><strong>PM</strong><span>Outcome, business viability, evidence quality, tradeoffs.</span></div>
+            <div class="node blue"><strong>Design</strong><span>Workflow, trust cues, cognitive load, failure handling.</span></div>
+            <div class="node amber"><strong>Engineering</strong><span>Feasibility, architecture, reliability, observability, data constraints.</span></div>
+            <div class="node red"><strong>Learning loop</strong><span>Customer evidence, telemetry, evals, incidents, roadmap updates.</span></div>
+          </div>
+          <p class="lead">
+            Engineering belongs in discovery when trace schema, data contracts, and tool
+            permissions shape the user experience.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Operating Cadence</p>
+          <h2>Run a deliberate PM cadence</h2>
+          <div class="flow wide compact visual" data-visual>
+            <div class="node"><strong>Discovery</strong><span>Opportunity tree, customer evidence, failure corpus.</span></div>
+            <div class="node"><strong>Delivery</strong><span>Risks, dependencies, confidence, scope changes.</span></div>
+            <div class="node"><strong>Metrics</strong><span>Adoption, DevEx, AI quality, data reliability.</span></div>
+            <div class="node"><strong>Quality</strong><span>Evals, traces, contracts, incidents, launch gates.</span></div>
+            <div class="node"><strong>Stakeholders</strong><span>Decisions, tradeoffs, risks, sequencing, asks.</span></div>
+            <div class="node"><strong>Strategy</strong><span>Monthly thesis and bet portfolio review.</span></div>
+          </div>
+          <p class="note">Cadence without decision rights becomes meeting load. Decide what each ritual is allowed to change.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Failure Modes</p>
+          <h2>Watch for senior PM traps</h2>
+          <div class="pm-grid cols-3" data-visual>
+            <div class="pm-card red"><strong>Hidden feature team</strong><span>Outcome language hides a pre-decided feature list.</span></div>
+            <div class="pm-card red"><strong>Demo theater</strong><span>A polished AI moment outranks production reliability evidence.</span></div>
+            <div class="pm-card amber"><strong>False certainty</strong><span>Roadmap confidence exceeds customer, data, or technical evidence.</span></div>
+            <div class="pm-card amber"><strong>Proxy metric capture</strong><span>Activity rises while customer success and quality fall.</span></div>
+            <div class="pm-card blue"><strong>Stakeholder capture</strong><span>Sales, executives, or governance own sequence without shared facts.</span></div>
+            <div class="pm-card blue"><strong>Hero PM mode</strong><span>Tradeoffs live in one person's head instead of the product system.</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Self-Diagnosis</p>
+          <h2>Diagnose your current operating model</h2>
+          <div class="evidence-map visual" data-visual>
+            <div class="node core"><strong>Strategy thesis</strong><span>Can the team say what it refuses to do?</span></div>
+            <div class="node"><strong>Opportunity tree</strong><span>Are problems and solutions separated?</span></div>
+            <div class="node"><strong>Bet roadmap</strong><span>Do items carry outcome, evidence, confidence, and gates?</span></div>
+            <div class="node"><strong>Metric tree</strong><span>Can you connect product behavior to business impact?</span></div>
+            <div class="node amber"><strong>Risk register</strong><span>Are AI, data, security, cost, and operational risks visible?</span></div>
+            <div class="node"><strong>Decision log</strong><span>Can a new teammate understand why choices were made?</span></div>
+            <div class="node blue"><strong>Quality rubric</strong><span>Do launch gates match risk tier?</span></div>
+            <div class="node"><strong>Learning review</strong><span>Does new evidence actually change plans?</span></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">90-Day Plan</p>
+          <h2>Create visible improvement in one quarter</h2>
+          <div class="timeline visual" data-visual>
+            <div class="phase">
+              <strong>Days 1-30: diagnose</strong>
+              <span>Pick one production-critical AI/data developer workflow. Audit thesis, evidence, metrics, quality gates, and stakeholder risks.</span>
+            </div>
+            <div class="phase">
+              <strong>Days 31-60: change decisions</strong>
+              <span>Create one opportunity tree, one metric tree, one confidence-rated roadmap review, and one AI/data quality gate.</span>
+            </div>
+            <div class="phase">
+              <strong>Days 61-90: scale</strong>
+              <span>Codify decision records, failure taxonomy, launch rubric, and cadence so other teams can reuse the operating model.</span>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Target State</p>
+          <h2>What good looks like</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>The team knows why</h3>
+              <p>Strategy names the workflow, wedge, customer outcome, business outcome, and constraints.</p>
+            </div>
+            <div class="panel">
+              <h3>The team can learn</h3>
+              <p>Discovery, telemetry, evals, traces, and incidents update confidence and sequencing.</p>
+            </div>
+            <div class="panel">
+              <h3>The team can say no</h3>
+              <p>Tradeoffs are grounded in shared facts, risk ownership, and the product theory.</p>
+            </div>
+          </div>
+          <p class="note">Good does not mean no conflict. It means conflict is about real choices.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Checklist</p>
+          <h2>Questions to keep using</h2>
+          <div class="grid-2 tight">
+            <div class="panel">
+              <h3>Before a roadmap review</h3>
+              <ul>
+                <li>What developer workflow are we changing?</li>
+                <li>What outcome would prove the bet worked?</li>
+                <li>What evidence would change our mind?</li>
+                <li>Which AI/data failure mode would break trust?</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>Before a stakeholder decision</h3>
+              <ul>
+                <li>Which facts, beliefs, and constraints are separate?</li>
+                <li>Who owns risk after the decision?</li>
+                <li>What quality gate protects the promise?</li>
+                <li>How will we know if the decision was wrong?</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Recap</p>
+          <h2>The practical mental model</h2>
+          <div class="grid-3">
+            <div class="panel">
+              <h3>Senior PM work is system design</h3>
+              <p>Design how the team chooses problems, gathers evidence, ships, learns, and handles risk.</p>
+            </div>
+            <div class="panel">
+              <h3>AI/data DevEx raises the bar</h3>
+              <p>Developer workflow, model quality, data reliability, tool permissions, and governance all shape product value.</p>
+            </div>
+            <div class="panel">
+              <h3>Lead PMs scale judgment</h3>
+              <p>Artifacts, metrics, decision records, and cadences help teams make better decisions without heroics.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">References</p>
+          <h2>Follow-up reading</h2>
+          <div class="reference-list">
+            <div>
+              <h3>Product model and discovery</h3>
+              <ul>
+                <li><a href="https://www.svpg.com/the-product-operating-model-an-introduction/">SVPG: Product Operating Model</a></li>
+                <li><a href="https://www.svpg.com/empowered-product-teams/">SVPG: Empowered Product Teams</a></li>
+                <li><a href="https://www.svpg.com/product-vs-feature-teams/">SVPG: Product vs Feature Teams</a></li>
+                <li><a href="https://www.producttalk.org/opportunity-solution-trees/">Product Talk: Opportunity Solution Trees</a></li>
+                <li><a href="https://rework.withgoogle.com/intl/en/guides/set-goals-with-okrs">Google re:Work: OKRs</a></li>
+                <li><a href="https://www.atlassian.com/agile/product-management/product-roadmaps">Atlassian: Product Roadmaps</a></li>
+                <li><a href="https://handbook.gitlab.com/handbook/product/">GitLab Product Handbook</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3>DevEx and delivery metrics</h3>
+              <ul>
+                <li><a href="https://dora.dev/guides/dora-metrics/">DORA Software Delivery Metrics</a></li>
+                <li><a href="https://dora.dev/research/2024/dora-report/">DORA 2024 Report</a></li>
+                <li><a href="https://getdx.com/research/space-of-developer-productivity/">DX: The SPACE of Developer Productivity</a></li>
+                <li><a href="https://getdx.com/report/devex-productivity/">DX: DevEx: What Actually Drives Productivity</a></li>
+                <li><a href="https://backstage.io/docs/overview/what-is-backstage/">Backstage Overview</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3>AI reliability and risk</h3>
+              <ul>
+                <li><a href="https://pair.withgoogle.com/guidebook/">Google PAIR Guidebook</a></li>
+                <li><a href="https://www.nist.gov/itl/ai-risk-management-framework">NIST AI Risk Management Framework</a></li>
+                <li><a href="https://developers.google.com/machine-learning/guides/rules-of-ml">Google Rules of Machine Learning</a></li>
+                <li><a href="https://papers.neurips.cc/paper/5656-hidden-technical-debt-in-machine-learning-systems.pdf">Hidden Technical Debt in ML Systems</a></li>
+                <li><a href="https://developers.openai.com/api/docs/guides/evals">OpenAI: Working with Evals</a></li>
+                <li><a href="https://developers.openai.com/api/docs/guides/evaluation-best-practices">OpenAI: Evaluation Best Practices</a></li>
+                <li><a href="https://docs.langchain.com/langsmith/observability">LangSmith Observability</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3>Data and agent integration</h3>
+              <ul>
+                <li><a href="https://docs.open-metadata.org/v1.12.x/api-reference/data-contracts">OpenMetadata Data Contracts</a></li>
+                <li><a href="https://openlineage.io/">OpenLineage</a></li>
+                <li><a href="https://greatexpectations.io/">Great Expectations</a></li>
+                <li><a href="https://modelcontextprotocol.io/docs/getting-started/intro">Model Context Protocol Introduction</a></li>
+                <li><a href="https://modelcontextprotocol.io/specification/2025-06-18">MCP Specification 2025-06-18</a></li>
+                <li><a href="https://www.anthropic.com/research/building-effective-agents">Anthropic: Building Effective Agents</a></li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script src="../../../assets/vendor/reveal/dist/reveal.js"></script>
+    <script src="../../../assets/vendor/reveal/dist/plugin/highlight.js"></script>
+    <script>
+      Reveal.initialize({
+        hash: true,
+        controls: true,
+        progress: true,
+        center: false,
+        width: 1280,
+        height: 720,
+        margin: 0.04,
+        plugins: [RevealHighlight],
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,227 @@
+[
+  {
+    "id": "svpg-product-operating-model",
+    "title": "The Product Operating Model: An Introduction",
+    "url": "https://www.svpg.com/the-product-operating-model-an-introduction/",
+    "sourceType": "primary",
+    "publisher": "Silicon Valley Product Group",
+    "retrieved": "2026-06-24",
+    "concepts": ["product model", "empowered teams", "outcomes"]
+  },
+  {
+    "id": "svpg-empowered-product-teams",
+    "title": "Empowered Product Teams",
+    "url": "https://www.svpg.com/empowered-product-teams/",
+    "sourceType": "primary",
+    "publisher": "Silicon Valley Product Group",
+    "retrieved": "2026-06-24",
+    "concepts": ["team empowerment", "objectives", "ownership"]
+  },
+  {
+    "id": "svpg-product-vs-feature-teams",
+    "title": "Product vs Feature Teams",
+    "url": "https://www.svpg.com/product-vs-feature-teams/",
+    "sourceType": "primary",
+    "publisher": "Silicon Valley Product Group",
+    "retrieved": "2026-06-24",
+    "concepts": ["feature teams", "product teams", "PM role"]
+  },
+  {
+    "id": "producttalk-opportunity-solution-trees",
+    "title": "Opportunity Solution Trees: Visualize Your Discovery to Stay Focused on Outcomes",
+    "url": "https://www.producttalk.org/opportunity-solution-trees/",
+    "sourceType": "primary",
+    "publisher": "Product Talk",
+    "retrieved": "2026-06-24",
+    "concepts": ["continuous discovery", "opportunity solution tree", "product trio"]
+  },
+  {
+    "id": "google-rework-okrs",
+    "title": "Set Goals with OKRs",
+    "url": "https://rework.withgoogle.com/intl/en/guides/set-goals-with-okrs",
+    "sourceType": "primary",
+    "publisher": "Google re:Work",
+    "retrieved": "2026-06-24",
+    "concepts": ["OKRs", "goals", "key results"]
+  },
+  {
+    "id": "atlassian-product-roadmaps",
+    "title": "Product Roadmaps",
+    "url": "https://www.atlassian.com/agile/product-management/product-roadmaps",
+    "sourceType": "primary",
+    "publisher": "Atlassian",
+    "retrieved": "2026-06-24",
+    "concepts": ["roadmaps", "strategy communication", "prioritization"]
+  },
+  {
+    "id": "gitlab-product-handbook",
+    "title": "Product Handbook",
+    "url": "https://handbook.gitlab.com/handbook/product/",
+    "sourceType": "primary",
+    "publisher": "GitLab",
+    "retrieved": "2026-06-24",
+    "concepts": ["product operations", "handbook", "async alignment"]
+  },
+  {
+    "id": "dora-metrics",
+    "title": "DORA's Software Delivery Performance Metrics",
+    "url": "https://dora.dev/guides/dora-metrics/",
+    "sourceType": "primary",
+    "publisher": "DORA",
+    "retrieved": "2026-06-24",
+    "concepts": ["delivery metrics", "lead time", "deployment frequency", "recovery"]
+  },
+  {
+    "id": "dora-2024-report",
+    "title": "Accelerate State of DevOps Report 2024",
+    "url": "https://dora.dev/research/2024/dora-report/",
+    "sourceType": "primary",
+    "publisher": "DORA",
+    "retrieved": "2026-06-24",
+    "concepts": ["AI adoption", "software delivery", "tradeoffs"]
+  },
+  {
+    "id": "space-framework-acm",
+    "title": "The SPACE of Developer Productivity",
+    "url": "https://getdx.com/research/space-of-developer-productivity/",
+    "sourceType": "primary",
+    "publisher": "DX",
+    "retrieved": "2026-06-24",
+    "concepts": ["developer productivity", "SPACE", "measurement"]
+  },
+  {
+    "id": "devex-acm",
+    "title": "DevEx: What Actually Drives Productivity",
+    "url": "https://getdx.com/report/devex-productivity/",
+    "sourceType": "primary",
+    "publisher": "DX",
+    "retrieved": "2026-06-24",
+    "concepts": ["developer experience", "feedback loops", "cognitive load", "flow"]
+  },
+  {
+    "id": "backstage-overview",
+    "title": "What Is Backstage?",
+    "url": "https://backstage.io/docs/overview/what-is-backstage/",
+    "sourceType": "primary",
+    "publisher": "Backstage",
+    "retrieved": "2026-06-24",
+    "concepts": ["developer portals", "software catalog", "platform engineering"]
+  },
+  {
+    "id": "google-pair-guidebook",
+    "title": "People + AI Guidebook",
+    "url": "https://pair.withgoogle.com/guidebook/",
+    "sourceType": "primary",
+    "publisher": "Google PAIR",
+    "retrieved": "2026-06-24",
+    "concepts": ["human-centered AI", "AI product design", "trust"]
+  },
+  {
+    "id": "nist-ai-rmf",
+    "title": "AI Risk Management Framework",
+    "url": "https://www.nist.gov/itl/ai-risk-management-framework",
+    "sourceType": "primary",
+    "publisher": "NIST",
+    "retrieved": "2026-06-24",
+    "concepts": ["AI risk", "trustworthy AI", "governance"]
+  },
+  {
+    "id": "google-rules-of-ml",
+    "title": "Rules of Machine Learning",
+    "url": "https://developers.google.com/machine-learning/guides/rules-of-ml",
+    "sourceType": "primary",
+    "publisher": "Google for Developers",
+    "retrieved": "2026-06-24",
+    "concepts": ["ML systems", "monitoring", "training-serving skew"]
+  },
+  {
+    "id": "hidden-technical-debt-ml",
+    "title": "Hidden Technical Debt in Machine Learning Systems",
+    "url": "https://papers.neurips.cc/paper/5656-hidden-technical-debt-in-machine-learning-systems.pdf",
+    "sourceType": "primary",
+    "publisher": "NeurIPS",
+    "retrieved": "2026-06-24",
+    "concepts": ["ML technical debt", "data dependencies", "feedback loops"]
+  },
+  {
+    "id": "openai-evals",
+    "title": "Working with Evals",
+    "url": "https://developers.openai.com/api/docs/guides/evals",
+    "sourceType": "primary",
+    "publisher": "OpenAI",
+    "retrieved": "2026-06-24",
+    "concepts": ["AI evaluations", "model reliability", "quality gates"]
+  },
+  {
+    "id": "openai-eval-best-practices",
+    "title": "Evaluation Best Practices",
+    "url": "https://developers.openai.com/api/docs/guides/evaluation-best-practices",
+    "sourceType": "primary",
+    "publisher": "OpenAI",
+    "retrieved": "2026-06-24",
+    "concepts": ["AI evaluations", "production testing", "nondeterminism"]
+  },
+  {
+    "id": "anthropic-effective-agents",
+    "title": "Building Effective AI Agents",
+    "url": "https://www.anthropic.com/research/building-effective-agents",
+    "sourceType": "primary",
+    "publisher": "Anthropic",
+    "retrieved": "2026-06-24",
+    "concepts": ["agents", "tools", "workflows", "autonomy"]
+  },
+  {
+    "id": "langsmith-observability",
+    "title": "LangSmith Observability",
+    "url": "https://docs.langchain.com/langsmith/observability",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-06-24",
+    "concepts": ["LLM observability", "tracing", "production metrics"]
+  },
+  {
+    "id": "openmetadata-data-contracts",
+    "title": "Data Contracts",
+    "url": "https://docs.open-metadata.org/v1.12.x/api-reference/data-contracts",
+    "sourceType": "primary",
+    "publisher": "OpenMetadata",
+    "retrieved": "2026-06-24",
+    "concepts": ["data contracts", "schema", "quality", "SLAs", "governance"]
+  },
+  {
+    "id": "openlineage-overview",
+    "title": "OpenLineage",
+    "url": "https://openlineage.io/",
+    "sourceType": "primary",
+    "publisher": "OpenLineage",
+    "retrieved": "2026-06-24",
+    "concepts": ["data lineage", "jobs", "datasets", "runs"]
+  },
+  {
+    "id": "great-expectations",
+    "title": "GX Core: Open Source Data Quality Platform",
+    "url": "https://greatexpectations.io/",
+    "sourceType": "primary",
+    "publisher": "Great Expectations",
+    "retrieved": "2026-06-24",
+    "concepts": ["data quality", "expectations", "validation"]
+  },
+  {
+    "id": "mcp-introduction",
+    "title": "What Is the Model Context Protocol?",
+    "url": "https://modelcontextprotocol.io/docs/getting-started/intro",
+    "sourceType": "primary",
+    "publisher": "Model Context Protocol",
+    "retrieved": "2026-06-24",
+    "concepts": ["MCP", "tools", "resources", "agent integrations"]
+  },
+  {
+    "id": "mcp-specification",
+    "title": "Model Context Protocol Specification 2025-06-18",
+    "url": "https://modelcontextprotocol.io/specification/2025-06-18",
+    "sourceType": "primary",
+    "publisher": "Model Context Protocol",
+    "retrieved": "2026-06-24",
+    "concepts": ["MCP", "protocol", "tool schemas", "integration boundary"]
+  }
+]

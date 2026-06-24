@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Product Management - Learn</title>
+    <meta
+      name="description"
+      content="Presentations about product strategy, discovery, execution, metrics, influence, and leadership."
+    />
+    <script src="../../assets/js/theme.js"></script>
+    <link rel="stylesheet" href="../../assets/css/site.css" />
+  </head>
+  <body data-topic-id="product-management" data-root="../../">
+    <header class="site-header">
+      <a class="brand" href="../../" aria-label="Learn home">
+        <span class="brand-mark">L</span>
+        <span>Learn</span>
+      </a>
+      <nav aria-label="Primary">
+        <a class="nav-link" href="../../">All topics</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="section-inner">
+          <h1 data-topic-title>Product Management</h1>
+          <p data-topic-summary></p>
+        </div>
+      </section>
+
+      <section class="band" aria-labelledby="topic-presentations-heading">
+        <div class="section-inner">
+          <div class="section-heading">
+            <h2 id="topic-presentations-heading">Presentations</h2>
+            <p data-topic-filter-label>Decks available for this topic.</p>
+          </div>
+          <div class="catalog-toolbar" data-topic-catalog-controls>
+            <label class="catalog-field search-field">
+              <span>Search</span>
+              <input
+                type="search"
+                data-catalog-search
+                placeholder="Search titles, tags, goals..."
+                autocomplete="off"
+              />
+            </label>
+            <label class="catalog-field">
+              <span>Sort</span>
+              <select data-catalog-sort>
+                <option value="updated-desc">Last updated, newest</option>
+                <option value="updated-asc">Last updated, oldest</option>
+                <option value="title-asc">Title, A-Z</option>
+                <option value="duration-desc">Duration, longest</option>
+              </select>
+            </label>
+            <label class="catalog-field compact-field">
+              <span>Per page</span>
+              <select data-catalog-page-size>
+                <option value="10">10</option>
+                <option value="20" selected>20</option>
+                <option value="50">50</option>
+              </select>
+            </label>
+          </div>
+          <div class="presentation-grid" data-topic-presentation-list></div>
+          <nav class="pagination" data-topic-pagination aria-label="Topic presentation pagination"></nav>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Built as static HTML for GitHub Pages.</p>
+    </footer>
+
+    <script src="../../assets/js/catalog.js"></script>
+    <script src="../../assets/js/site.js"></script>
+  </body>
+</html>

@@ -12,8 +12,50 @@ window.LEARN_CATALOG = {
       summary:
         "Deep technical presentations about database storage engines, execution paths, durability, performance, and operational behavior.",
     },
+    {
+      id: "product-management",
+      title: "Product Management",
+      summary:
+        "Practical presentations about product strategy, discovery, execution, stakeholder influence, metrics, business impact, and team leadership.",
+    },
   ],
   presentations: [
+    {
+      id: "effective-ai-data-devex-pm",
+      topicId: "product-management",
+      title: "Effective Product Management for AI/Data Developer Experience",
+      subtitle: "Strategy, Discovery, Execution, Metrics, Influence, and Leadership",
+      path: "slides/product-management/effective-ai-data-devex-pm/",
+      summary:
+        "A senior-PM operating model for AI/data developer-experience products, using an AI developer platform to connect strategy, discovery, roadmapping, stakeholder influence, DevEx metrics, AI evals, data reliability, and team leadership.",
+      covers: [
+        "A six-pillar PM effectiveness model spanning strategy, discovery, execution, influence, metrics, and team leadership for experienced product managers.",
+        "AI/data developer-experience mechanisms including evals, traces, data contracts, lineage, MCP integrations, docs, SDKs, CLIs, errors, support, and production adoption funnels.",
+        "Practical operating artifacts: product thesis, opportunity tree, confidence-rated roadmap, metric tree, quality gates, decision records, stakeholder risk map, and 90-day improvement plan.",
+      ],
+      learningGoals: [
+        "Turn senior PM work from backlog management into a repeatable operating system for better product decisions.",
+        "Use discovery, telemetry, eval failures, traces, data quality, and delivery metrics to make AI/data DevEx roadmap choices sharper.",
+        "Communicate strategy, tradeoffs, quality gates, and business impact to executives, engineering, design, security, data, support, and go-to-market stakeholders.",
+      ],
+      durationMinutes: 70,
+      slideCount: 36,
+      lastUpdated: "2026-06-24",
+      tags: [
+        { slug: "product-management", label: "Product Management" },
+        { slug: "developer-experience", label: "Developer Experience" },
+        { slug: "ai-products", label: "AI Products" },
+        { slug: "data-products", label: "Data Products" },
+        { slug: "product-strategy", label: "Product Strategy" },
+        { slug: "product-discovery", label: "Product Discovery" },
+        { slug: "roadmapping", label: "Roadmapping" },
+        { slug: "stakeholder-influence", label: "Stakeholder Influence" },
+        { slug: "metrics", label: "Metrics" },
+        { slug: "evals", label: "Evals" },
+        { slug: "data-governance", label: "Data Governance" },
+        { slug: "leadership", label: "Leadership" },
+      ],
+    },
     {
       id: "wiredtiger-storage-engine",
       topicId: "database-internals",
