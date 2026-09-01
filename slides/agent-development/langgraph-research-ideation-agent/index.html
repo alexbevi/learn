@@ -1,0 +1,1154 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Build a Research and Ideation Agent with LangGraph</title>
+    <script src="../../../assets/js/theme.js"></script>
+    <link rel="stylesheet" href="../../../assets/vendor/reveal/dist/reveal.css" />
+    <link
+      rel="stylesheet"
+      href="../../../assets/vendor/reveal/dist/plugin/highlight/monokai.css"
+    />
+    <link rel="stylesheet" href="../../../assets/css/deck.css" />
+    <style>
+      .reveal .compact { margin-top: 16px; }
+      .reveal .tight { margin-top: 12px; }
+      .reveal .muted { color: var(--deck-muted); }
+      .reveal .accent { color: var(--deck-accent); }
+      .reveal .amber { color: var(--deck-amber); }
+      .reveal .red { color: var(--deck-red); }
+      .reveal .tiny { font-size: 0.43em; }
+      .reveal .small { font-size: 0.54em; }
+      .reveal .code-tiny { font-size: 0.39em; line-height: 1.23; }
+      .reveal .panel.good { border-color: rgb(33 199 168 / 55%); }
+      .reveal .panel.warn { border-color: rgb(255 184 77 / 55%); }
+      .reveal .panel.bad { border-color: rgb(242 109 109 / 55%); }
+      .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 5px 9px;
+        border: 1px solid var(--deck-line);
+        border-radius: 999px;
+        background: var(--deck-code-fill);
+        color: var(--deck-muted);
+        font-size: 0.42em;
+        font-weight: 720;
+      }
+      .graph-flow {
+        display: grid;
+        grid-template-columns: repeat(9, minmax(0, 1fr));
+        align-items: center;
+        gap: 8px;
+        margin-top: 28px;
+      }
+      .graph-node {
+        position: relative;
+        min-height: 86px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        padding: 10px 7px;
+        border: 1px solid var(--deck-line);
+        border-radius: 10px;
+        background: linear-gradient(180deg, var(--deck-panel-2), var(--deck-panel));
+        color: var(--deck-text);
+        text-align: center;
+        font-size: 0.47em;
+        font-weight: 760;
+      }
+      .graph-node small { color: var(--deck-muted); font-size: 0.72em; font-weight: 600; }
+      .graph-node.model { border-color: rgb(122 168 255 / 55%); }
+      .graph-node.tool { border-color: rgb(255 184 77 / 55%); }
+      .graph-node.human { border-color: rgb(242 109 109 / 55%); }
+      .flow-arrow { color: var(--deck-accent); text-align: center; font-size: 0.72em; }
+      .fanout-stack { display: grid; gap: 6px; }
+      .fanout-stack span {
+        padding: 5px;
+        border: 1px solid var(--deck-line);
+        border-radius: 6px;
+        background: var(--deck-panel);
+        color: var(--deck-muted);
+        font-size: 0.31em;
+        text-align: center;
+      }
+      .legend { display: flex; gap: 18px; margin-top: 18px; }
+      .legend span { color: var(--deck-muted); font-size: 0.42em; }
+      .legend i { display: inline-block; width: 10px; height: 10px; margin-right: 6px; border: 2px solid var(--deck-line); border-radius: 3px; }
+      .legend .det i { border-color: var(--deck-accent); }
+      .legend .model-key i { border-color: var(--deck-blue); }
+      .legend .tool-key i { border-color: var(--deck-amber); }
+      .legend .human-key i { border-color: var(--deck-red); }
+      .mini-flow { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 18px 0; }
+      .mini-flow span {
+        padding: 8px 10px;
+        border: 1px solid var(--deck-line);
+        border-radius: 8px;
+        color: var(--deck-text);
+        font-size: 0.48em;
+      }
+      .mini-flow b { color: var(--deck-accent); font-size: 0.6em; }
+      .lane {
+        display: grid;
+        grid-template-columns: 150px repeat(5, minmax(0, 1fr));
+        align-items: stretch;
+        gap: 8px;
+        margin-top: 12px;
+      }
+      .lane > div {
+        padding: 10px;
+        border: 1px solid var(--deck-line);
+        border-radius: 8px;
+        background: var(--deck-panel);
+        color: var(--deck-muted);
+        font-size: 0.4em;
+      }
+      .lane .lane-name { display: flex; align-items: center; color: var(--deck-text); font-weight: 760; }
+      .lane .active { border-color: var(--deck-accent); color: var(--deck-text); }
+      .state-map {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 24px;
+      }
+      .state-map .panel { padding: 15px; }
+      .state-map .panel p { font-size: 0.5em; }
+      .equation {
+        display: grid;
+        grid-template-columns: 1fr 54px 1fr;
+        align-items: center;
+        gap: 12px;
+        margin-top: 22px;
+      }
+      .equation .branch-box {
+        padding: 14px;
+        border: 1px solid var(--deck-line);
+        border-radius: 10px;
+        background: var(--deck-panel);
+      }
+      .write-row { display: flex; gap: 8px; margin-top: 10px; }
+      .write-row span { flex: 1; padding: 8px; border: 1px solid var(--deck-line); border-radius: 6px; color: var(--deck-muted); font-size: 0.4em; text-align: center; }
+      .equation .operator { color: var(--deck-accent); text-align: center; font-size: 0.8em; font-weight: 900; }
+      .result-box { margin-top: 10px; padding: 10px; border: 1px solid var(--deck-line); border-radius: 7px; color: var(--deck-text); font-size: 0.45em; }
+      .practice-box {
+        margin-top: 22px;
+        padding: 20px;
+        border: 1px solid rgb(255 184 77 / 55%);
+        border-radius: 10px;
+        background: linear-gradient(180deg, rgb(255 184 77 / 8%), var(--deck-panel));
+      }
+      .practice-box p { margin: 0; }
+      .answer { margin-top: 16px; padding: 13px 16px; border-left: 4px solid var(--deck-accent); background: var(--deck-code-fill); }
+      .answer p { font-size: 0.5em; }
+      .boundary {
+        display: grid;
+        grid-template-columns: 1fr 70px 1fr 70px 1fr;
+        align-items: center;
+        gap: 10px;
+        margin-top: 28px;
+      }
+      .boundary .node-block { padding: 22px 14px; border: 1px solid var(--deck-line); border-radius: 10px; background: var(--deck-panel); text-align: center; }
+      .boundary .node-block h3 { margin-bottom: 8px; }
+      .boundary .node-block p { margin: 0; font-size: 0.5em; }
+      .boundary .checkpoint { color: var(--deck-accent); text-align: center; font-size: 0.42em; font-weight: 760; }
+      .route-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 20px; }
+      .route-card { padding: 14px; border: 1px solid var(--deck-line); border-radius: 9px; background: var(--deck-panel); }
+      .route-card h3 { color: var(--deck-accent); font-size: 0.78em; }
+      .route-card p { margin: 6px 0 0; font-size: 0.46em; }
+      .superstep {
+        display: grid;
+        grid-template-columns: 120px repeat(5, minmax(0, 1fr));
+        gap: 8px;
+        align-items: stretch;
+        margin-top: 20px;
+      }
+      .superstep > div { min-height: 48px; padding: 10px; border: 1px solid var(--deck-line); border-radius: 7px; color: var(--deck-muted); font-size: 0.4em; }
+      .superstep .head { color: var(--deck-text); font-weight: 760; }
+      .superstep .task { border-color: rgb(255 184 77 / 45%); }
+      .superstep .merge { border-color: rgb(33 199 168 / 55%); }
+      .topology-inline { display: flex; align-items: center; gap: 7px; margin-top: 16px; }
+      .topology-inline span { padding: 7px 9px; border: 1px solid var(--deck-line); border-radius: 7px; color: var(--deck-muted); font-size: 0.34em; }
+      .topology-inline b { color: var(--deck-accent); font-size: 0.45em; }
+      .pipeline {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        align-items: center;
+        gap: 8px;
+        margin-top: 28px;
+      }
+      .pipeline .pipe-box { min-height: 96px; display: flex; flex-direction: column; justify-content: center; padding: 12px; border: 1px solid var(--deck-line); border-radius: 9px; background: var(--deck-panel); text-align: center; }
+      .pipeline .pipe-box h3 { font-size: 0.72em; }
+      .pipeline .pipe-box p { margin: 7px 0 0; font-size: 0.41em; }
+      .pipeline .pipe-arrow { color: var(--deck-accent); text-align: center; font-size: 0.65em; }
+      .loop-map { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 24px; }
+      .loop-map .panel { min-height: 118px; }
+      .loop-map .return { position: absolute; right: 24%; bottom: -25px; left: 24%; color: var(--deck-amber); font-size: 0.42em; text-align: center; }
+      .sequence { display: grid; grid-template-columns: 130px repeat(5, minmax(0, 1fr)); gap: 8px; margin-top: 18px; }
+      .sequence > div { padding: 10px; border: 1px solid var(--deck-line); border-radius: 7px; color: var(--deck-muted); font-size: 0.4em; }
+      .sequence .head { color: var(--deck-text); font-weight: 760; }
+      .sequence .repeat { border-color: var(--deck-red); color: var(--deck-text); }
+      .sequence .saved { border-color: var(--deck-accent); }
+      .identity-link { display: grid; place-items: center; min-height: 100%; color: var(--deck-accent); font-size: 0.52em; font-weight: 800; }
+      .scope-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 24px; }
+      .scope-grid .panel { min-height: 190px; }
+      .scope-grid .scope-life { display: block; margin-bottom: 9px; color: var(--deck-amber); font-size: 0.68em; font-weight: 800; }
+      .checkpoint-row { display: grid; grid-template-columns: 120px repeat(6, minmax(0, 1fr)); gap: 7px; margin-top: 14px; }
+      .checkpoint-row > div { padding: 9px; border: 1px solid var(--deck-line); border-radius: 7px; color: var(--deck-muted); font-size: 0.37em; }
+      .checkpoint-row .head { color: var(--deck-text); font-weight: 760; }
+      .checkpoint-row .ok { border-color: var(--deck-accent); }
+      .checkpoint-row .fail { border-color: var(--deck-red); }
+      .fork-map { position: relative; margin-top: 28px; padding: 18px 10px 58px; }
+      .fork-main { display: grid; grid-template-columns: repeat(6, 1fr); align-items: center; gap: 10px; }
+      .fork-main span, .fork-branch span { padding: 10px; border: 1px solid var(--deck-line); border-radius: 7px; background: var(--deck-panel); color: var(--deck-muted); font-size: 0.4em; text-align: center; }
+      .fork-main b, .fork-branch b { color: var(--deck-accent); font-size: 0.5em; text-align: center; }
+      .fork-branch { position: absolute; left: 42%; right: 5%; bottom: 0; display: grid; grid-template-columns: 1fr 28px 1fr 28px 1fr; align-items: center; }
+      .memory-table td:first-child, .memory-table th:first-child { color: var(--deck-text); font-weight: 700; }
+      .agent-boundary { display: grid; grid-template-columns: 1fr 80px 1fr; align-items: center; gap: 16px; margin-top: 28px; }
+      .agent-boundary .versus { color: var(--deck-accent); text-align: center; font-size: 0.48em; font-weight: 800; }
+      .stream-map { display: grid; grid-template-columns: 1.2fr 70px 1fr; gap: 14px; align-items: center; margin-top: 24px; }
+      .stream-source { padding: 22px; border: 1px solid var(--deck-accent); border-radius: 10px; background: var(--deck-panel); }
+      .stream-source p { margin: 7px 0 0; font-size: 0.5em; }
+      .stream-arrow { color: var(--deck-accent); text-align: center; font-size: 0.8em; }
+      .stream-consumers { display: grid; gap: 9px; }
+      .stream-consumers div { padding: 11px 14px; border: 1px solid var(--deck-line); border-radius: 8px; background: var(--deck-panel); color: var(--deck-muted); font-size: 0.43em; }
+      .failure-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 22px; }
+      .failure-card { padding: 14px; border: 1px solid var(--deck-line); border-radius: 9px; background: var(--deck-panel); }
+      .failure-card h3 { font-size: 0.78em; }
+      .failure-card p { margin: 8px 0 0; font-size: 0.44em; }
+      .test-stack { display: grid; grid-template-columns: 1fr; gap: 7px; width: 76%; margin: 22px auto 0; }
+      .test-layer { margin-inline: auto; padding: 10px 18px; border: 1px solid var(--deck-line); border-radius: 8px; background: var(--deck-panel); color: var(--deck-muted); font-size: 0.43em; text-align: center; }
+      .test-layer:nth-child(1) { width: 42%; border-color: var(--deck-red); }
+      .test-layer:nth-child(2) { width: 58%; border-color: var(--deck-amber); }
+      .test-layer:nth-child(3) { width: 74%; border-color: var(--deck-blue); }
+      .test-layer:nth-child(4) { width: 92%; border-color: var(--deck-accent); }
+      .eval-stack { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 22px; }
+      .eval-stack .panel { min-height: 178px; padding: 14px; }
+      .eval-stack .metric { font-size: 0.86em; }
+      .trace-tree { display: grid; grid-template-columns: 1fr 1.2fr; gap: 20px; margin-top: 24px; }
+      .trace-nodes { display: grid; gap: 8px; }
+      .trace-nodes div { padding: 9px 12px; border-left: 3px solid var(--deck-line); background: var(--deck-panel); color: var(--deck-muted); font-size: 0.41em; }
+      .trace-nodes div:nth-child(2), .trace-nodes div:nth-child(3) { margin-left: 24px; border-left-color: var(--deck-blue); }
+      .trace-nodes div:nth-child(4) { margin-left: 48px; border-left-color: var(--deck-amber); }
+      .metadata-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 9px; }
+      .metadata-list span { padding: 9px; border: 1px solid var(--deck-line); border-radius: 7px; color: var(--deck-muted); font-size: 0.4em; }
+      .prod-map { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(3, auto); gap: 10px; margin-top: 20px; }
+      .prod-map .prod-box { padding: 11px; border: 1px solid var(--deck-line); border-radius: 8px; background: var(--deck-panel); color: var(--deck-muted); font-size: 0.4em; text-align: center; }
+      .prod-map .core { grid-column: 2 / 4; border-color: var(--deck-accent); color: var(--deck-text); font-weight: 760; }
+      .prod-map .wide { grid-column: span 2; }
+      .prod-map .trust { border-color: var(--deck-red); }
+      .preflight { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin-top: 22px; }
+      .preflight .panel { min-height: 225px; padding: 13px; }
+      .preflight ul { margin: 10px 0 0; padding-left: 1em; }
+      .preflight li { margin: 5px 0; font-size: 0.43em; }
+      .benefit-map { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 22px; }
+      .benefit-map .panel { min-height: 142px; }
+      .benefit-map .mechanism { display: block; margin-top: 10px; color: var(--deck-accent); font-size: 0.48em; font-weight: 750; }
+      .decision-table td, .decision-table th { padding: 9px; }
+      .recap-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px 18px; margin-top: 20px; counter-reset: review; }
+      .recap-item { counter-increment: review; display: grid; grid-template-columns: 28px 1fr; gap: 8px; align-items: start; padding: 8px 10px; border-bottom: 1px solid var(--deck-line); color: var(--deck-muted); font-size: 0.43em; }
+      .recap-item::before { content: counter(review); display: grid; place-items: center; width: 24px; height: 24px; border: 1px solid var(--deck-accent); border-radius: 50%; color: var(--deck-accent); font-weight: 800; }
+      @media (max-width: 900px) {
+        .graph-flow, .route-grid, .state-map { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .flow-arrow { display: none; }
+      }
+    </style>
+  </head>
+  <body class="has-deck-topbar">
+    <header class="deck-topbar" aria-label="Presentation navigation">
+      <a class="deck-nav-link" href="../../../">Main menu</a>
+      <div class="deck-title">
+        <span>Build a Research and Ideation Agent with LangGraph</span>
+        <small>Graph concepts, production mechanics, and tradeoffs in Python</small>
+      </div>
+      <a class="deck-nav-link" href="../../../topics/agent-development/">Topic</a>
+    </header>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <p class="kicker">Agent Development · Intermediate</p>
+          <h1>Build a Research and Ideation Agent with LangGraph</h1>
+          <p class="lead">
+            Learn the graph by tracing one real system—from a research brief to
+            parallel evidence, ideas, human judgment, and a durable final brief.
+          </p>
+          <div class="tag-row">
+            <span class="tag">Python 3.11+</span>
+            <span class="tag">LangGraph 1.2.11</span>
+            <span class="tag">Production-oriented</span>
+          </div>
+          <p class="footnote">55 minutes / 37 slides / runnable example included</p>
+        </section>
+
+        <section>
+          <p class="kicker">Learning contract</p>
+          <h2>The finish line</h2>
+          <div class="grid-2 compact">
+            <div class="callout">
+              <h3>Build</h3>
+              <p>Implement typed state, nodes, routes, dynamic fan-out, a reducer-backed join, and human review.</p>
+            </div>
+            <div class="callout">
+              <h3>Trace</h3>
+              <p>Explain which tasks run, what state changes, where checkpoints land, and what repeats after failure.</p>
+            </div>
+            <div class="callout">
+              <h3>Operate</h3>
+              <p>Design retries, persistence, streaming, tests, traces, evaluations, and deployment boundaries.</p>
+            </div>
+            <div class="callout">
+              <h3>Choose</h3>
+              <p>Defend plain Python, <code>create_agent</code>, or LangGraph for a new workload.</p>
+            </div>
+          </div>
+          <p class="footnote">
+            Out of scope: frontend code, model training, and choosing a search provider.
+            Every model and tool adapter is replaceable.
+          </p>
+        </section>
+
+        <section>
+          <p class="kicker">Anchor system</p>
+          <h2>The assistant we will build</h2>
+          <div class="graph-flow" data-visual="anchor research ideation graph">
+            <div class="graph-node"><span>Brief</span><small>product goal</small></div>
+            <div class="flow-arrow">→</div>
+            <div class="graph-node model"><span>Plan</span><small>research topics</small></div>
+            <div class="flow-arrow">⇢</div>
+            <div class="fanout-stack">
+              <span>market</span><span>users</span><span>risks</span>
+            </div>
+            <div class="flow-arrow">⇢</div>
+            <div class="graph-node model"><span>Synthesize</span><small>3 directions</small></div>
+            <div class="flow-arrow">→</div>
+            <div class="graph-node human"><span>Review</span><small>approve / revise</small></div>
+          </div>
+          <div class="topology-inline">
+            <span>evidence records</span><b>→</b><span>critique + bounded revision</span><b>→</b><span>cited final brief</span>
+          </div>
+          <div class="legend">
+            <span class="det"><i></i>deterministic control</span>
+            <span class="model-key"><i></i>model judgment</span>
+            <span class="tool-key"><i></i>tool / source work</span>
+            <span class="human-key"><i></i>human gate</span>
+          </div>
+          <p class="footnote">The graph controls execution. It does not make evidence true or ideas useful.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Why a graph?</p>
+          <h2>Use a graph when control is part of the product</h2>
+          <div class="grid-2 compact" data-visual="agent loop versus explicit graph">
+            <div class="panel">
+              <h3>Model / tool loop</h3>
+              <div class="mini-flow"><span>model</span><b>↔</b><span>tools</span></div>
+              <p><strong>Best when:</strong> the model chooses tools until it can answer.</p>
+              <p class="tight"><strong>Default:</strong> start with LangChain <code>create_agent</code>.</p>
+            </div>
+            <div class="panel good">
+              <h3>Explicit workflow</h3>
+              <div class="mini-flow"><span>plan</span><b>→</b><span>fan-out</span><b>→</b><span>gate</span></div>
+              <p><strong>Best when:</strong> order, parallelism, recovery, or review changes correctness.</p>
+              <p class="tight"><strong>Use:</strong> LangGraph's lower-level runtime.</p>
+            </div>
+          </div>
+          <p class="lead">Inference: choose LangGraph for a runtime guarantee you can name and test—not because the app contains an LLM.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Runtime mental model</p>
+          <h2>A graph has a static plan and a dynamic run</h2>
+          <div data-visual="graph definition and superstep execution">
+            <div class="lane">
+              <div class="lane-name">Graph definition</div>
+              <div class="active">possible nodes</div><div>possible edges</div><div>state schema</div><div>reducers</div><div>compile</div>
+            </div>
+            <div class="lane">
+              <div class="lane-name">One invocation</div>
+              <div class="active">input state</div><div>eligible tasks</div><div>parallel superstep</div><div>merge updates</div><div>next tasks</div>
+            </div>
+            <div class="lane">
+              <div class="lane-name">State snapshots</div>
+              <div><code>{brief}</code></div><div><code>{topics}</code></div><div><code>{findings}</code></div><div><code>{ideas}</code></div><div><code>{review}</code></div>
+            </div>
+          </div>
+          <p class="footnote">The topology describes possible execution. A trace describes the tasks and data of one run.</p>
+        </section>
+
+        <section>
+          <p class="kicker">State</p>
+          <h2>State is the workflow contract</h2>
+          <div class="state-map" data-visual="state context store source boundaries">
+            <div class="panel good">
+              <h3>Graph state</h3>
+              <p>Mutable run facts needed for routing, recovery, or inspection.</p>
+              <p class="tight"><code>brief</code> <code>findings</code> <code>ideas</code></p>
+            </div>
+            <div class="panel">
+              <h3>Runtime context</h3>
+              <p>Injected dependencies and immutable per-invocation identity.</p>
+              <p class="tight"><code>user_id</code> <code>search_client</code></p>
+            </div>
+            <div class="panel">
+              <h3>Store</h3>
+              <p>Application-defined information shared across threads.</p>
+              <p class="tight"><code>preferences</code> <code>saved_topics</code></p>
+            </div>
+            <div class="panel warn">
+              <h3>Source systems</h3>
+              <p>Authoritative documents, product data, and external side effects.</p>
+              <p class="tight"><code>corpus</code> <code>publication</code></p>
+            </div>
+          </div>
+          <p class="lead">Keep a key only if a later node, route, recovery path, or operator needs it.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Reducers</p>
+          <h2>Reducers are concurrency policy</h2>
+          <div class="equation" data-visual="parallel writes and reducer merge">
+            <div class="branch-box bad">
+              <h3>No reducer</h3>
+              <div class="write-row"><span>[market]</span><span>[users]</span><span>[risks]</span></div>
+              <div class="result-box red">conflicting writes / overwrite semantics</div>
+            </div>
+            <div class="operator">→</div>
+            <div class="branch-box good">
+              <h3><code>Annotated[list, operator.add]</code></h3>
+              <div class="write-row"><span>[market]</span><span>[users]</span><span>[risks]</span></div>
+              <div class="result-box accent">[market, users, risks]</div>
+            </div>
+          </div>
+          <div class="grid-3 compact">
+            <div class="panel"><h3>Identity</h3><p>What is the empty value?</p></div>
+            <div class="panel"><h3>Duplicates</h3><p>Can retries repeat an item?</p></div>
+            <div class="panel"><h3>Order</h3><p>Parallel completion order is not stable.</p></div>
+          </div>
+          <p class="footnote">Sort by a stable key after the barrier if order matters to a prompt, test, or user.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Practice 1 · diagnose</p>
+          <h2>Repair the state contract</h2>
+          <div class="practice-box">
+            <p class="lead">
+              Three parallel research tasks each return <code>{"findings": [item]}</code>.
+              The state declares <code>findings: list[Finding]</code> with no reducer.
+            </p>
+            <p><strong>Predict:</strong> what breaks? Then specify a safe merge rule and a deterministic ordering strategy.</p>
+          </div>
+          <div class="answer fragment">
+            <p>
+              Use <code>Annotated[list[Finding], operator.add]</code>. Give each finding a stable
+              topic or rank, then sort after the parallel superstep. The reducer combines values;
+              it does not promise completion order or deduplicate retries.
+            </p>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Node design</p>
+          <h2>A node boundary is a recovery boundary</h2>
+          <div class="boundary" data-visual="node boundaries and checkpoints">
+            <div class="node-block">
+              <h3>Research</h3>
+              <p>external reads + normalization</p>
+            </div>
+            <div class="checkpoint">checkpoint<br />retry policy</div>
+            <div class="node-block">
+              <h3>Synthesize</h3>
+              <p>model call + structured ideas</p>
+            </div>
+            <div class="checkpoint">checkpoint<br />trace boundary</div>
+            <div class="node-block">
+              <h3>Publish</h3>
+              <p>authorized idempotent effect</p>
+            </div>
+          </div>
+          <div class="grid-2 compact">
+            <div class="panel good"><h3>Split when</h3><p>retry, checkpoint, approval, trace, or failure ownership differs.</p></div>
+            <div class="panel warn"><h3>Keep together when</h3><p>steps are pure helpers that you are willing to rerun as one operation.</p></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Routing</p>
+          <h2>Four control primitives, four different jobs</h2>
+          <div class="route-grid" data-visual="LangGraph routing primitive comparison">
+            <div class="route-card">
+              <h3>Static edge</h3>
+              <p><strong>Trigger:</strong> node completes</p><p><strong>Job:</strong> invariant order</p><p><code>add_edge(A, B)</code></p>
+            </div>
+            <div class="route-card">
+              <h3>Conditional edge</h3>
+              <p><strong>Trigger:</strong> route function</p><p><strong>Job:</strong> branch or loop</p><p>separate work from routing</p>
+            </div>
+            <div class="route-card">
+              <h3>Send</h3>
+              <p><strong>Returns:</strong> task + input</p><p><strong>Job:</strong> dynamic map</p><p>one topic → one worker</p>
+            </div>
+            <div class="route-card">
+              <h3>Command</h3>
+              <p><strong>Returns:</strong> update + goto</p><p><strong>Job:</strong> atomic decision</p><p>review → revise / finish</p>
+            </div>
+          </div>
+          <p class="footnote">Use <code>Command</code> when state change and next hop are one decision; otherwise a conditional edge keeps topology more visible.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Practice 2 · predict</p>
+          <h2>Spot the accidental double route</h2>
+          <div class="grid-2 compact" data-visual="broken and corrected command routing">
+            <div class="panel bad">
+              <h3>Broken</h3>
+              <pre><code class="language-python code-small">builder.add_edge("review", "finalize")
+
+def review(state):
+    if rejected:
+        return Command(goto="revise")</code></pre>
+              <p class="tight">Which nodes become eligible after rejection?</p>
+            </div>
+            <div class="panel good fragment">
+              <h3>Repair</h3>
+              <pre><code class="language-python code-small"># no normal outgoing edge
+def review(state) -> Command[
+    Literal["revise", "finalize"]
+]:
+    return Command(goto=destination)</code></pre>
+              <p class="tight"><code>Command</code> owns both destinations—or move both into one conditional edge.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Parallel research</p>
+          <h2><code>Send</code> turns a plan into a dynamic superstep</h2>
+          <div data-visual="Send fan-out superstep timeline">
+            <div class="superstep">
+              <div class="head">Superstep</div><div>1</div><div>2</div><div>2</div><div>2</div><div>3</div>
+            </div>
+            <div class="superstep">
+              <div class="head">Task</div><div class="merge">plan</div><div class="task">research<br />market</div><div class="task">research<br />users</div><div class="task">research<br />risks</div><div class="merge">synthesize</div>
+            </div>
+            <div class="superstep">
+              <div class="head">State write</div><div>topics</div><div>finding</div><div>finding</div><div>finding</div><div>ideas</div>
+            </div>
+          </div>
+          <div class="grid-3 compact">
+            <div class="panel"><h3>Dynamic width</h3><p>The plan can create N tasks at runtime.</p></div>
+            <div class="panel"><h3>Barrier</h3><p>Synthesis waits for the superstep to finish.</p></div>
+            <div class="panel warn"><h3>Limits</h3><p>Provider quotas and cost still cap useful concurrency.</p></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Verified Python · state</p>
+          <h2>Define state for the run you need to recover</h2>
+          <pre><code class="language-python code-tiny">import operator
+from typing import Annotated
+from typing_extensions import TypedDict
+
+class Finding(TypedDict):
+    topic: str
+    claim: str
+    source_url: str
+
+class ResearchState(TypedDict, total=False):
+    brief: str
+    topics: list[str]
+    findings: Annotated[list[Finding], operator.add]
+    ideas: list[str]
+    review: dict[str, str]
+    final_brief: str
+
+class ResearchTask(TypedDict):
+    topic: str</code></pre>
+          <div class="tag-row">
+            <span class="tag">verified: langgraph==1.2.11</span>
+            <span class="tag">parallel-safe findings</span>
+            <span class="tag">task-specific Send input</span>
+          </div>
+          <p class="footnote">Typed shape is not runtime validation. Normalize and validate external model/tool output before state update.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Verified Python · topology</p>
+          <h2>Compile the smallest useful graph</h2>
+          <div class="grid-2 compact">
+            <div>
+              <pre><code class="language-python code-tiny">builder = StateGraph(ResearchState)
+builder.add_node("plan_research", plan_research)
+builder.add_node(
+    "research_topic",
+    research_topic,
+    retry_policy=RetryPolicy(
+        max_attempts=3,
+        retry_on=ConnectionError,
+    ),
+)
+builder.add_node("synthesize_ideas", synthesize_ideas)
+builder.add_node("review_ideas", review_ideas)
+builder.add_node("finalize", finalize)</code></pre>
+            </div>
+            <div>
+              <pre><code class="language-python code-tiny">builder.add_edge(START, "plan_research")
+builder.add_conditional_edges(
+    "plan_research",
+    fan_out_research,
+    ["research_topic"],
+)
+builder.add_edge(
+    "research_topic", "synthesize_ideas"
+)
+builder.add_edge("synthesize_ideas", "review_ideas")
+# review_ideas routes with Command
+builder.add_edge("finalize", END)
+
+graph = builder.compile(
+    checkpointer=InMemorySaver()
+)</code></pre>
+            </div>
+          </div>
+          <div class="topology-inline" data-visual="compiled example topology">
+            <span>START</span><b>→</b><span>plan</span><b>⇢</b><span>research × N</span><b>→</b><span>synthesize</span><b>→</b><span>review</span><b>→</b><span>finalize</span>
+          </div>
+          <p class="footnote">Verified with <code>langgraph==1.2.11</code>. Search and model nodes use deterministic stand-ins so graph behavior is testable without credentials.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Practice 3 · trace</p>
+          <h2>Walk one run before you execute it</h2>
+          <table class="table tiny" data-visual="worked graph execution trace">
+            <thead>
+              <tr><th>After</th><th>Eligible next</th><th>State written</th><th>Durable boundary</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>input</td><td><code>plan_research</code></td><td><code>brief</code></td><td>thread begins</td></tr>
+              <tr class="fragment"><td>plan</td><td>3 × <code>research_topic</code></td><td><code>topics</code></td><td>checkpoint</td></tr>
+              <tr class="fragment"><td>research superstep</td><td><code>synthesize_ideas</code></td><td>3 merged <code>findings</code></td><td>checkpoint + task writes</td></tr>
+              <tr class="fragment"><td>synthesis</td><td><code>review_ideas</code></td><td><code>ideas</code></td><td>checkpoint</td></tr>
+              <tr class="fragment"><td>interrupt</td><td>none until resume</td><td>interrupt payload</td><td>paused thread</td></tr>
+              <tr class="fragment"><td>approve resume</td><td><code>finalize</code></td><td><code>review</code></td><td>review node reruns</td></tr>
+              <tr class="fragment"><td>finalize</td><td><code>END</code></td><td><code>final_brief</code></td><td>completed thread</td></tr>
+            </tbody>
+          </table>
+          <p class="footnote">Before revealing each row: predict tasks, changed keys, and the last safe recovery point.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Model and tool boundary</p>
+          <h2>Keep evidence facts separate from generated prose</h2>
+          <div class="pipeline" data-visual="evidence normalization and synthesis pipeline">
+            <div class="pipe-box"><h3>Search</h3><p>candidate pages</p></div>
+            <div class="pipe-arrow">→</div>
+            <div class="pipe-box"><h3>Normalize</h3><p>claim, URL, locator, time</p></div>
+            <div class="pipe-arrow">→</div>
+            <div class="pipe-box"><h3>Findings</h3><p>durable evidence records</p></div>
+            <div class="pipe-arrow">→</div>
+            <div class="pipe-box"><h3>Synthesize</h3><p>ideas reference finding IDs</p></div>
+          </div>
+          <div class="grid-3 compact">
+            <div class="panel"><h3>Provenance</h3><p>Where did the information come from?</p></div>
+            <div class="panel"><h3>Support</h3><p>Does the source actually justify the claim?</p></div>
+            <div class="panel warn"><h3>Freshness</h3><p>Is the claim still valid for this decision?</p></div>
+          </div>
+          <p class="lead">A URL is provenance—not proof. Citation verification is its own capability and evaluation target.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Loops and termination</p>
+          <h2>Every critique loop needs a budget and an exit</h2>
+          <div class="loop-map" data-visual="bounded critique and revision loop">
+            <div class="panel"><h3>Synthesize</h3><p>candidate ideas + evidence IDs</p></div>
+            <div class="panel"><h3>Critique</h3><p>coverage, support, distinctness, risk</p></div>
+            <div class="panel good"><h3>Gate</h3><p>threshold met → review</p></div>
+            <div class="panel warn"><h3>Escape</h3><p>budget exhausted → review gaps</p></div>
+            <div class="return">↶ revise with structured gaps while <code>attempt &lt; max_attempts</code></div>
+          </div>
+          <div class="grid-3" style="margin-top: 46px">
+            <div class="panel"><h3>Observable</h3><p>Write scores and gaps to state.</p></div>
+            <div class="panel"><h3>Bounded</h3><p>Cap calls, time, sources, and revisions.</p></div>
+            <div class="panel"><h3>Fallback</h3><p>Return unresolved uncertainty to a human.</p></div>
+          </div>
+          <p class="footnote">Model self-confidence is not a stopping rule.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Human-in-the-loop</p>
+          <h2>Resume restarts the interrupted node</h2>
+          <div data-visual="interrupt and resume node replay">
+            <div class="sequence">
+              <div class="head">First invoke</div><div>enter review</div><div class="repeat">code before interrupt</div><div class="saved"><code>interrupt(payload)</code></div><div>save state</div><div>wait</div>
+            </div>
+            <div class="sequence">
+              <div class="head">Resume invoke</div><div>restore state</div><div class="repeat">code before interrupt again</div><div class="saved">resume value returned</div><div>route</div><div>continue</div>
+            </div>
+          </div>
+          <div class="grid-2 compact">
+            <div class="panel good"><h3>Safe before interrupt</h3><p>Pure computation, reads, or idempotent upserts.</p></div>
+            <div class="panel bad"><h3>Unsafe before interrupt</h3><p>Append-only writes, charges, sends, or non-idempotent creation.</p></div>
+          </div>
+          <p class="lead">Put the effect after the interrupt—or in a later node with an idempotency key.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Verified Python · pause / resume</p>
+          <h2>Resume on the same authorized thread</h2>
+          <div class="grid-2 compact" data-visual="pause and resume code flow">
+            <div>
+              <h3>1 · Run until review</h3>
+              <pre><code class="language-python code-tiny">config = {
+    "configurable": {
+        "thread_id": "onboarding-brief-001"
+    }
+}
+paused = graph.invoke(
+    {"brief": brief, "findings": []},
+    config,
+)
+assert "__interrupt__" in paused
+
+snapshot = graph.get_state(config)
+ideas = snapshot.values["ideas"]</code></pre>
+            </div>
+            <div>
+              <h3>2 · Validate and resume</h3>
+              <pre><code class="language-python code-tiny">from langgraph.types import Command
+
+# Application authorizes user + thread,
+# then validates the selected idea.
+completed = graph.invoke(
+    Command(resume={
+        "action": "approve",
+        "idea": ideas[0],
+    }),
+    config,
+)
+
+print(completed["final_brief"])</code></pre>
+            </div>
+          </div>
+          <p class="footnote">A thread ID is not authorization. Treat resume as an authenticated state-changing API call. Verified with <code>langgraph==1.2.11</code>.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Persistence model</p>
+          <h2>Four data scopes, four different owners</h2>
+          <div class="scope-grid" data-visual="persistence and data ownership scopes">
+            <div class="panel good">
+              <span class="scope-life">current run</span>
+              <h3>Graph state</h3>
+              <p>Facts needed by downstream nodes and routes.</p>
+              <p class="tight"><strong>Owner:</strong> graph contract</p>
+            </div>
+            <div class="panel">
+              <span class="scope-life">one thread</span>
+              <h3>Checkpointer</h3>
+              <p>Snapshots, pending writes, interrupts, and recovery history.</p>
+              <p class="tight"><strong>Owner:</strong> runtime</p>
+            </div>
+            <div class="panel">
+              <span class="scope-life">across threads</span>
+              <h3>Store</h3>
+              <p>Preferences or application-defined long-term memories.</p>
+              <p class="tight"><strong>Owner:</strong> application</p>
+            </div>
+            <div class="panel warn">
+              <span class="scope-life">authoritative</span>
+              <h3>Source system</h3>
+              <p>Documents, product records, publication state, and effects.</p>
+              <p class="tight"><strong>Owner:</strong> domain service</p>
+            </div>
+          </div>
+          <p class="footnote">One physical database can host several scopes. Their schemas, access, retention, and authority still differ.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Checkpoint semantics</p>
+          <h2>The boundary defines what must run again</h2>
+          <div data-visual="pending writes and parallel failure recovery">
+            <div class="checkpoint-row">
+              <div class="head">Task</div><div>plan</div><div>market</div><div>users</div><div>risks</div><div>synthesize</div><div>review</div>
+            </div>
+            <div class="checkpoint-row">
+              <div class="head">Attempt 1</div><div class="ok">saved</div><div class="ok">task write ✓</div><div class="ok">task write ✓</div><div class="fail">503 ✕</div><div>blocked</div><div>—</div>
+            </div>
+            <div class="checkpoint-row">
+              <div class="head">Resume</div><div>reuse</div><div>reuse</div><div>reuse</div><div class="ok">retry ✓</div><div class="ok">run</div><div>next</div>
+            </div>
+          </div>
+          <div class="grid-2 compact">
+            <div class="panel good"><h3>Runtime guarantee</h3><p>Successful parallel task writes can survive a sibling failure.</p></div>
+            <div class="panel bad"><h3>Not guaranteed</h3><p>An external side effect is not deduplicated because its state write persisted.</p></div>
+          </div>
+          <p class="footnote">Full checkpoints are superstep snapshots; per-task pending writes support recovery inside the superstep.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Time travel</p>
+          <h2>Replay reproduces a path; fork explores another</h2>
+          <div class="fork-map" data-visual="checkpoint replay and fork timeline">
+            <div class="fork-main">
+              <span>brief<br />CP₀</span><b>→</b><span>research<br />CP₁</span><b>→</b><span>synthesis<br />CP₂</span><b>→</b>
+            </div>
+            <div class="fork-branch">
+              <span>update audience</span><b>→</b><span>new synthesis</span><b>→</b><span>new review</span>
+            </div>
+          </div>
+          <div class="grid-2 compact">
+            <div class="panel"><h3>Replay</h3><p>Resume from a historical checkpoint. Nodes before it are reused; nodes after it execute again.</p></div>
+            <div class="panel good"><h3>Fork</h3><p>Create a new checkpoint with modified state, then compare the alternative trajectory.</p></div>
+          </div>
+          <p class="footnote">Downstream model and API calls can differ. Record model, prompt, tool, and data versions when comparison matters.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Memory</p>
+          <h2>Memory is not the same as research evidence</h2>
+          <table class="table memory-table" data-visual="memory and evidence comparison">
+            <thead><tr><th>Information</th><th>Scope</th><th>Mechanism</th><th>Trust question</th></tr></thead>
+            <tbody>
+              <tr><td>Current brief and ideas</td><td>one thread</td><td>checkpointed state</td><td>Is this still the active run?</td></tr>
+              <tr><td>User tone preference</td><td>across threads</td><td>namespaced store</td><td>Did the user set or confirm it?</td></tr>
+              <tr><td>Market claim</td><td>source-specific</td><td>evidence record + corpus</td><td>Is it supported and fresh?</td></tr>
+              <tr><td>Publication status</td><td>domain truth</td><td>product database</td><td>Was the effect authorized and committed?</td></tr>
+            </tbody>
+          </table>
+          <p class="lead">Remember preferences; re-research time-sensitive facts.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Subgraphs</p>
+          <h2>A subgraph is a state-lifetime boundary</h2>
+          <table class="table" data-visual="subgraph persistence mode comparison">
+            <thead><tr><th>Mode</th><th><code>checkpointer=</code></th><th>State lifetime</th><th>Research fit</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Per invocation</strong></td><td><code>None</code></td><td>fresh each call; inherits parent durability</td><td>independent source-analysis worker</td></tr>
+              <tr><td><strong>Per thread</strong></td><td><code>True</code></td><td>accumulates on the same thread</td><td>multi-turn research coach</td></tr>
+              <tr><td><strong>Stateless</strong></td><td><code>False</code></td><td>no checkpoints or interrupts</td><td>pure, cheap helper graph</td></tr>
+            </tbody>
+          </table>
+          <div class="grid-2 compact">
+            <div class="panel good"><h3>Promote to a subgraph</h3><p>Own tools, state, policy, tests, or an independent lifecycle.</p></div>
+            <div class="panel warn"><h3>Keep as a node</h3><p>One recoverable operation with no private workflow state.</p></div>
+          </div>
+        </section>
+
+        <section>
+          <p class="kicker">Multi-agent judgment</p>
+          <h2>Prefer capability boundaries over agent theater</h2>
+          <div class="agent-boundary" data-visual="Send workers versus verification subgraph">
+            <div class="panel good">
+              <h3><code>Send</code> × homogeneous workers</h3>
+              <div class="mini-flow"><span>market</span><span>users</span><span>risks</span></div>
+              <p>Same contract and tools; only the topic input changes.</p>
+            </div>
+            <div class="versus">versus</div>
+            <div class="panel">
+              <h3>Verification subgraph</h3>
+              <div class="mini-flow"><span>retrieve</span><b>→</b><span>contradict</span><b>→</b><span>score</span></div>
+              <p>Private multi-step state, separate quality policy, and independent tests.</p>
+            </div>
+          </div>
+          <p class="lead">A persona prompt is not an architectural boundary. A capability with accountable state and tools can be.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Streaming</p>
+          <h2>Progress, tokens, and diagnostics are different streams</h2>
+          <div class="stream-map" data-visual="LangGraph stream modes and consumers">
+            <div class="stream-source">
+              <h3>One graph run</h3>
+              <p><code>stream_mode=["updates", "messages", "custom"]</code></p>
+              <p>Each event has a purpose and an audience.</p>
+            </div>
+            <div class="stream-arrow">⇢</div>
+            <div class="stream-consumers">
+              <div><strong class="accent">Product UI</strong> · custom progress + final tokens</div>
+              <div><strong class="amber">Developer</strong> · state updates + task events</div>
+              <div><strong class="red">Operator</strong> · checkpoints, errors, latency, retry state</div>
+            </div>
+          </div>
+          <table class="table tiny">
+            <thead><tr><th>Mode</th><th>What it carries</th><th>Research example</th></tr></thead>
+            <tbody>
+              <tr><td><code>updates</code></td><td>node state deltas</td><td>three new findings merged</td></tr>
+              <tr><td><code>messages</code></td><td>LLM token chunks + metadata</td><td>draft brief text</td></tr>
+              <tr><td><code>custom</code></td><td>application events</td><td>"3/5 sources checked"</td></tr>
+            </tbody>
+          </table>
+          <p class="footnote">The v2 unified <code>StreamPart</code> format requires LangGraph 1.1+. Newer v3 event streaming is version-sensitive. Never send raw debug state to users.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Failure design</p>
+          <h2>Classify failures by who can resolve them</h2>
+          <div class="failure-grid" data-visual="failure ownership taxonomy">
+            <div class="failure-card good">
+              <h3>Retry</h3>
+              <p><strong>Owner:</strong> infrastructure</p>
+              <p>503, connection reset, temporary quota.</p>
+              <p class="accent"><code>RetryPolicy</code></p>
+            </div>
+            <div class="failure-card">
+              <h3>Loop</h3>
+              <p><strong>Owner:</strong> model/workflow</p>
+              <p>Unsupported claim, malformed structured output.</p>
+              <p class="accent">state + route</p>
+            </div>
+            <div class="failure-card warn">
+              <h3>Interrupt</h3>
+              <p><strong>Owner:</strong> user/reviewer</p>
+              <p>Ambiguous scope, permission, consequential choice.</p>
+              <p class="amber"><code>interrupt()</code></p>
+            </div>
+            <div class="failure-card bad">
+              <h3>Surface</h3>
+              <p><strong>Owner:</strong> engineering</p>
+              <p>Invariant violation, schema bug, impossible state.</p>
+              <p class="red">exception + alert</p>
+            </div>
+          </div>
+          <p class="lead">Catching everything and asking the model to recover converts defects into expensive, opaque loops.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Practice 4 · choose</p>
+          <h2>Route each failure to its resolver</h2>
+          <div class="practice-box">
+            <div class="grid-2 tight">
+              <p><strong>A.</strong> Search returns HTTP 503.</p>
+              <p><strong>B.</strong> Synthesis emits an unsupported claim.</p>
+              <p><strong>C.</strong> The brief omits the target user.</p>
+              <p><strong>D.</strong> Normalized state violates an invariant.</p>
+            </div>
+            <p class="tight">Choose: retry, loop, interrupt, or surface. Name the owner and the failure signal.</p>
+          </div>
+          <div class="answer fragment" data-visual="failure recovery answer matrix">
+            <p><strong>A retry</strong> transient infrastructure · <strong>B loop</strong> with evidence gaps · <strong>C interrupt</strong> for user input · <strong>D surface</strong> as an engineering defect.</p>
+          </div>
+          <p class="footnote">In the 1.2 docs, node timeouts and node-level error handlers are alpha. Retry policies are sufficient for the verified example.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Testing</p>
+          <h2>Test topology and nodes before testing prose</h2>
+          <div class="test-stack" data-visual="LangGraph testing layers">
+            <div class="test-layer"><strong>Live integration</strong> · provider schemas, credentials, latency</div>
+            <div class="test-layer"><strong>Partial paths</strong> · seeded state, interrupts, recovery</div>
+            <div class="test-layer"><strong>Graph contract</strong> · routing, fan-out, termination</div>
+            <div class="test-layer"><strong>Deterministic units</strong> · reducers, validators, nodes with fakes</div>
+          </div>
+          <div class="grid-3 compact">
+            <div class="panel good"><h3>Fresh persistence</h3><p>Create a graph and checkpointer per test.</p></div>
+            <div class="panel"><h3>Exact assertions</h3><p>State keys, next tasks, interrupt payloads, and terminal state.</p></div>
+            <div class="panel warn"><h3>Separate concern</h3><p>Passing graph tests does not prove research quality.</p></div>
+          </div>
+          <p class="footnote">Bundled command: <code>python -m unittest discover -s examples -p 'test_*.py'</code> · 2 tests verified with <code>langgraph==1.2.11</code>.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Evaluation</p>
+          <h2>Evaluate the evidence path, not only the final text</h2>
+          <div class="eval-stack" data-visual="research agent evaluation stack">
+            <div class="panel">
+              <span class="metric">Component</span>
+              <p>retrieval relevance<br />schema validity<br />citation support</p>
+            </div>
+            <div class="panel">
+              <span class="metric">Trajectory</span>
+              <p>tool choice<br />source diversity<br />recovery path</p>
+            </div>
+            <div class="panel">
+              <span class="metric">Outcome</span>
+              <p>idea distinctness<br />decision usefulness<br />human acceptance</p>
+            </div>
+            <div class="panel good">
+              <span class="metric">Feedback loop</span>
+              <p>production trace<br />→ curated dataset<br />→ offline regression</p>
+            </div>
+          </div>
+          <div class="grid-2 compact">
+            <div class="callout"><h3>Offline</h3><p>Compare prompts, models, tools, and graph versions on curated examples before release.</p></div>
+            <div class="callout"><h3>Online</h3><p>Sample live runs for unsupported claims, policy failures, latency, and user feedback.</p></div>
+          </div>
+          <p class="footnote">LLM judges are signals, not ground truth. Calibrate them against deterministic checks and human review.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Observability</p>
+          <h2>Trace decisions with version and cost context</h2>
+          <div class="trace-tree" data-visual="trace tree and metadata">
+            <div class="trace-nodes">
+              <div><strong>thread</strong> onboarding-brief-001</div>
+              <div><strong>run</strong> research-and-ideate</div>
+              <div><strong>node</strong> synthesize_ideas</div>
+              <div><strong>model call</strong> structured ideas</div>
+            </div>
+            <div class="metadata-list">
+              <span>graph version</span><span>prompt version</span>
+              <span>model + provider</span><span>tool + source IDs</span>
+              <span>latency + retries</span><span>tokens + cost</span>
+              <span>review decision</span><span>quality feedback</span>
+            </div>
+          </div>
+          <div class="grid-2 compact">
+            <div class="panel good"><h3>Debuggable</h3><p>Filter failures by node, graph version, or research provider.</p></div>
+            <div class="panel bad"><h3>Privacy risk</h3><p>Prompts, source text, and state may contain sensitive data. Redact and control retention.</p></div>
+          </div>
+          <p class="footnote">LangSmith supplies this trace model and evaluation loop, but LangGraph does not require LangSmith.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Production architecture</p>
+          <h2>Production is a topology, not a compile call</h2>
+          <div class="prod-map" data-visual="production LangGraph service topology">
+            <div class="prod-box trust">Authenticated client / review UI</div>
+            <div class="prod-box wide">API gateway · authorization · rate limits</div>
+            <div class="prod-box">Background worker / scheduler</div>
+            <div class="prod-box">Search + source services</div>
+            <div class="prod-box core">Agent Server or self-hosted graph runtime</div>
+            <div class="prod-box">Model providers</div>
+            <div class="prod-box">Domain tools + idempotency</div>
+            <div class="prod-box">Durable checkpointer</div>
+            <div class="prod-box">Cross-thread store</div>
+            <div class="prod-box wide">Traces · metrics · evaluation datasets · alerts</div>
+          </div>
+          <p class="lead">For every arrow: who authenticates it, what times out, what retries, what is idempotent, and what data is retained?</p>
+          <p class="footnote">LangSmith offers managed, hybrid, standalone, and self-hosted options. It is one deployment family, not a requirement.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Production hardening</p>
+          <h2>Harden the graph before adding autonomy</h2>
+          <div class="preflight" data-visual="production readiness checklist">
+            <div class="panel">
+              <h3>Execution</h3>
+              <ul><li>call/time budgets</li><li>bounded loops</li><li>concurrency limits</li><li>graceful failure</li></ul>
+            </div>
+            <div class="panel">
+              <h3>State</h3>
+              <ul><li>schema validation</li><li>retention policy</li><li>migration plan</li><li>durable checkpointer</li></ul>
+            </div>
+            <div class="panel">
+              <h3>Tools</h3>
+              <ul><li>least privilege</li><li>timeouts + retries</li><li>idempotency keys</li><li>audit trail</li></ul>
+            </div>
+            <div class="panel">
+              <h3>Quality</h3>
+              <ul><li>evidence contract</li><li>golden dataset</li><li>human gate</li><li>uncertainty surfaced</li></ul>
+            </div>
+            <div class="panel">
+              <h3>Release</h3>
+              <ul><li>pinned dependencies</li><li>version metadata</li><li>canary + rollback</li><li>incident owner</li></ul>
+            </div>
+          </div>
+          <p class="footnote">A deployable app exposes compiled graph(s), dependencies, and environment configuration through <code>langgraph.json</code>. The surrounding controls remain application responsibilities.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Pros</p>
+          <h2>What LangGraph buys you—by mechanism</h2>
+          <div class="benefit-map" data-visual="LangGraph benefits mapped to mechanisms">
+            <div class="panel"><h3>Inspectable control</h3><p>Deterministic and model-driven steps share one explicit flow.</p><span class="mechanism">nodes + edges + Command</span></div>
+            <div class="panel"><h3>Durable review</h3><p>Wait minutes or days without holding a process open.</p><span class="mechanism">interrupt + checkpointer</span></div>
+            <div class="panel"><h3>Recoverable work</h3><p>Resume from safe boundaries and preserve completed parallel tasks.</p><span class="mechanism">checkpoints + pending writes</span></div>
+            <div class="panel"><h3>Dynamic parallelism</h3><p>Scale research tasks from a runtime plan.</p><span class="mechanism">Send + reducers</span></div>
+            <div class="panel"><h3>Testable seams</h3><p>Exercise nodes, routes, and partial paths separately.</p><span class="mechanism">typed state + compiled nodes</span></div>
+            <div class="panel"><h3>Operational visibility</h3><p>Stream progress and trace decisions at node boundaries.</p><span class="mechanism">stream modes + traces</span></div>
+          </div>
+          <p class="footnote">These are orchestration properties. Accuracy, safe authorization, and useful ideas still need separate design and evaluation.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Cons and choice</p>
+          <h2>Choose the smallest sufficient runtime</h2>
+          <table class="table decision-table" data-visual="plain Python create_agent LangGraph decision table">
+            <thead><tr><th></th><th>Plain Python</th><th>LangChain <code>create_agent</code></th><th>LangGraph</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Best fit</strong></td><td>short deterministic pipeline</td><td>standard model/tool loop</td><td>custom durable workflow</td></tr>
+              <tr><td><strong>What you own</strong></td><td>flow + retries</td><td>tools, prompts, middleware</td><td>state schema, routes, persistence, migrations</td></tr>
+              <tr><td><strong>Warning sign</strong></td><td>manual resume logic appears</td><td>approval and phases leak into prompts</td><td>graph has many helper-shaped nodes</td></tr>
+              <tr><td><strong>Upgrade trigger</strong></td><td>independent recovery boundaries</td><td>custom stateful control is product logic</td><td>already at the lower-level runtime</td></tr>
+              <tr><td><strong>Example</strong></td><td>one-shot brainstorm</td><td>read-only search chatbot</td><td>approval-gated research brief</td></tr>
+            </tbody>
+          </table>
+          <p class="lead">Inference: graph complexity is justified only when its control and recovery semantics reduce greater product or operational complexity.</p>
+        </section>
+
+        <section>
+          <p class="kicker">Recap</p>
+          <h2>A reusable LangGraph design review</h2>
+          <div class="recap-grid" data-visual="ten question LangGraph design review">
+            <div class="recap-item">What outcome and terminal states exist?</div>
+            <div class="recap-item">What facts must survive a retry or pause?</div>
+            <div class="recap-item">Which keys overwrite, reduce, or need stable order?</div>
+            <div class="recap-item">Where are the retry, approval, and effect boundaries?</div>
+            <div class="recap-item">Which routes are static, conditional, Send, or Command?</div>
+            <div class="recap-item">What repeats after failure, replay, or interrupt?</div>
+            <div class="recap-item">Which data is thread state, store memory, or source truth?</div>
+            <div class="recap-item">How are loops, concurrency, time, and cost bounded?</div>
+            <div class="recap-item">Which exact tests and quality metrics prove behavior?</div>
+            <div class="recap-item">Why is this not simpler as Python or <code>create_agent</code>?</div>
+          </div>
+          <p class="lead">If those answers are explicit, the graph is explainable. If they are testable, it is on the path to production.</p>
+        </section>
+
+        <section>
+          <p class="kicker">References</p>
+          <h2>Primary sources by concept</h2>
+          <div class="reference-list">
+            <h3>Positioning and design</h3>
+            <ul>
+              <li><a href="https://docs.langchain.com/oss/python/langgraph/overview">LangGraph overview</a></li>
+              <li><a href="https://docs.langchain.com/oss/python/releases/langgraph-v1">What's new in LangGraph v1</a></li>
+              <li><a href="https://docs.langchain.com/oss/python/langgraph/thinking-in-langgraph">Thinking in LangGraph</a></li>
+              <li><a href="https://github.com/langchain-ai/langgraph/releases/tag/1.2.11">LangGraph 1.2.11 release</a></li>
+            </ul>
+            <h3>Graph mechanics</h3>
+            <ul>
+              <li><a href="https://docs.langchain.com/oss/python/langgraph/graph-api">Graph API overview</a></li>
+              <li><a href="https://docs.langchain.com/oss/python/langgraph/use-graph-api">Use the Graph API</a></li>
+              <li><a href="https://docs.langchain.com/oss/python/langgraph/streaming">Streaming</a></li>
+              <li><a href="https://docs.langchain.com/oss/python/langgraph/use-subgraphs">Subgraphs</a></li>
+            </ul>
+            <h3>Durability and state</h3>
+            <ul>
+              <li><a href="https://docs.langchain.com/oss/python/langgraph/persistence">Persistence</a></li>
+              <li><a href="https://docs.langchain.com/oss/python/langgraph/interrupts">Interrupts</a></li>
+              <li><a href="https://docs.langchain.com/oss/python/langgraph/fault-tolerance">Fault tolerance</a></li>
+              <li><a href="https://docs.langchain.com/oss/python/langgraph/use-time-travel">Time travel</a></li>
+              <li><a href="https://docs.langchain.com/oss/python/langgraph/add-memory">Memory</a></li>
+            </ul>
+            <h3>Testing and operations</h3>
+            <ul>
+              <li><a href="https://docs.langchain.com/oss/python/langgraph/test">Test LangGraph applications</a></li>
+              <li><a href="https://docs.langchain.com/oss/python/langgraph/application-structure">Application structure</a></li>
+              <li><a href="https://docs.langchain.com/oss/python/langgraph/deploy">Deployment</a></li>
+              <li><a href="https://docs.langchain.com/langsmith/observability-concepts">LangSmith observability concepts</a></li>
+              <li><a href="https://docs.langchain.com/langsmith/evaluation">LangSmith evaluation</a></li>
+              <li><a href="https://docs.langchain.com/langsmith/evaluate-graph">Evaluate a graph</a></li>
+            </ul>
+          </div>
+          <p class="footnote">Research ledger: <code>sources.json</code> · teaching contract: <code>claims.json</code> · last verified 2026-09-01</p>
+        </section>
+      </div>
+    </div>
+
+    <script src="../../../assets/vendor/reveal/dist/reveal.js"></script>
+    <script src="../../../assets/vendor/reveal/dist/plugin/highlight.js"></script>
+    <script>
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        hash: true,
+        slideNumber: true,
+        transition: "slide",
+        backgroundTransition: "fade",
+        plugins: [RevealHighlight],
+      });
+    </script>
+  </body>
+</html>

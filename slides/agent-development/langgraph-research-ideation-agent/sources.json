@@ -1,0 +1,211 @@
+[
+  {
+    "id": "langgraph-release-1-2-11",
+    "title": "LangGraph 1.2.11 release",
+    "url": "https://github.com/langchain-ai/langgraph/releases/tag/1.2.11",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-09-01",
+    "concepts": ["langgraph", "version", "release"],
+    "confidence": "high",
+    "notes": "Official release used to pin and verify the runnable Python example. The package metadata requires Python 3.10 or newer."
+  },
+  {
+    "id": "langgraph-overview",
+    "title": "LangGraph overview",
+    "url": "https://docs.langchain.com/oss/python/langgraph/overview",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-09-01",
+    "concepts": ["langgraph", "orchestration", "agents", "durable-execution"],
+    "confidence": "high",
+    "notes": "Official positioning of LangGraph as a low-level orchestration runtime that mixes deterministic and model-driven steps."
+  },
+  {
+    "id": "langgraph-v1",
+    "title": "What's new in LangGraph v1",
+    "url": "https://docs.langchain.com/oss/python/releases/langgraph-v1",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-09-01",
+    "concepts": ["langgraph", "stability", "langchain", "create-agent"],
+    "confidence": "high",
+    "notes": "Official relationship between LangGraph v1 and LangChain v1 create_agent."
+  },
+  {
+    "id": "thinking-in-langgraph",
+    "title": "Thinking in LangGraph",
+    "url": "https://docs.langchain.com/oss/python/langgraph/thinking-in-langgraph",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-09-01",
+    "concepts": ["state", "nodes", "errors", "node-granularity", "interrupts"],
+    "confidence": "high",
+    "notes": "Official design guidance for state, node boundaries, error categories, and human input."
+  },
+  {
+    "id": "graph-api-concepts",
+    "title": "Graph API overview",
+    "url": "https://docs.langchain.com/oss/python/langgraph/graph-api",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-09-01",
+    "concepts": ["state", "nodes", "edges", "runtime", "supersteps"],
+    "confidence": "high",
+    "notes": "Official conceptual reference for graph primitives and runtime behavior."
+  },
+  {
+    "id": "graph-api-guide",
+    "title": "Use the Graph API",
+    "url": "https://docs.langchain.com/oss/python/langgraph/use-graph-api",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-09-01",
+    "concepts": ["reducers", "parallelism", "send", "command", "loops"],
+    "confidence": "high",
+    "notes": "Official Python examples for state updates, branches, parallel supersteps, Send, and Command."
+  },
+  {
+    "id": "persistence",
+    "title": "LangGraph persistence",
+    "url": "https://docs.langchain.com/oss/python/langgraph/persistence",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-09-01",
+    "concepts": ["checkpoints", "threads", "stores", "pending-writes", "fault-tolerance"],
+    "confidence": "high",
+    "notes": "Official distinction between thread-scoped checkpointers and cross-thread stores, plus checkpoint and pending-write semantics."
+  },
+  {
+    "id": "interrupts",
+    "title": "LangGraph interrupts",
+    "url": "https://docs.langchain.com/oss/python/langgraph/interrupts",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-09-01",
+    "concepts": ["interrupt", "human-in-the-loop", "resume", "idempotency"],
+    "confidence": "high",
+    "notes": "Official pause/resume behavior and the rule that a resumed interrupt restarts its node from the beginning."
+  },
+  {
+    "id": "fault-tolerance",
+    "title": "LangGraph fault tolerance",
+    "url": "https://docs.langchain.com/oss/python/langgraph/fault-tolerance",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-09-01",
+    "concepts": ["retries", "timeouts", "error-handlers", "recovery"],
+    "confidence": "high",
+    "notes": "Official retry policy and failure-handling semantics. Node timeouts and node-level error handlers are documented as alpha in LangGraph 1.2."
+  },
+  {
+    "id": "subgraphs",
+    "title": "Use subgraphs",
+    "url": "https://docs.langchain.com/oss/python/langgraph/use-subgraphs",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-09-01",
+    "concepts": ["subgraphs", "persistence", "multi-agent", "state-isolation"],
+    "confidence": "high",
+    "notes": "Official per-invocation, per-thread, and stateless subgraph persistence modes."
+  },
+  {
+    "id": "time-travel",
+    "title": "Use time travel",
+    "url": "https://docs.langchain.com/oss/python/langgraph/use-time-travel",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-09-01",
+    "concepts": ["replay", "fork", "checkpoints", "debugging"],
+    "confidence": "high",
+    "notes": "Official replay and fork behavior from prior checkpoints."
+  },
+  {
+    "id": "streaming",
+    "title": "LangGraph streaming",
+    "url": "https://docs.langchain.com/oss/python/langgraph/streaming",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-09-01",
+    "concepts": ["streaming", "updates", "messages", "custom", "debug"],
+    "confidence": "high",
+    "notes": "Official stream modes and v2 unified StreamPart format."
+  },
+  {
+    "id": "memory",
+    "title": "Add memory",
+    "url": "https://docs.langchain.com/oss/python/langgraph/add-memory",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-09-01",
+    "concepts": ["short-term-memory", "long-term-memory", "checkpointer", "store"],
+    "confidence": "high",
+    "notes": "Official short-term and long-term memory patterns."
+  },
+  {
+    "id": "testing",
+    "title": "Test LangGraph applications",
+    "url": "https://docs.langchain.com/oss/python/langgraph/test",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-09-01",
+    "concepts": ["testing", "nodes", "edges", "partial-execution", "checkpointers"],
+    "confidence": "high",
+    "notes": "Official patterns for fresh checkpointers, individual node tests, and partial graph execution."
+  },
+  {
+    "id": "application-structure",
+    "title": "LangGraph application structure",
+    "url": "https://docs.langchain.com/oss/python/langgraph/application-structure",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-09-01",
+    "concepts": ["production", "langgraph-json", "dependencies", "deployment"],
+    "confidence": "high",
+    "notes": "Official file and configuration structure for deployable LangGraph applications."
+  },
+  {
+    "id": "deployment",
+    "title": "Deploy LangGraph applications",
+    "url": "https://docs.langchain.com/oss/python/langgraph/deploy",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-09-01",
+    "concepts": ["deployment", "agent-server", "cloud", "self-hosting"],
+    "confidence": "high",
+    "notes": "Official managed, hybrid, standalone, and self-hosted deployment options."
+  },
+  {
+    "id": "observability",
+    "title": "LangSmith observability concepts",
+    "url": "https://docs.langchain.com/langsmith/observability-concepts",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-09-01",
+    "concepts": ["observability", "traces", "runs", "threads", "metadata"],
+    "confidence": "high",
+    "notes": "Official trace, run, thread, tag, and metadata model. LangSmith is optional to LangGraph itself."
+  },
+  {
+    "id": "evaluation",
+    "title": "LangSmith evaluation",
+    "url": "https://docs.langchain.com/langsmith/evaluation",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-09-01",
+    "concepts": ["evaluation", "datasets", "offline-evals", "online-evals"],
+    "confidence": "high",
+    "notes": "Official lifecycle for offline regression evaluation and online production evaluation."
+  },
+  {
+    "id": "evaluate-graph",
+    "title": "How to evaluate a graph",
+    "url": "https://docs.langchain.com/langsmith/evaluate-graph",
+    "sourceType": "primary",
+    "publisher": "LangChain",
+    "retrieved": "2026-09-01",
+    "concepts": ["graph-evaluation", "nodes", "trajectory", "end-to-end"],
+    "confidence": "high",
+    "notes": "Official examples for end-to-end, intermediate-step, and individual-node evaluation."
+  }
+]
