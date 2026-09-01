@@ -7,7 +7,9 @@ description: Use when auditing or fact-checking Learn repository HTML presentati
 
 ## Overview
 
-Validate a Learn presentation for structural health, rendering readiness, and factual accuracy against current primary sources. If accuracy issues are found, summarize them and ask the user before changing the deck.
+Validate a Learn presentation for teaching quality, structural health,
+rendering readiness, and factual accuracy against current primary sources. If
+issues are found, summarize them and ask the user before changing the deck.
 
 ## Validation Workflow
 
@@ -45,10 +47,21 @@ Validate a Learn presentation for structural health, rendering readiness, and fa
    - Separate verified facts from inferences.
    - Note any areas not fully checked because sources were unavailable or ambiguous.
 
-6. Report before editing.
+6. Review teaching quality.
+   - Read and apply the
+     [presentation quality rubric](../../../docs/presentation-quality-rubric.md).
+   - Score all eight dimensions from 1 to 4 using evidence in the deck and its
+     artifacts.
+   - Report the average and the two changes most likely to improve learning.
+   - Do not treat the score as a substitute for a serious factual, structural,
+     or rendering finding.
+
+7. Report before editing.
    - Lead with findings, ordered by severity, each with slide reference, issue, source-backed correction, and source links.
    - Include local validation status and source coverage.
    - Include artifact coverage: whether `research.md`, `sources.json`, `claims.json`, and `visuals.md` exist and appear current.
+   - Include the quality-rubric scores with one concrete piece of evidence per
+     dimension.
    - If there are factual or structural issues, ask: "Do you want me to apply these fixes to the presentation?"
    - Do not update deck files until the user confirms.
 

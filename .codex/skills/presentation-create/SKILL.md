@@ -95,6 +95,8 @@ Create source-grounded, static HTML learning decks for the Learn repository. The
    - Use canonical lowercase slugs and useful concept-level labels; avoid near-duplicates.
 
 9. Audit information density after authoring and before validation.
+   - Read and apply the
+     [presentation quality rubric](../../../docs/presentation-quality-rubric.md).
    - Review the deck teaching unit by teaching unit against `claims.json`.
    - For each claim-bearing slide, confirm:
      - it answers a concrete learner question
@@ -109,6 +111,9 @@ Create source-grounded, static HTML learning decks for the Learn repository. The
    - Tighten, split, merge, or remove slides that are accurate but thin.
    - Update `claims.json`, `visuals.md`, references, and catalog metadata if
      the audit changes the deck.
+   - Record the eight scores and evidence in the completion response. A new or
+     materially revised deck should average at least 3.0 with no dimension
+     scored 1.
 
 10. Validate locally.
    - Run `node scripts/validate-site.mjs`.
@@ -137,6 +142,7 @@ Create source-grounded, static HTML learning decks for the Learn repository. The
   practice for substantial topics.
 - Technical examples are verified against a stated version or visibly labeled
   as pseudocode.
+- The quality-rubric review averages at least 3.0 with no dimension scored 1.
 - Local validation passes.
 - Visual spot checks show no obvious overflow or broken navigation.
 - Changes are committed and pushed as a self-contained slice.

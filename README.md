@@ -31,6 +31,11 @@ PNG/source pairing, image accessibility, visual-aid cadence, research-artifact
 presence, and local HTTP smoke URLs. Do not wait for GitHub Pages deployment as
 the primary validation signal; Pages is only the publishing target.
 
+Structural validation is necessary but insufficient. Review new and materially
+revised decks with `docs/presentation-quality-rubric.md`. The rubric covers
+learner outcomes, progression, mechanism depth, practice, source integrity,
+visual teaching, concision, and transfer.
+
 Visual-aid cadence currently reports warnings rather than failures so older decks
 remain valid. Treat those warnings as authoring feedback for new or materially
 updated presentations.

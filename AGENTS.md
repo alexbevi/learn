@@ -106,6 +106,14 @@ the source of truth.
 
 ## Validation
 
+- Review new and materially revised decks with
+  `docs/presentation-quality-rubric.md` before completion. Score evidence in the
+  deck, not the author's stated intent.
+- New and materially revised decks should average at least 3.0 on the rubric
+  with no dimension scored 1. Treat a lower score as a prompt to fix the
+  teaching problem, not to add slides mechanically.
+- For existing-deck audits, report rubric findings before proposing changes.
+  Keep the audit read-only until the user approves fixes.
 - Run `node scripts/validate-site.mjs` before committing presentation or catalog
   changes.
 - Run `node scripts/check-source-links.mjs <deck-id>` for source-link validation
