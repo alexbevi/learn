@@ -80,7 +80,9 @@ When the user confirms fixes:
 4. Add or adjust references so every corrected concept has a source.
 5. Run `node scripts/validate-site.mjs`.
 6. Perform local browser or screenshot checks when layout risk is non-trivial.
-7. Commit and push a self-contained Conventional Commit if this repository workflow calls for commits.
+7. Commit a self-contained Conventional Commit only when the user requests it
+   or the active task explicitly includes a repository commit. Push only when
+   the user explicitly requests a push.
 
 ## No-Issue Response
 

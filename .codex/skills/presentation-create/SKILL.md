@@ -7,7 +7,10 @@ description: Create new Learn repository presentations or materially revise an e
 
 ## Overview
 
-Create source-grounded, static HTML learning decks for the Learn repository. The output is a complete vertical slice: deck files, local assets, catalog metadata, validation, commit, and push.
+Create source-grounded, static HTML learning decks for the Learn repository. A
+complete deck includes its local assets, catalog metadata, research artifacts,
+and validation evidence. Committing and pushing are separate actions that
+require task-level authorization.
 
 ## Workflow
 
@@ -129,11 +132,12 @@ Create source-grounded, static HTML learning decks for the Learn repository. The
      rendered snippet changed.
    - Treat visual-aid warnings as prompts to add or improve visuals for substantial decks.
 
-11. Commit and push a vertical slice when requested by the repo workflow.
+11. Commit only when the user requests it or the active task explicitly includes
+    a repository commit.
    - Stage only task-local files.
    - Use Conventional Commit format.
    - Leave unrelated dirty changes alone.
-   - Push after the commit.
+   - Push only when the user explicitly requests a push.
 
 ## Completion Checklist
 
@@ -151,4 +155,5 @@ Create source-grounded, static HTML learning decks for the Learn repository. The
 - Local validation passes.
 - Visual spot checks show no obvious overflow or broken navigation.
 - The whole-deck render report and contact sheet have been reviewed.
-- Changes are committed and pushed as a self-contained slice.
+- If requested, changes are committed as a self-contained slice.
+- If explicitly requested, the commit is pushed.

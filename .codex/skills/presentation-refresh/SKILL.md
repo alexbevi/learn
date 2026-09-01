@@ -32,7 +32,9 @@ Refresh a deck without changing its core learning promise.
    - tags, if concepts materially changed
    - slide count and duration, if changed
 
-7. Validate locally and commit a focused slice.
+7. Validate locally. Commit a focused slice only when the user requests it or
+   the active task explicitly includes a repository commit. Push only when the
+   user explicitly requests a push.
 
 ## Guardrails
 

@@ -163,6 +163,11 @@ Proceed with reasonable defaults when the answers are clear from context.
 
 ## Commits
 
+- Treat validation as part of completing deck work. Treat commit and push as
+  separate repository actions, not as presentation quality criteria.
+- Commit only when the user requests it or the active task explicitly includes
+  a repository commit.
+- Push only when the user explicitly requests a push.
 - Commit vertical slices that are self-contained.
 - Use Conventional Commit messages.
 - Stage only task-local files.

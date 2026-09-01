@@ -86,9 +86,10 @@ node scripts/scaffold-presentation-artifacts.mjs <deck-id>
 ## Content Workflow
 
 Presentation creation is handled through repo-local Codex skills so intake,
-research, outline, visual planning, authoring, metadata, validation, commit, and
-push stay consistent. Project skill definitions live under `.codex/skills/` and
-should remain repo-local rather than being installed under `$CODEX_HOME/skills/`.
+research, outline, visual planning, authoring, metadata, and validation stay
+consistent. Commits and pushes are separate actions that require task-level
+authorization. Project skill definitions live under `.codex/skills/` and should
+remain repo-local rather than being installed under `$CODEX_HOME/skills/`.
 
 The staged workflow is:
 
