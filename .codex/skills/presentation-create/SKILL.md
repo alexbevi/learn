@@ -70,6 +70,14 @@ Create source-grounded, static HTML learning decks for the Learn repository. The
      selection, and design critique.
    - Make the recap answer the learning goals directly and include a transfer
      prompt that applies the lesson to a new system or decision.
+   - Run code, configuration, query, and command examples when practical. Record
+     the tested version, command, and expected result in `claims.json` under
+     `exampleValidation`.
+   - Copy slide snippets from the verified example. If an example cannot run as
+     shown, label it visibly as pseudocode and record
+     `exampleValidation.status` as `pseudocode`.
+   - For an example that teaches a failure, run the failure case and record the
+     expected error or diagnostic signal with status `expected-failure`.
    - Use real HTML formatting. Inline code in prose must be `<code>...</code>`, not markdown-style backticks.
    - Avoid slide text overflow by using compact copy, responsive grids, stable dimensions, and smaller text inside cards/panels.
 
@@ -107,6 +115,8 @@ Create source-grounded, static HTML learning decks for the Learn repository. The
    - Use local files or a local static server for browser checks and screenshots.
    - Do not wait for public GitHub Pages deployment to validate the content.
    - Fix structural, rendering, metadata, reference, image accessibility, and inline-code issues before committing.
+   - Re-run example verification commands after the final slide edit when the
+     rendered snippet changed.
    - Treat visual-aid warnings as prompts to add or improve visuals for substantial decks.
 
 11. Commit and push a vertical slice when requested by the repo workflow.
@@ -125,6 +135,8 @@ Create source-grounded, static HTML learning decks for the Learn repository. The
 - Visual aids are planned, local, accessible, and frequent enough for the deck's length.
 - The deck delivers its observable learning promise and includes active
   practice for substantial topics.
+- Technical examples are verified against a stated version or visibly labeled
+  as pseudocode.
 - Local validation passes.
 - Visual spot checks show no obvious overflow or broken navigation.
 - Changes are committed and pushed as a self-contained slice.

@@ -64,6 +64,11 @@ Convert research into a teaching plan before writing HTML.
        data model, policy, or decision mechanism that supports the claim
      - `example`: the workload, scenario, code snippet, or artifact that makes
        the claim concrete
+     - `exampleValidation`: for code, configuration, queries, and commands,
+       record `status` and `expected`. For runnable examples, also record
+       `version` and `command`. Use `verified` or `expected-failure` after
+       running the check. Use `pseudocode` when the example is intentionally
+       incomplete.
      - `counterpoint`: the caveat, constraint, failure mode, tradeoff, or
        competing interpretation the learner should not miss
      - `sourceTreatment`: `sourced`, `inference`, or `mixed`
@@ -85,6 +90,12 @@ Example contract:
   "coreClaim": "JWT identity and database-enforced policies let generated APIs serve browser clients safely when policies are correct.",
   "mechanism": "Client JWT -> generated API -> database role/claims -> row-level policy predicate -> filtered result set.",
   "example": "Membership policy over projects and agent_runs tables.",
+  "exampleValidation": {
+    "status": "verified",
+    "version": "PostgreSQL 17",
+    "command": "psql -f examples/membership-policy.sql",
+    "expected": "Member rows are returned; non-member rows are filtered."
+  },
   "counterpoint": "Policies can be misconfigured, slow, or bypassed by privileged service-role code.",
   "sourceIds": ["vendor-auth-docs", "vendor-policy-docs"],
   "sourceTreatment": "sourced",

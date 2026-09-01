@@ -37,6 +37,7 @@ Build the evidence base before writing slides.
      - extracted claims
      - concrete mechanisms, APIs, protocols, runtime paths, or flows
      - implementation details, configuration surfaces, and code-level handles
+     - versions and local commands that can verify planned examples
      - operational or implementation implications
      - knobs, limits, failure modes, security concerns, or observability signals
      - example workload or scenario where the concept matters
@@ -59,3 +60,6 @@ Build the evidence base before writing slides.
   breaks down, and what a practitioner should do with it.
 - Research should be strong enough that an outline can answer "why", "how",
   "what changes", and "what can go wrong" without inventing unsupported detail.
+- For technical examples, identify a supported version and a practical way to
+  run, compile, parse, or otherwise verify the example. If verification is not
+  practical, explain why the deck should use clearly labeled pseudocode.

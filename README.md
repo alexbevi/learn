@@ -99,6 +99,9 @@ When creating a new learning plan:
 5. Build the deck as static HTML using the shared slide layout and local assets.
    Substantial decks should include at least two prediction, diagnosis, tracing,
    architecture-selection, or design-critique moments.
+   Run technical examples against a stated version when practical and record
+   the verification in `claims.json`. Visibly label incomplete examples as
+   pseudocode.
 6. Prefer deterministic HTML/CSS visuals for technical diagrams. Render
    reproducible PNG assets with:
 

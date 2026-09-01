@@ -218,6 +218,22 @@ function validateResearchArtifacts(presentation) {
           if (claim.sourceIds && !Array.isArray(claim.sourceIds)) {
             fail(`${presentation.id}: claims.json[${index}] sourceIds must be an array`);
           }
+          if (claim.exampleValidation) {
+            const validation = claim.exampleValidation;
+            const validStatuses = ["verified", "expected-failure", "pseudocode"];
+            if (!validStatuses.includes(validation.status)) {
+              fail(`${presentation.id}: claims.json[${index}] exampleValidation has unknown status ${validation.status}`);
+            }
+            if (validation.status !== "pseudocode" && !validation.version) {
+              fail(`${presentation.id}: claims.json[${index}] exampleValidation missing version`);
+            }
+            if (validation.status !== "pseudocode" && !validation.command) {
+              fail(`${presentation.id}: claims.json[${index}] exampleValidation missing command`);
+            }
+            if (!validation.expected) {
+              fail(`${presentation.id}: claims.json[${index}] exampleValidation missing expected`);
+            }
+          }
           for (const sourceId of claim.sourceIds || []) {
             if (sourceIds.size && !sourceIds.has(sourceId)) {
               fail(`${presentation.id}: claims.json[${index}] references unknown source id ${sourceId}`);

@@ -79,6 +79,9 @@ the source of truth.
   architecture, or critiquing a design.
 - The recap must answer the learning goals directly and give the learner a way
   to transfer the lesson to a new system or decision.
+- Run technical examples against the stated version when practical. Record the
+  verification command and expected result in the deck artifacts. Visibly label
+  snippets that are illustrative or incomplete as pseudocode.
 - Prefer a shorter coherent deck over an exhaustive deck. Remove accurate
   slides that do not change what the learner understands or can do.
 
