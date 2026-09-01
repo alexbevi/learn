@@ -1,0 +1,165 @@
+{
+  "version": 1,
+  "dimensions": [
+    "learner-outcome-alignment",
+    "conceptual-progression",
+    "mechanism-depth",
+    "worked-application-and-practice",
+    "source-and-inference-integrity",
+    "visual-teaching-value",
+    "concision-and-distinctness",
+    "transfer-and-operational-usefulness"
+  ],
+  "cases": [
+    {
+      "id": "narrow-runtime-mechanism",
+      "name": "Narrow runtime mechanism",
+      "mode": "create",
+      "artifactType": "deck",
+      "prompt": "Create a 20-minute advanced deck explaining how a MongoDB driver selects a server for a read. Anchor it on a primary becoming unavailable during traffic. The audience is backend engineers who know replica sets but not SDAM internals. Use Node.js for examples. Keep general MongoDB background out of scope.",
+      "qualityDimensions": [
+        "learner-outcome-alignment",
+        "conceptual-progression",
+        "mechanism-depth",
+        "worked-application-and-practice",
+        "source-and-inference-integrity",
+        "visual-teaching-value",
+        "concision-and-distinctness",
+        "transfer-and-operational-usefulness"
+      ],
+      "criteria": [
+        { "id": "trace-selection", "text": "The learner traces topology monitoring, read preference, candidate filtering, latency window, and selection timeout through the outage." },
+        { "id": "outage-practice", "text": "At least one practice moment asks the learner to predict or diagnose selection behavior during the outage." },
+        { "id": "bounded-scope", "text": "The deck does not expand into a general MongoDB or distributed-systems survey." }
+      ]
+    },
+    {
+      "id": "conversational-intake",
+      "name": "Conversational learning intake",
+      "mode": "create",
+      "artifactType": "conversation-and-deck",
+      "prompt": "I am ready to learn event-driven architecture.",
+      "qualityDimensions": [
+        "learner-outcome-alignment",
+        "conceptual-progression",
+        "worked-application-and-practice",
+        "concision-and-distinctness",
+        "transfer-and-operational-usefulness"
+      ],
+      "criteria": [
+        { "id": "first-question", "text": "The first response asks one focused question about what the learner wants to decide, build, diagnose, trace, or explain." },
+        { "id": "adaptive-intake", "text": "Later questions respond to prior answers and stop once the learning contract is clear." },
+        { "id": "learning-contract", "text": "Before research, the agent states the inferred outcome, before-state, recurring example, and exclusions." }
+      ]
+    },
+    {
+      "id": "scenario-based-comparison",
+      "name": "Scenario-based product comparison",
+      "mode": "create",
+      "artifactType": "deck",
+      "prompt": "Create a decision deck comparing Apache Kafka and NATS JetStream for an internal event backbone. The company runs Go services, needs replay for incident recovery, handles 40,000 events per second at peak, and has a small platform team. The audience is staff engineers and engineering managers.",
+      "qualityDimensions": [
+        "learner-outcome-alignment",
+        "conceptual-progression",
+        "mechanism-depth",
+        "worked-application-and-practice",
+        "source-and-inference-integrity",
+        "visual-teaching-value",
+        "concision-and-distinctness",
+        "transfer-and-operational-usefulness"
+      ],
+      "criteria": [
+        { "id": "stable-axes", "text": "Both products are evaluated on the same workload-specific axes." },
+        { "id": "conditional-decision", "text": "The recommendation follows from workload constraints and names conditions that would reverse it." },
+        { "id": "current-primary-sources", "text": "Current project-owned documentation carries material capability and operational claims." }
+      ]
+    },
+    {
+      "id": "advanced-failure-lab",
+      "name": "Advanced technical failure lab",
+      "mode": "create",
+      "artifactType": "deck",
+      "prompt": "Teach idempotency in distributed payment workflows to senior Go engineers. Use one payment authorization workflow throughout. Include retries, duplicate delivery, idempotency-key storage, transaction boundaries, race conditions, expiry, and an executable failure lab. Do not cover introductory HTTP semantics.",
+      "qualityDimensions": [
+        "learner-outcome-alignment",
+        "conceptual-progression",
+        "mechanism-depth",
+        "worked-application-and-practice",
+        "source-and-inference-integrity",
+        "visual-teaching-value",
+        "concision-and-distinctness",
+        "transfer-and-operational-usefulness"
+      ],
+      "criteria": [
+        { "id": "race-mechanism", "text": "The deck explains the storage and transaction mechanism that resolves concurrent duplicate requests." },
+        { "id": "verified-lab", "text": "The failure lab records its Go version, command, and expected duplicate-delivery result." },
+        { "id": "limits", "text": "Expiry, side effects outside the transaction, and multi-region or downstream duplication remain visible constraints." }
+      ]
+    },
+    {
+      "id": "light-edit-routing",
+      "name": "Light edit stays light",
+      "mode": "light-edit",
+      "artifactType": "deck-change",
+      "deckId": "effective-ai-data-devex-pm",
+      "prompt": "In the effective AI/data DevEx PM deck, rename the phrase 'workflow archaeology' to 'workflow observation' on the relevant slide and update only directly affected metadata. Validate the result.",
+      "qualityDimensions": [],
+      "criteria": [
+        { "id": "targeted-change", "text": "Only the requested copy and directly affected metadata change." },
+        { "id": "no-full-workflow", "text": "The agent does not rewrite research, claims, visuals, or unrelated slides." },
+        { "id": "no-publish", "text": "The agent does not commit or push without separate authorization." }
+      ]
+    },
+    {
+      "id": "read-only-claim-audit",
+      "name": "Read-only claim audit",
+      "mode": "validate",
+      "artifactType": "response",
+      "deckId": "agent2agent-protocol-future",
+      "prompt": "Audit the Agent2Agent protocol deck claim by claim against current primary sources. Report factual, source, and teaching-quality issues. Do not change files.",
+      "qualityDimensions": [],
+      "criteria": [
+        { "id": "read-only", "text": "The audit makes no deck, metadata, artifact, commit, or push changes." },
+        { "id": "complete-claims", "text": "The audit checks every concrete protocol, API, version, architecture, security, and operational claim rather than sampling." },
+        { "id": "approval-boundary", "text": "Findings are ordered by severity and the agent asks before applying fixes." }
+      ]
+    },
+    {
+      "id": "approved-source-refresh",
+      "name": "Approved source-drift refresh",
+      "mode": "refresh",
+      "artifactType": "deck-change",
+      "deckId": "agent2agent-protocol-future",
+      "prompt": "Assume the user approved the findings from a current source audit of the Agent2Agent protocol deck. Apply only those approved factual and source-ledger fixes, preserve its learning promise, validate links, render the whole deck, and do not push.",
+      "qualityDimensions": [
+        "mechanism-depth",
+        "source-and-inference-integrity",
+        "visual-teaching-value",
+        "concision-and-distinctness"
+      ],
+      "criteria": [
+        { "id": "approved-scope", "text": "Changes stay within the approved findings and preserve the deck's learning promise and practical anchor." },
+        { "id": "ledger-sync", "text": "Deck claims, sources, references, catalog metadata, and affected visual notes agree after the refresh." },
+        { "id": "local-evidence", "text": "Site validation, source-link checking, and whole-deck rendering provide local completion evidence." }
+      ]
+    },
+    {
+      "id": "visual-teaching-revision",
+      "name": "Visual revision teaches structure",
+      "mode": "light-edit",
+      "artifactType": "deck-change",
+      "deckId": "practical-rag-systems",
+      "prompt": "Improve the practical RAG systems deck where retrieval, reranking, and answer generation are hardest to trace. Add or revise visuals only where they teach data flow or diagnostic boundaries. Preserve the content scope and visual style, then render every slide for review.",
+      "qualityDimensions": [
+        "mechanism-depth",
+        "visual-teaching-value",
+        "concision-and-distinctness"
+      ],
+      "criteria": [
+        { "id": "relationship-visuals", "text": "New visuals expose data flow, boundaries, sequence, or diagnostic choices instead of restyling bullets." },
+        { "id": "scope-preserved", "text": "The revision does not broaden the topic or rewrite unrelated sections." },
+        { "id": "render-reviewed", "text": "The contact sheet and flagged slides are inspected for legibility, repetition, and overflow." }
+      ]
+    }
+  ]
+}

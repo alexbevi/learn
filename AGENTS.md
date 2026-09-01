@@ -33,6 +33,20 @@ the source of truth.
 - Keep audits read-only. Use the user's approval of findings as the boundary
   between validation and implementation.
 
+### Agent evaluation
+
+- Treat changes to `AGENTS.md`, presentation skills, artifact schemas, and
+  validation heuristics as agent behavior changes.
+- Validate the case catalog with
+  `node scripts/run-presentation-evals.mjs --validate`.
+- For material behavior changes, prepare and run representative cases from
+  `evals/presentation-agent/cases.json` in an isolated worktree or temporary
+  repository copy. Give the agent under test only the case prompt.
+- Score outcomes with the presentation quality rubric and case-specific
+  criteria. Store generated packets and scorecards under `.artifacts/`.
+- Compare behavior before and after instruction changes. Do not add a permanent
+  rule for a single failure unless a representative case reproduces it.
+
 ## Project Constraints
 
 - Keep the site deployable as static files on GitHub Pages.

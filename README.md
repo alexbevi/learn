@@ -62,6 +62,14 @@ Research artifact templates can be created for an existing catalog deck:
 node scripts/scaffold-presentation-artifacts.mjs <deck-id>
 ```
 
+Validate and prepare presentation-agent evaluation cases:
+
+```bash
+node scripts/run-presentation-evals.mjs --validate
+node scripts/run-presentation-evals.mjs --list
+node scripts/run-presentation-evals.mjs --prepare <case-id>
+```
+
 ## Structure
 
 - `index.html` lists topics, presentations, and filterable tags.
@@ -80,6 +88,10 @@ node scripts/scaffold-presentation-artifacts.mjs <deck-id>
   source, claim, and visual-plan artifacts for a deck.
 - `scripts/check-source-links.mjs` checks external source links when network
   validation is appropriate.
+- `scripts/run-presentation-evals.mjs` prepares representative agent test cases
+  and combines rubric review with deterministic validation evidence.
+- `evals/presentation-agent/` contains the case catalog and reviewer
+  calibration examples.
 - Substantial decks may include `research.md`, `sources.json`, `claims.json`,
   and `visuals.md` beside `index.html`.
 
