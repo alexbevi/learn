@@ -1,6 +1,6 @@
 ---
 name: presentation-validate
-description: Use when auditing or fact-checking Learn repository HTML presentations against current sources of truth, including local structural validation, web-backed accuracy review, issue summary, and optional user-approved fixes.
+description: Audit a Learn repository presentation without editing it. Covers teaching quality, structure, rendered layout, source coverage, and claim-by-claim factual accuracy against current primary sources; fixes require a separate user approval.
 ---
 
 # Presentation Validate
@@ -34,6 +34,9 @@ issues are found, summarize them and ask the user before changing the deck.
    - Note slide numbers or section labels for every claim cluster.
    - If `claims.json` is missing, mention that the deck cannot be audited against a formal slide contract.
    - If `sources.json` is missing or mostly secondary sources, mention source coverage risk.
+   - For a claim-by-claim request, include every concrete API, version,
+     architecture, operational, performance, security, and code claim rather
+     than sampling.
 
 4. Check sources of truth on the web.
    - Browse for current primary sources whenever the claim involves modern tools, APIs, products, releases, or comparisons.

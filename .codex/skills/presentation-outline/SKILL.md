@@ -1,6 +1,6 @@
 ---
 name: presentation-outline
-description: Use after presentation-research and before authoring a Learn repository deck; turns research artifacts into a narrative slide plan with learning objectives, slide contracts, source ids, examples, and planned visuals.
+description: Turn Learn repository research artifacts into a teaching plan, claim contracts, practice moments, and a visual plan before deck authoring. Use directly for a requested outline stage; presentation-create orchestrates it for full deck work.
 ---
 
 # Presentation Outline
@@ -130,8 +130,16 @@ Example contract:
    - Record unresolved scope risks in the outline response instead of hiding
      them in later slides.
 
+7. Plan the visuals.
+   - Read [visual planning](references/visual-planning.md) for substantial decks
+     or whenever the outline includes architecture, lifecycle, runtime flow,
+     data flow, taxonomy, state, or comparison.
+   - Create or update `visuals.md` before HTML authoring.
+
 ## Output
 
 - `claims.json` ready for authoring, with full contracts only where they improve
   the teaching plan.
+- `visuals.md` with the teaching purpose and validation plan for each required
+  visual.
 - A short outline summary in the response with any unresolved scope risks.

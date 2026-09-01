@@ -10,19 +10,28 @@ the source of truth.
 - Project skill definitions live under `.codex/skills/`.
 - Keep these skills repo-local. Do not install or maintain global copies under
   `$CODEX_HOME/skills/`.
-- Use the `presentation-create` Codex skill when creating or materially
-  updating a learning presentation.
-- Use `presentation-research`, `presentation-outline`, and
-  `presentation-visual-plan` as the staged workflow before authoring substantial
-  new decks.
-- Use the `presentation-validate` Codex skill when auditing a presentation
-  for structural health, rendering readiness, source coverage, or factual
-  accuracy.
-- Use `presentation-claim-check` for claim-by-claim factual review, and
-  `presentation-refresh` when revisiting older decks for drift.
+- Use `presentation-create` for new decks and material revisions. It
+  orchestrates research, outlining, visual planning, authoring, and validation.
+- Use `presentation-research` or `presentation-outline` directly only when the
+  user requests that stage as a standalone deliverable.
+- Use `presentation-validate` for read-only teaching-quality, structural,
+  rendering, source, and claim-by-claim factual audits.
+- Use `presentation-refresh` when revisiting an older deck for source or product
+  drift after an audit.
 - Validation audits must check current web sources of truth for technical claims
   and summarize issues before applying fixes. Ask the user before changing a deck
   in response to validation findings.
+
+### Task routing
+
+- Treat a change as light when it affects copy, styling, metadata, references,
+  or fewer than five slides without changing the learning promise or adding
+  material claims. Edit directly and run targeted validation.
+- Treat a change as material when it creates a deck, changes the learning
+  promise or practical anchor, changes a major architecture or comparison, or
+  rewrites roughly 20 percent or more of the claim-bearing slides.
+- Keep audits read-only. Use the user's approval of findings as the boundary
+  between validation and implementation.
 
 ## Project Constraints
 

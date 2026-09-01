@@ -1,6 +1,6 @@
 ---
 name: presentation-create
-description: Use when creating or materially updating static HTML learning presentations in /Users/alex/Workspace/learn, including conversational intake, source-grounded research, deck authoring, metadata/tag updates, local validation, commit, and push.
+description: Create new Learn repository presentations or materially revise an existing deck when the learning promise, practical anchor, major architecture, comparison, or roughly 20 percent of claim-bearing slides changes. Do not use for read-only audits or light copy, style, metadata, reference, or sub-five-slide edits.
 ---
 
 # Presentation Create
@@ -42,8 +42,9 @@ Create source-grounded, static HTML learning decks for the Learn repository. The
    - Keep title, goals, transition, recap, references, and practice entries as
      lightweight as their role permits.
 
-5. Use `presentation-visual-plan`.
-   - Create `visuals.md` before or during authoring.
+5. Complete visual planning as part of `presentation-outline`.
+   - Read its visual-planning reference and create `visuals.md` before or during
+     authoring.
    - Aim for one visual aid every 4-6 slides.
    - Include at least one visual for every major taxonomy, lifecycle, architecture, runtime flow, data flow, or decision framework.
    - Prefer deterministic HTML/CSS visuals for technical diagrams, with labels and text controlled by code.

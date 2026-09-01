@@ -93,11 +93,12 @@ should remain repo-local rather than being installed under `$CODEX_HOME/skills/`
 The staged workflow is:
 
 - `presentation-research`: create `research.md` and `sources.json`.
-- `presentation-outline`: create `claims.json` as the slide contract.
-- `presentation-visual-plan`: create `visuals.md` and required diagram plans.
-- `presentation-create`: author the HTML deck and catalog slice.
-- `presentation-claim-check`: audit claims against current sources of truth.
-- `presentation-refresh`: revisit older decks for drift, visuals, and metadata.
+- `presentation-outline`: create `claims.json` and `visuals.md` as the teaching
+  plan.
+- `presentation-create`: orchestrate new decks and material revisions.
+- `presentation-validate`: run read-only quality, rendering, source, and
+  claim-by-claim audits.
+- `presentation-refresh`: apply approved drift fixes to older decks.
 
 When creating a new learning plan:
 
@@ -141,10 +142,9 @@ When creating a new learning plan:
 12. Validate external source links with `node scripts/check-source-links.mjs`
     when network conditions allow.
 
-For factual review, use `presentation-claim-check` or `presentation-validate`.
-They run local structural validation, check deck claims against current web
-sources of truth, summarize issues by severity, and ask before applying
-presentation fixes.
+For factual review, use `presentation-validate`. It runs local structural and
+rendered validation, checks deck claims against current web sources of truth,
+summarizes issues by severity, and asks before applying presentation fixes.
 
 ## Tagging
 
