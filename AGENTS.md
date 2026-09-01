@@ -62,6 +62,26 @@ the source of truth.
 - If an external image is embedded, copy it into the repo, add useful `alt`
   text, and cite its source page in the deck.
 
+## Learning Quality
+
+- Start substantial deck work with one observable learning promise: what the
+  learner should be able to decide, build, diagnose, trace, or explain after
+  the presentation.
+- Name the learner's relevant before-state and the practical after-state. Do
+  not use topic coverage as a substitute for a learning outcome.
+- Use one or two recurring problems, systems, incidents, or decisions as the
+  deck's practical anchors.
+- Each major teaching section should contain a concrete mechanism, a worked
+  example, a failure case or constraint, and a learner decision or practice
+  prompt when the topic supports one.
+- Substantial decks should include at least two active learning moments, such
+  as predicting behavior, tracing a request, diagnosing a failure, selecting an
+  architecture, or critiquing a design.
+- The recap must answer the learning goals directly and give the learner a way
+  to transfer the lesson to a new system or decision.
+- Prefer a shorter coherent deck over an exhaustive deck. Remove accurate
+  slides that do not change what the learner understands or can do.
+
 ## References
 
 - Every deck must end with a references slide.
@@ -106,7 +126,10 @@ conversationally before creating the deck.
 
 The intake should establish:
 
+- the observable decision, task, diagnosis, or explanation the learner wants
+  to perform afterward
 - audience and current familiarity
+- relevant prior knowledge and known points of confusion
 - desired depth
 - implementation language or ecosystem
 - product versus technical emphasis

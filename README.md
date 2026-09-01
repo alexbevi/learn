@@ -84,8 +84,10 @@ The staged workflow is:
 
 When creating a new learning plan:
 
-1. Prompt the user conversationally, one focused question at a time, to shape
-   scope, audience, technical depth, and desired examples.
+1. Prompt the user conversationally, one focused question at a time. Establish
+   what they should be able to decide, build, diagnose, trace, or explain after
+   the deck, then shape scope, prior knowledge, depth, and the recurring
+   practical example.
 2. Research from primary sources and write `research.md` plus `sources.json`.
 3. Write `claims.json` with one slide contract per planned slide: learning
    objective, core claim, source ids, visual requirement, and practical
@@ -94,6 +96,8 @@ When creating a new learning plan:
    slides and at least one visual for each major taxonomy, lifecycle,
    architecture, runtime flow, data flow, or decision framework.
 5. Build the deck as static HTML using the shared slide layout and local assets.
+   Substantial decks should include at least two prediction, diagnosis, tracing,
+   architecture-selection, or design-critique moments.
 6. Prefer deterministic HTML/CSS visuals for technical diagrams. Render
    reproducible PNG assets with:
 

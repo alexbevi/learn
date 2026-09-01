@@ -19,8 +19,15 @@ Create source-grounded, static HTML learning decks for the Learn repository. The
 2. Run conversational intake when the user is asking to learn about a new topic.
    - Ask one focused question at a time.
    - Do not list all intake questions up front.
-   - Establish audience, depth, implementation language/ecosystem, product vs technical emphasis, a practical anchor example, and out-of-scope areas.
+   - First establish what the learner should be able to decide, build,
+     diagnose, trace, or explain after the deck.
+   - Establish audience, relevant prior knowledge, known confusion, depth,
+     implementation language or ecosystem, product vs technical emphasis, a
+     practical anchor example, and out-of-scope areas.
    - Once direction is clear, proceed with reasonable defaults instead of over-questioning.
+   - Before research, state a short learning contract with the observable
+     outcome, learner before-state, practical anchor, and exclusions. Continue
+     unless the user corrects it.
 
 3. Use `presentation-research` before authoring.
    - Create `research.md` and `sources.json` in the deck directory.
@@ -52,6 +59,14 @@ Create source-grounded, static HTML learning decks for the Learn repository. The
    - Revise or remove slides that could apply unchanged to many unrelated
      technologies. Replace vague value claims with mechanisms, examples,
      caveats, or operational consequences.
+   - Build each major teaching section around a mechanism, a worked example, a
+     failure case or constraint, and a learner decision or practice prompt when
+     the topic supports one.
+   - Include at least two active learning moments in a substantial deck. Good
+     forms include prediction, request tracing, failure diagnosis, architecture
+     selection, and design critique.
+   - Make the recap answer the learning goals directly and include a transfer
+     prompt that applies the lesson to a new system or decision.
    - Use real HTML formatting. Inline code in prose must be `<code>...</code>`, not markdown-style backticks.
    - Avoid slide text overflow by using compact copy, responsive grids, stable dimensions, and smaller text inside cards/panels.
 
@@ -103,6 +118,8 @@ Create source-grounded, static HTML learning decks for the Learn repository. The
 - Catalog entry includes a `lastUpdated` date in `YYYY-MM-DD` format.
 - Every source used is listed on the deck's references slide, grouped by concept.
 - Visual aids are planned, local, accessible, and frequent enough for the deck's length.
+- The deck delivers its observable learning promise and includes active
+  practice for substantial topics.
 - Local validation passes.
 - Visual spot checks show no obvious overflow or broken navigation.
 - Changes are committed and pushed as a self-contained slice.
