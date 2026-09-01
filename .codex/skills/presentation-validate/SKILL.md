@@ -19,6 +19,8 @@ issues are found, summarize them and ask the user before changing the deck.
 
 2. Run local structural validation first.
    - From `/Users/alex/Workspace/learn`, run `node scripts/validate-site.mjs`.
+   - Run `node scripts/render-deck.mjs <deck-id>` and inspect its
+     `report.json`, contact sheet, and flagged slides.
    - Record failures before deeper content review.
    - Use local files or a local static server for any browser/rendering checks.
    - Do not wait for GitHub Pages deployment.

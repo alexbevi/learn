@@ -327,7 +327,7 @@ for (const presentation of catalog.presentations) {
   }
   validateResearchArtifacts(presentation);
   const visuals = visualAidCount(source);
-  const targetVisuals = Math.max(1, Math.ceil(actualSlides / 8));
+  const targetVisuals = Math.max(1, Math.ceil(actualSlides / 6));
   if (visuals < targetVisuals) {
     warn(
       `${presentation.id}: ${visuals} visual aid(s) found; target at least ${targetVisuals} for ${actualSlides} slides`,

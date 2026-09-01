@@ -116,6 +116,9 @@ the source of truth.
   Keep the audit read-only until the user approves fixes.
 - Run `node scripts/validate-site.mjs` before committing presentation or catalog
   changes.
+- Run `node scripts/render-deck.mjs <deck-id>` for new or materially revised
+  decks. Inspect `report.json`, the contact sheet, and any flagged slides at the
+  target viewport before completion.
 - Run `node scripts/check-source-links.mjs <deck-id>` for source-link validation
   when creating, validating, or refreshing a deck with external references.
 - Treat the local checkout, local static files, and local HTTP smoke test as the

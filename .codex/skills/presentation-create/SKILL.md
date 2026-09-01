@@ -117,7 +117,11 @@ Create source-grounded, static HTML learning decks for the Learn repository. The
 
 10. Validate locally.
    - Run `node scripts/validate-site.mjs`.
-   - Use local files or a local static server for browser checks and screenshots.
+   - Run `node scripts/render-deck.mjs <deck-id>` to render every slide at the
+     target viewport.
+   - Inspect the generated `report.json`, contact sheet, and every flagged slide.
+     Treat density and repeated-layout findings as review prompts, not automatic
+     proof of a defect.
    - Do not wait for public GitHub Pages deployment to validate the content.
    - Fix structural, rendering, metadata, reference, image accessibility, and inline-code issues before committing.
    - Re-run example verification commands after the final slide edit when the
@@ -145,4 +149,5 @@ Create source-grounded, static HTML learning decks for the Learn repository. The
 - The quality-rubric review averages at least 3.0 with no dimension scored 1.
 - Local validation passes.
 - Visual spot checks show no obvious overflow or broken navigation.
+- The whole-deck render report and contact sheet have been reviewed.
 - Changes are committed and pushed as a self-contained slice.

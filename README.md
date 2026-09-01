@@ -46,6 +46,16 @@ External source links can be checked on demand:
 node scripts/check-source-links.mjs <deck-id>
 ```
 
+Render every slide and create a review report plus contact sheet:
+
+```bash
+node scripts/render-deck.mjs <deck-id>
+```
+
+Review output is written under `.artifacts/deck-review/`, which is ignored by
+Git. Set `LEARN_CHROME_PATH` if Chrome or Chromium is not in a standard
+location.
+
 Research artifact templates can be created for an existing catalog deck:
 
 ```bash
@@ -64,6 +74,8 @@ node scripts/scaffold-presentation-artifacts.mjs <deck-id>
 - `visuals/` stores reproducible HTML/CSS sources for rendered PNG visual aids.
 - `scripts/render-visuals.mjs` renders `visuals/**/*.html` to matching PNGs
   under `assets/img/`.
+- `scripts/render-deck.mjs` renders an entire deck at 1600 by 900 and records
+  overflow, text-size, density, and repeated-layout review signals.
 - `scripts/scaffold-presentation-artifacts.mjs` creates starter research,
   source, claim, and visual-plan artifacts for a deck.
 - `scripts/check-source-links.mjs` checks external source links when network
