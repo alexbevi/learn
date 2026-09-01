@@ -37,7 +37,10 @@ Create source-grounded, static HTML learning decks for the Learn repository. The
 
 4. Use `presentation-outline`.
    - Create `claims.json` before writing slides.
-   - Every slide should have a learning objective, core claim, supporting source ids, visual requirement, and practical takeaway.
+   - Give claim-bearing slides a learning objective, core claim, supporting
+     source ids, visual requirement, and practical takeaway.
+   - Keep title, goals, transition, recap, references, and practice entries as
+     lightweight as their role permits.
 
 5. Use `presentation-visual-plan`.
    - Create `visuals.md` before or during authoring.
@@ -84,8 +87,8 @@ Create source-grounded, static HTML learning decks for the Learn repository. The
    - Use canonical lowercase slugs and useful concept-level labels; avoid near-duplicates.
 
 9. Audit information density after authoring and before validation.
-   - Review the deck slide by slide against `claims.json`.
-   - For each slide, confirm:
+   - Review the deck teaching unit by teaching unit against `claims.json`.
+   - For each claim-bearing slide, confirm:
      - it answers a concrete learner question
      - the core claim is source-backed or explicitly marked as inference
      - it includes a mechanism, example, operational implication, caveat, or
@@ -93,6 +96,8 @@ Create source-grounded, static HTML learning decks for the Learn repository. The
      - it does not repeat another slide without adding new structure
      - it has a visual when the concept involves architecture, lifecycle,
        runtime flow, data flow, taxonomy, state, or comparison
+   - For each practice slide, confirm that the learner must predict, trace,
+     diagnose, select, or critique before seeing the explanation.
    - Tighten, split, merge, or remove slides that are accurate but thin.
    - Update `claims.json`, `visuals.md`, references, and catalog metadata if
      the audit changes the deck.

@@ -5,7 +5,7 @@ description: Use after presentation-research and before authoring a Learn reposi
 
 # Presentation Outline
 
-Convert research into a slide contract before writing HTML.
+Convert research into a teaching plan before writing HTML.
 
 ## Inputs
 
@@ -47,10 +47,18 @@ Convert research into a slide contract before writing HTML.
      it.
 
 3. Create or update `claims.json`.
-   - Use an array of slide contract objects.
-   - Required fields: `slide`, `title`, `objective`, `coreClaim`,
-     `sourceIds`, `visual`, `practicalTakeaway`.
-   - For substantial technical or strategic decks, also include:
+   - Use an array of slide-plan objects. Give every object a `slide`, `title`,
+     and `role`.
+   - Use `role: claim` for slides that teach a factual, technical, or strategic
+     claim. These require `objective`, `coreClaim`, `sourceIds`, `visual`, and
+     `practicalTakeaway`.
+   - Use `role: practice` for prediction, tracing, diagnosis, selection, or
+     critique slides. These require `objective`, `prompt`, `expectedReasoning`,
+     `sourceIds`, and `visual`.
+   - Title, goals, transition, recap, and references slides may use their
+     matching role with a short `objective`. Do not invent claims, examples, or
+     counterpoints to fill fields on structural slides.
+   - For substantial technical or strategic claim slides, also include:
      - `learnerQuestion`: the specific question this slide answers
      - `mechanism`: the concrete API, state path, runtime flow, protocol,
        data model, policy, or decision mechanism that supports the claim
@@ -71,6 +79,7 @@ Example contract:
 {
   "slide": 12,
   "title": "Auth and RLS Request Path",
+  "role": "claim",
   "objective": "Explain how browser-side access can be safe.",
   "learnerQuestion": "How does the platform keep direct client data access from leaking tenant data?",
   "coreClaim": "JWT identity and database-enforced policies let generated APIs serve browser clients safely when policies are correct.",
@@ -84,13 +93,18 @@ Example contract:
 }
 ```
 
-4. Keep one claim per slide whenever possible.
+4. Keep one teaching move per slide whenever possible.
    - Dense decks can use two supporting points, but avoid mixed-purpose slides.
    - Every technical claim should trace to source ids or be marked as inference.
+   - Practice slides should make the learner do something before revealing the
+     explanation. Do not restate the previous slide as a question.
 
 5. Estimate slide count and duration.
-   - Technical deep dives usually need 35-60 slides.
-   - Prefer more focused slides over overloaded layouts.
+   - Derive length from the learning promise, learner baseline, teaching units,
+     and available presentation time.
+   - Prefer a shorter coherent path over broad topic coverage.
+   - Split overloaded slides, but remove thin or repetitive slides instead of
+     preserving them to reach a target count.
 
 6. Run an adversarial outline review before authoring HTML.
    - Review `claims.json` for:
@@ -107,5 +121,6 @@ Example contract:
 
 ## Output
 
-- `claims.json` ready for authoring.
+- `claims.json` ready for authoring, with full contracts only where they improve
+  the teaching plan.
 - A short outline summary in the response with any unresolved scope risks.

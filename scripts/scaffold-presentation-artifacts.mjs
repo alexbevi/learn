@@ -71,6 +71,7 @@ function claimsTemplate(presentation) {
       {
         slide: 1,
         title: presentation.title,
+        role: "claim",
         objective: "Introduce the deck's learning promise.",
         coreClaim: "Replace with the slide's single core claim.",
         sourceIds: ["source-1"],

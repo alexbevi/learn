@@ -199,7 +199,18 @@ function validateResearchArtifacts(presentation) {
         fail(`${presentation.id}: claims.json must be an array`);
       } else {
         for (const [index, claim] of claims.entries()) {
-          for (const field of ["slide", "title", "objective", "coreClaim", "sourceIds", "visual", "practicalTakeaway"]) {
+          const role = claim?.role || "claim";
+          const commonFields = ["slide", "title", "objective"];
+          const roleFields = role === "claim"
+            ? ["coreClaim", "sourceIds", "visual", "practicalTakeaway"]
+            : role === "practice"
+              ? ["prompt", "expectedReasoning", "sourceIds", "visual"]
+              : [];
+          const validRoles = ["claim", "practice", "title", "goals", "transition", "recap", "references"];
+          if (!validRoles.includes(role)) {
+            fail(`${presentation.id}: claims.json[${index}] has unknown role ${role}`);
+          }
+          for (const field of [...commonFields, ...roleFields]) {
             if (claim?.[field] === undefined || claim?.[field] === "") {
               fail(`${presentation.id}: claims.json[${index}] missing ${field}`);
             }

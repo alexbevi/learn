@@ -89,9 +89,10 @@ When creating a new learning plan:
    the deck, then shape scope, prior knowledge, depth, and the recurring
    practical example.
 2. Research from primary sources and write `research.md` plus `sources.json`.
-3. Write `claims.json` with one slide contract per planned slide: learning
-   objective, core claim, source ids, visual requirement, and practical
-   takeaway.
+3. Write `claims.json` as a teaching plan. Claim-bearing slides receive full
+   contracts with an objective, core claim, source ids, visual requirement, and
+   practical takeaway. Practice and structural slides use lighter role-specific
+   entries instead of invented claims.
 4. Create a visual inventory in `visuals.md`. Aim for one visual aid every 4-6
    slides and at least one visual for each major taxonomy, lifecycle,
    architecture, runtime flow, data flow, or decision framework.
